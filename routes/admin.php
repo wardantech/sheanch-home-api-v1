@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Settings\FacilityController;
+use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\Admin\Settings\UtilityController;
 use App\Http\Controllers\Admin\User\AdminController;
 use App\Http\Controllers\Admin\User\LandlordController;
@@ -44,7 +45,8 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     //landlord route
     Route::group(['prefix' => 'landlord'], function(){
-        Route::apiResource('/', LandlordController::class)->only(['index','store','show','update']);
+        Route::apiResource('/', LandlordController::class)->only(['store','show','update']);
+        Route::post('list', [LandlordController::class,'list']);
     });
 
     //Tenant route
@@ -63,6 +65,13 @@ Route::group(['middleware' => ['auth:api']], function(){
         //Utility route
         Route::group(['prefix' => 'utility'], function(){
             Route::apiResource('/', UtilityController::class)->only(['index','store','show','update']);
+        });
+
+        //Address route
+        Route::group(['prefix' => ''], function(){
+            Route::get('divisions', [GetDivisionDistrictThanaController::class, 'getDivisions']);
+            Route::post('districts', [GetDivisionDistrictThanaController::class, 'getDistricets']);
+            Route::post('thanas', [GetDivisionDistrictThanaController::class, 'getThanas']);
         });
 
     });
