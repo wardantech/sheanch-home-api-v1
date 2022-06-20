@@ -15,12 +15,11 @@ return new class extends Migration
     {
         Schema::create('landlords', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('name');
             $table->string('nid');
-            $table->tinyInteger('thana_id');
-            $table->tinyInteger('district_id');
-            $table->tinyInteger('division_id');
+            $table->integer('thana_id');
+            $table->integer('district_id');
+            $table->integer('division_id');
             $table->text('postal_address')->nullable();
             $table->text('residential_address')->nullable();
             $table->timestamps();
