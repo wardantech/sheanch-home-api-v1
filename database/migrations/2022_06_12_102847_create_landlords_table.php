@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('nid');
+            $table->string('image')->nullable();
             $table->integer('thana_id');
             $table->integer('district_id');
             $table->integer('division_id');
