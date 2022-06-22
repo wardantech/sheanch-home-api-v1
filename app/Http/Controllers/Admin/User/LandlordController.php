@@ -19,7 +19,16 @@ class LandlordController extends Controller
     public function __construct()
     {
         //$this->authRepository = $authRepository;
-        $this->middleware(['auth:api']);
+        $this->middleware(['auth:api'],['except' => ['formSubmit']]);
+    }
+
+    public function formSubmit(Request $request)
+    {
+
+        $imageName = time().'.'.$request->file->getClientOriginalExtension();
+        $request->file->move(public_path('images'), $imageName);
+
+        return response()->json(['success'=>'You have successfully upload file.']);
     }
 
     public function list(Request $request){
@@ -59,7 +68,13 @@ class LandlordController extends Controller
      */
 
     public function store(Request $request){
-
+        return $request->toJson();
+        if($request->input('image')) {
+            return $request->input('image');
+            $imageName = time().'.'.$request->image->getClientOriginalExtension();
+            $request->image->move(public_path('images'), $imageName);
+        }
+        return $request;
         $rules = [
             'email' => [
                 'required',
@@ -68,6 +83,7 @@ class LandlordController extends Controller
                         ->whereNull('deleted_at');
                 })
             ],
+            //'image' => 'mimes:jpg,jpeg,png|max:2048',
             'name' => 'required|string|max:255',
             'mobile' => 'required|string',
             'thana_id' => 'required|numeric',
@@ -82,20 +98,24 @@ class LandlordController extends Controller
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
         }
         //--- Validation Section Ends
+
+
         DB::beginTransaction();
         try {
 
-            $data = new Landlord();
+            $landlord = new Landlord();
 
-            $data->name = $request->name;
-            $data->nid = $request->nid;
-            $data->thana_id = $request->thana_id;
-            $data->district_id = $request->district_id;
-            $data->division_id = $request->division_id;
-            $data->postal_address = $request->postal_address;
-            $data->residential_address = $request->residential_address;
+            $landlord->name = $request->name;
+            $landlord->nid = $request->nid;
+            $landlord->thana_id = $request->thana_id;
+            $landlord->district_id = $request->district_id;
+            $landlord->division_id = $request->division_id;
+            $landlord->postal_address = $request->postal_address;
+            $landlord->residential_address = $request->residential_address;
 
-            $data->save();
+
+            $landlord->image = $imageName;
+            $landlord->save();
 
             $user = new User();
             $user->email = $request->email;

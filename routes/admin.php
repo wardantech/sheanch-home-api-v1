@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('as', function (){
     return 6;
 });
-
+Route::post('formSubmit',[LandlordController::class,'formSubmit']);
 Route::post('register',[AuthController::class,'register']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
