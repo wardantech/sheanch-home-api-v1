@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('as', function (){
     return 6;
 });
-Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
+
 
 Route::post('register',[AuthController::class,'register']);
 
@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::group(['prefix' => 'landlord'], function(){
         Route::apiResource('/', LandlordController::class)->only(['store','show','update']);
         Route::post('list', [LandlordController::class,'list']);
+        Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
     });
 
     //Tenant route
