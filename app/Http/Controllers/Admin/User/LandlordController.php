@@ -19,17 +19,28 @@ class LandlordController extends Controller
     public function __construct()
     {
         //$this->authRepository = $authRepository;
-        $this->middleware(['auth:api'],['except' => ['formSubmit']]);
+        $this->middleware(['auth:api'],
+            ['except' => ['formSubmit']]
+        );
     }
 
-    public function formSubmit(Request $request)
+    public function imageUpload(Request $request, $id)
     {
+        try{
+            $imageName = uniqid('landlord-',false).'.'.$request->file->getClientOriginalExtension();
+            $request->file->move(public_path('images'), $imageName);
 
-        $imageName = time().'.'.$request->file->getClientOriginalExtension();
-        $request->file->move(public_path('images'), $imageName);
+            $landlord = Landlord::findOrFail($id);
+            $landlord->image = $imageName;
+            $landlord->update();
 
-        return response()->json(['success'=>'You have successfully upload file.']);
+            return response()->json(['success'=>'You have successfully upload file.']);
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Landlord Image error', ['error' => $exception->getMessage()]);
+        }
     }
+
 
     public function list(Request $request){
 
@@ -68,13 +79,8 @@ class LandlordController extends Controller
      */
 
     public function store(Request $request){
-        return $request->toJson();
-        if($request->input('image')) {
-            return $request->input('image');
-            $imageName = time().'.'.$request->image->getClientOriginalExtension();
-            $request->image->move(public_path('images'), $imageName);
-        }
-        return $request;
+
+        //--- Validation Section Starts
         $rules = [
             'email' => [
                 'required',
@@ -83,7 +89,7 @@ class LandlordController extends Controller
                         ->whereNull('deleted_at');
                 })
             ],
-            //'image' => 'mimes:jpg,jpeg,png|max:2048',
+
             'name' => 'required|string|max:255',
             'mobile' => 'required|string',
             'thana_id' => 'required|numeric',
@@ -113,8 +119,6 @@ class LandlordController extends Controller
             $landlord->postal_address = $request->postal_address;
             $landlord->residential_address = $request->residential_address;
 
-
-            $landlord->image = $imageName;
             $landlord->save();
 
             $user = new User();
@@ -128,6 +132,9 @@ class LandlordController extends Controller
             $user->save();
 
             DB::commit();
+
+            return $this->sendResponse(['id'=>$landlord->id],'Landlord create successfully');
+
 
         }catch (\Exception $exception){
             DB::rollback();
