@@ -20,7 +20,7 @@ class LandlordController extends Controller
     {
         //$this->authRepository = $authRepository;
         $this->middleware(['auth:api'],
-            ['except' => ['formSubmit']]
+            //['except' => ['imageUpload']]
         );
     }
 
