@@ -21,6 +21,14 @@ class UtilityController extends Controller
     }
 
     /**
+     * Store api
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request){
+
+    }
+
+    /**
      * Register api
      * @return \Illuminate\Http\Response
      */

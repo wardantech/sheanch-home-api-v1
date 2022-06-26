@@ -27,13 +27,6 @@ class TenantController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->toJson();
-        if ($request->input('image')) {
-            return $request->input('image');
-            $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-            $request->image->move(public_path('images'), $imageName);
-        }
-        return $request;
         $rules = [
             //'image' => 'mimes:jpg,jpeg,png|max:2048',
             'type' => 'required|numeric',
@@ -63,7 +56,6 @@ class TenantController extends Controller
             $tenant->gender = $request->gender;
             $tenant->dob = $request->dob;
             $tenant->nid = $request->nid;
-            $tenant->image = $imageName;
             $tenant->passport_no = $request->passport_no;
             $tenant->marital_status = $request->marital_status;
             $tenant->thana_id = $request->thana_id;
@@ -73,11 +65,16 @@ class TenantController extends Controller
             $tenant->postal_address = $request->postal_address;
             $tenant->physical_address = $request->physical_address;
             $tenant->save();
+
+            return $this->sendResponse(['id'=>$tenant->id],'Tenant create successfully');
+
         } catch (\Exception $exception) {
             return $this->sendError('Landlord store error', ['error' => $exception->getMessage()]);
         }
 
     }
+
+
 
     /**
      * Register api
