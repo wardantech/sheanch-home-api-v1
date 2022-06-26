@@ -55,6 +55,7 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::group(['prefix' => 'tenant'], function(){
         Route::apiResource('/', TenantController::class)->only(['store','show','update']);
         Route::post('list', [TenantController::class,'list']);
+        Route::post('image-upload/{id}',[TenantController::class,'imageUpload']);
     });
 
     //Settings route
@@ -62,12 +63,14 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //facility route
         Route::group(['prefix' => 'facility'], function(){
-            Route::apiResource('/', FacilityController::class)->only(['index','store','show','update']);
+            Route::apiResource('/', FacilityController::class)->only(['store','show','update']);
+            Route::post('list', [FacilityController::class,'list']);
         });
 
         //Utility route
         Route::group(['prefix' => 'utility'], function(){
-            Route::apiResource('/', UtilityController::class)->only(['index','store','show','update']);
+            Route::apiResource('/', UtilityController::class)->only(['store','show','update']);
+            Route::post('list', [UtilityController::class,'list']);
         });
 
         //Address route
