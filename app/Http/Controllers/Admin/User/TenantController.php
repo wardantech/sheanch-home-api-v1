@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant;
+use App\Models\User;
 
 
 class TenantController extends Controller
@@ -22,6 +23,60 @@ class TenantController extends Controller
     }
 
     /**
+     * Tenant Image Upload api
+     * @return \Illuminate\Http\Response
+     */
+    public function imageUpload(Request $request, $id)
+    {
+        try{
+            $imageName = uniqid('tenant-',false).'.'.$request->file->getClientOriginalExtension();
+            $request->file->move(public_path('images'), $imageName);
+
+            $tenant = Tenant::findOrFail($id);
+            $tenant->image = $imageName;
+            $tenant->update();
+
+            return response()->json(['success'=>'You have successfully upload file.']);
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Tenant Image error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * List api
+     * @return \Illuminate\Http\Response
+     */
+    public function list(Request $request){
+        $columns = ['id', 'name'];
+
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+
+        $query = Tenant::select('*')->orderBy($columns[$column], $dir);
+
+        $count = Tenant::count();
+
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if($length!='all'){
+            $fetchData = $query->paginate($length);
+        }
+        else{
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+    }
+
+    /**
      * Store api
      * @return \Illuminate\Http\Response
      */
@@ -29,6 +84,15 @@ class TenantController extends Controller
     {
         //--- Validation Section Start ---//
         $rules = [
+            'email' => [
+                'required',
+                Rule::unique('users')->where(function ($query) use ($request) {
+                    return $query->where('type',2)
+                        ->whereNull('deleted_at');
+                })
+            ],
+            'mobile' => 'required|string',
+            'password' => 'required|confirmed|string|min:6',
             //'image' => 'mimes:jpg,jpeg,png|max:2048',
             'type' => 'required|numeric',
             'name' => 'required|string|max:255',
@@ -47,7 +111,9 @@ class TenantController extends Controller
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
         }
         //--- Validation Section Ends  ---//
+        DB::beginTransaction();
         try {
+            // Tenant Store
             $tenant = new Tenant();
             $tenant->type = $request->type;
             $tenant->name = $request->name;
@@ -64,12 +130,23 @@ class TenantController extends Controller
             $tenant->physical_address = $request->physical_address;
             $tenant->save();
 
+            // User Store
+            $user = new User();
+            $user->email = $request->email;
+            $user->mobile = $request->mobile;
+            $user->name = $request->name;
+            $user->status = 1;
+            $user->type = 2; //landlord
+            $user->password = bcrypt($request->password);
+            $user->save();
+
+            DB::commit();
             return $this->sendResponse(['id'=>$tenant->id],'Tenant create successfully');
 
         } catch (\Exception $exception) {
-            return $this->sendError('Landlord store error', ['error' => $exception->getMessage()]);
+            DB::rollback();
+            return $this->sendError('Tenant store error', ['error' => $exception->getMessage()]);
         }
-
     }
 
 
