@@ -94,7 +94,6 @@ class TenantController extends Controller
             'mobile' => 'required|string',
             'password' => 'required|confirmed|string|min:6',
             //'image' => 'mimes:jpg,jpeg,png|max:2048',
-            'type' => 'required|numeric',
             'name' => 'required|string|max:255',
             'gender' => 'required|integer',
             'marital_status' => 'integer',
@@ -115,7 +114,7 @@ class TenantController extends Controller
         try {
             // Tenant Store
             $tenant = new Tenant();
-            $tenant->type = $request->type;
+            $tenant->type = 3; // Tenant
             $tenant->name = $request->name;
             $tenant->gender = $request->gender;
             $tenant->dob = $request->dob;
