@@ -22,6 +22,39 @@ class TenantController extends Controller
     }
 
     /**
+     * List api
+     * @return \Illuminate\Http\Response
+     */
+    public function list(Request $request){
+        $columns = ['id', 'name'];
+
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+
+        $query = Tenant::select('*')->orderBy($columns[$column], $dir);
+
+        $count = Tenant::count();
+
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if($length!='all'){
+            $fetchData = $query->paginate($length);
+        }
+        else{
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+    }
+
+    /**
      * Store api
      * @return \Illuminate\Http\Response
      */

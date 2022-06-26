@@ -52,7 +52,8 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     //Tenant route
     Route::group(['prefix' => 'tenant'], function(){
-        Route::apiResource('/', TenantController::class)->only(['index','store','show','update']);
+        Route::apiResource('/', TenantController::class)->only(['store','show','update']);
+        Route::post('list', [TenantController::class,'list']);
     });
 
     //Settings route
