@@ -27,14 +27,12 @@ class TenantController extends Controller
      */
     public function store(Request $request)
     {
+        //--- Validation Section Start ---//
         $rules = [
             //'image' => 'mimes:jpg,jpeg,png|max:2048',
             'type' => 'required|numeric',
             'name' => 'required|string|max:255',
             'gender' => 'required|integer',
-            'dob' => 'required|string',
-            'nid' => 'string',
-            'passport_no' => 'string',
             'marital_status' => 'integer',
             'thana_id' => 'required|numeric',
             'district_id' => 'required|numeric',
@@ -44,7 +42,7 @@ class TenantController extends Controller
             'physical_address' => 'string',
         ];
         $validator = Validator::make($request->all(), $rules);
-        //--- Validation Section Start ---//
+
         if ($validator->fails()) {
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
         }
