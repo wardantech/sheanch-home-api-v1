@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('utilities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->tinyInteger('status')->index()->default(1)->comment('1-active,0-deactivated');
-            $table->tinyInteger('type')->comment('1-floor,2-cooling,3-heating,4-other');
+            $table->integer('status')->index()->default(1)->comment('1-active,0-deactivated');
+            $table->integer('type')->comment('1-floor,2-cooling,3-heating,4-other');
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps();
