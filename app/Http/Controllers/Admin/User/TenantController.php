@@ -150,10 +150,96 @@ class TenantController extends Controller
         }
     }
 
-
-
     /**
-     * Register api
+     * Show tenant single data for update
+     * @param $id
      * @return \Illuminate\Http\Response
      */
+
+    public function show($id)
+    {
+        try{
+            $landlord = Tenant::findOrFail($id);
+
+            return $this->sendResponse($landlord,'Tenant data get successfully');
+        }
+        catch (\Exception $exception){
+            DB::rollback();
+            return $this->sendError('Tenant data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * This method for tenant update
+     * @param Request $request
+     * @param $id
+     */
+
+    public function update(Request $request, $id)
+    {
+        // Tenants Validation
+        $rules = [
+            'email' => [
+                'required',
+                Rule::unique('users')->where(function ($query) use ($request, $id) {
+                    return $query->whereNull('deleted_at')->where('id','==',$id);
+                })
+            ],
+            'mobile' => 'required|string',
+            //'image' => 'mimes:jpg,jpeg,png|max:2048',
+            'name' => 'required|string|max:255',
+            'gender' => 'required|integer',
+            'marital_status' => 'integer',
+            'thana_id' => 'required|numeric',
+            'district_id' => 'required|numeric',
+            'division_id' => 'required|numeric',
+            'postal_code' => 'string',
+            'postal_address' => 'string',
+            'physical_address' => 'string',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
+        }
+
+        // Tenants Validation End
+        DB::beginTransaction();
+        try {
+            // Tenant Update
+            $tenant = Tenant::findOrFail($id);
+
+            $tenant->name = $request->name;
+            $tenant->email = $request->email;
+            $tenant->mobile = $request->mobile;
+            $tenant->status = $request->status;
+            $tenant->gender = $request->gender;
+            $tenant->dob = $request->dob;
+            $tenant->nid = $request->nid;
+            $tenant->passport_no = $request->passport_no;
+            $tenant->marital_status = $request->marital_status;
+            $tenant->thana_id = $request->thana_id;
+            $tenant->district_id = $request->district_id;
+            $tenant->division_id = $request->division_id;
+            $tenant->postal_code = $request->postal_code;
+            $tenant->postal_address = $request->postal_address;
+            $tenant->physical_address = $request->physical_address;
+            $tenant->update();
+
+            // User update
+            $user = new User();
+            $user->email = $request->email;
+            $user->mobile = $request->mobile;
+            $user->name = $request->name;
+            $user->status = $request->status;
+            $user->type = 3; //Tenant
+            $user->update();
+
+            DB::commit();
+            return $this->sendResponse(['id'=>$tenant->id],'Tenant updated successfully');
+
+        }catch (\Exception $exception) {
+            DB::rollback();
+            return $this->sendError('Tenant update error', ['error' => $exception->getMessage()]);
+        }
+    }
 }
