@@ -114,10 +114,10 @@ class TenantController extends Controller
             // Tenant Store
             $tenant = new Tenant();
 
-            $tenant->status = $request->status;
             $tenant->name = $request->name;
             $tenant->email = $request->email;
             $tenant->mobile = $request->mobile;
+            $tenant->status = $request->status;
             $tenant->gender = $request->gender;
             $tenant->dob = $request->dob;
             $tenant->nid = $request->nid;
@@ -136,8 +136,8 @@ class TenantController extends Controller
             $user->email = $request->email;
             $user->mobile = $request->mobile;
             $user->name = $request->name;
-            $user->status = 1;
-            $user->type = 2; //Tenant
+            $user->status = $request->status;
+            $user->type = 3; //Tenant
             $user->password = bcrypt($request->password);
             $user->save();
 
