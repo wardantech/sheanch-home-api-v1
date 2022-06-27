@@ -85,8 +85,10 @@ class LandlordController extends Controller
             'email' => [
                 'required',
                 Rule::unique('users')->where(function ($query) use ($request) {
-                    return $query->where('type',2)
-                        ->whereNull('deleted_at');
+//                    return $query->where('type',2)
+//                        ->whereNull('deleted_at');
+                    return $query->whereNull('deleted_at');
+
                 })
             ],
 

@@ -87,8 +87,7 @@ class TenantController extends Controller
             'email' => [
                 'required',
                 Rule::unique('users')->where(function ($query) use ($request) {
-                    return $query->where('type',2)
-                        ->whereNull('deleted_at');
+                    return $query->whereNull('deleted_at');
                 })
             ],
             'mobile' => 'required|string',
@@ -114,8 +113,11 @@ class TenantController extends Controller
         try {
             // Tenant Store
             $tenant = new Tenant();
-            $tenant->type = 3; // Tenant
+
+            $tenant->status = $request->status;
             $tenant->name = $request->name;
+            $tenant->email = $request->email;
+            $tenant->mobile = $request->mobile;
             $tenant->gender = $request->gender;
             $tenant->dob = $request->dob;
             $tenant->nid = $request->nid;
@@ -135,7 +137,7 @@ class TenantController extends Controller
             $user->mobile = $request->mobile;
             $user->name = $request->name;
             $user->status = 1;
-            $user->type = 2; //landlord
+            $user->type = 2; //Tenant
             $user->password = bcrypt($request->password);
             $user->save();
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('mobile');
             $table->string('nid');
+            $table->string('status')->index()->comment('1-active,0-deactivated');
             $table->string('image')->nullable();
             $table->integer('thana_id');
             $table->integer('district_id');
