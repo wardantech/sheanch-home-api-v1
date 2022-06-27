@@ -46,9 +46,11 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     //landlord route
     Route::group(['prefix' => 'landlord'], function(){
-        Route::apiResource('/', LandlordController::class)->only(['store','show','update']);
+        Route::post('store', [LandlordController::class,'store']);
         Route::post('list', [LandlordController::class,'list']);
+        Route::get('show/{id}',[LandlordController::class,'show']);
         Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
+
     });
 
     //Tenant route
