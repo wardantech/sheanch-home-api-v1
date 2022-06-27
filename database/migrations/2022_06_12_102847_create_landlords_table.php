@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('mobile');
-            $table->string('nid');
+            $table->string('nid')->nullable();
             $table->string('status')->index()->comment('1-active,0-deactivated');
             $table->string('image')->nullable();
             $table->integer('thana_id');

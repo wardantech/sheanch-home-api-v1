@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('store', [LandlordController::class,'store']);
         Route::post('list', [LandlordController::class,'list']);
         Route::get('show/{id}',[LandlordController::class,'show']);
+        Route::post('update/{id}',[LandlordController::class,'update']);
         Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
 
     });

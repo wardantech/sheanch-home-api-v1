@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();
-            $table->integer('status')->index()->comment('1-active,0-deactivated');
             $table->string('name');
             $table->string('email');
             $table->string('mobile');
+            $table->integer('status')->nullable()->index()->comment('1-active,0-deactivated');
             $table->integer('gender')->comment('1-male,2-female,3-others');
-            $table->string('dob');
+            $table->string('dob')->nullable();
             $table->string('nid')->nullable();
             $table->string('image')->nullable();
             $table->string('passport_no')->nullable();
