@@ -22,6 +22,8 @@ return new class extends Migration
             $table->tinyInteger('type')->index()->comment('1-Admin,2-Landlord,3-Tenant ');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->integer('landlord_id')->nullable();
+            $table->integer('tenant_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

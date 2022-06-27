@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->tinyInteger('type');
             $table->string('name');
+            $table->string('email');
+            $table->string('mobile');
             $table->tinyInteger('gender')->comment('1-male,2-female,3-others');
             $table->string('dob');
             $table->string('nid')->nullable();
@@ -29,6 +31,8 @@ return new class extends Migration
             $table->string('postal_code')->nullable();
             $table->text('postal_address')->nullable();
             $table->text('physical_address')->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

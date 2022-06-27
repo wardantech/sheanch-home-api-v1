@@ -112,6 +112,8 @@ class LandlordController extends Controller
             $landlord = new Landlord();
 
             $landlord->name = $request->name;
+            $landlord->email = $request->email;
+            $landlord->mobile = $request->mobile;
             $landlord->nid = $request->nid;
             $landlord->thana_id = $request->thana_id;
             $landlord->district_id = $request->district_id;
@@ -125,6 +127,7 @@ class LandlordController extends Controller
             $user->email = $request->email;
             $user->mobile = $request->mobile;
             $user->name = $request->name;
+            $user->landlord_id = $landlord->id;
             $user->status = 1;
             $user->type = 2; //landlord
             $user->password = bcrypt($request->password);
@@ -135,12 +138,23 @@ class LandlordController extends Controller
 
             return $this->sendResponse(['id'=>$landlord->id],'Landlord create successfully');
 
-
         }catch (\Exception $exception){
             DB::rollback();
             return $this->sendError('Landlord store error', ['error' => $exception->getMessage()]);
         }
 
+    }
+
+    public function show($id){
+         try{
+             $landlord = Landlord::findOrFail($id);
+
+             return $this->sendResponse($landlord,'Landlord data get successfully');
+         }
+         catch (\Exception $exception){
+             DB::rollback();
+             return $this->sendError('Landlord data error', ['error' => $exception->getMessage()]);
+         }
     }
 
 }
