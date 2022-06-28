@@ -1,12 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\Settings\FacilityController;
-use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
-use App\Http\Controllers\Admin\Settings\UtilityController;
-use App\Http\Controllers\Admin\User\AdminController;
-use App\Http\Controllers\Admin\User\LandlordController;
-use App\Http\Controllers\Admin\User\TenantController;
-use App\Http\Controllers\Auth\AuthController;
+
+
+use App\Http\Controllers\Auth\OTPController;
+use App\Http\Controllers\User\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,5 +31,19 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
     Route::post('logout', [AuthController::class,'logout']);
     Route::post('refresh', [AuthController::class,'refresh']);
     Route::post('me', [AuthController::class,'me']);
+});
+
+Route::post('send-otp', [OTPController::class,'sendOTP']);
+
+//User route
+Route::group(['middleware' => ['auth:api']], function(){
+
+    //landlord route
+//    Route::group(['prefix' => 'user'], function(){
+//        Route::apiResource('/', AdminController::class)->only(['index','store','show','update']);
+//    });
+
+
+
 });
 
