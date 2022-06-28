@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
+use App\Http\Controllers\Admin\Settings\UtilityCategoryController;
 use App\Http\Controllers\Admin\Settings\UtilityController;
 use App\Http\Controllers\Admin\User\AdminController;
 use App\Http\Controllers\Admin\User\LandlordController;
@@ -74,8 +75,21 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //Utility route
         Route::group(['prefix' => 'utility'], function(){
-            Route::apiResource('/', UtilityController::class)->only(['store','show','update']);
+            // Utility Category
+            Route::group(['prefix' => 'category'], function() {
+                Route::post('/', [UtilityCategoryController::class, 'store']);
+                Route::post('list', [UtilityCategoryController::class, 'getList']);
+                Route::get('show/{id}',[UtilityCategoryController::class, 'show']);
+                Route::post('update/{id}',[UtilityCategoryController::class, 'update']);
+                Route::post('deactive/{id}',[UtilityCategoryController::class, 'deActive']);
+                Route::post('active/{id}',[UtilityCategoryController::class, 'active']);
+            });
+
+            Route::post('/', [UtilityController::class, 'store']);
             Route::post('list', [UtilityController::class,'list']);
+            Route::get('get-categories', [UtilityController::class, 'getCategories']);
+            Route::get('show/{id}',[UtilityController::class, 'show']);
+            Route::post('update/{id}',[UtilityController::class, 'update']);
         });
 
         //Address route
