@@ -53,8 +53,8 @@ class AuthController extends Controller
 
     }
 
-    public function register(Request $request){
-
+    public function register(Request $request)
+    {
         //--- Validation Section
         $rules = [
             'name' => 'required|string|max:255',
@@ -72,6 +72,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'status' => 0,
             'password' => Hash::make($request->password),
         ]);
 

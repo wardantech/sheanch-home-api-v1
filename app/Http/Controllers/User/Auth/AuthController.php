@@ -62,8 +62,8 @@ class AuthController extends Controller
 
     }
 
-    public function register(Request $request){
-
+    public function register(Request $request)
+    {
         //--- Validation Section
         $rules = [
             'name' => 'required|string|max:255',
@@ -121,53 +121,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // otp
-    public function otp(Request $request)
-    {
-        //--- Validation Section
-        $rules = [
-            'mobile' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
-        }
-        //--- Validation Section Ends
-
-        //--- OTP Section
-        $otp = mt_rand(1000, 9999);
-        $phone = $request->phone;
-        try {
-            $smsUrl = "http://gosms.xyz/api/v1/sendSms?username=medylife&password=Vu3wq8e7j7KqqQN&number=(" . $phone . ")&sms_content=Your%20OTP%20is:%20" . $otp . "&sms_type=1&masking=non-masking";
-
-            //otp table
-            $otp_code = new Otp();
-            $otp_code->name = $request->name;
-            $otp_code->password = $request->password;
-            $otp_code->email = $request->email;
-            $otp_code->phone = $request->phone;
-            $otp_code->otp = $otp;
-            $otp_code->save();
-
-            //--- Send api sms request
-
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $smsUrl);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_POST, false);
-            curl_exec($curl); //response output
-            curl_close($curl);
-
-            return response()->json(['status' => 'success','message'=>'Otp sent successfully'], 200);
-
-        } catch (\Exception $exception) {
-
-            return response()->json($exception->getMessage());
-
-        }
-    }
 
 
 }
