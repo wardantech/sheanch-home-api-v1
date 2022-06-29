@@ -25,7 +25,7 @@ Route::get('as', function (){
 });
 
 
-Route::post('register',[AuthController::class,'register']);
+Route::post('register',[AuthController::class, 'register']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
 

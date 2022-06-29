@@ -19,8 +19,8 @@ Route::get('/', function () {
 
 Route::get('otp', function (){
     $url = "http://66.45.237.70/api.php";
-    $number="01910030277";
-    $text="Hello Dipto";
+    $number="01643734728";
+    $text="Hello Asif";
     $data= array(
         'username'=>"01322644599",
         'password'=>"4NBHSC3G",

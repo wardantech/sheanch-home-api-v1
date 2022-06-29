@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('mobile')->index()->nullable();
             $table->string('name');
             $table->string('email');
-            $table->string('status')->index()->comment('1-active,0-deactivated');
+            $table->string('status')->index()->default(0)->comment('1-active,0-deactivated');
             $table->integer('type')->index()->comment('1-Admin,2-Landlord,3-Tenant ');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
