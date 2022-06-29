@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\Admin\Settings\UtilityCategoryController;
@@ -69,8 +70,20 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //facility route
         Route::group(['prefix' => 'facility'], function(){
-            Route::apiResource('/', FacilityController::class)->only(['store','show','update']);
+            // Facility category
+            Route::group(['prefix' => 'category'], function() {
+                Route::post('/', [FacilityCategoryController::class, 'store']);
+                Route::post('list', [FacilityCategoryController::class, 'getList']);
+                Route::get('show/{id}',[FacilityCategoryController::class, 'show']);
+                Route::post('update/{id}',[FacilityCategoryController::class, 'update']);
+                Route::post('change-status/{id}',[FacilityCategoryController::class, 'status']);
+            });
+
+            Route::post('/', [FacilityController::class, 'store']);
             Route::post('list', [FacilityController::class,'list']);
+            Route::get('get-categories', [FacilityController::class, 'getCategories']);
+            Route::get('show/{id}',[FacilityController::class, 'show']);
+            Route::post('update/{id}',[FacilityController::class, 'update']);
         });
 
         //Utility route
@@ -81,8 +94,7 @@ Route::group(['middleware' => ['auth:api']], function(){
                 Route::post('list', [UtilityCategoryController::class, 'getList']);
                 Route::get('show/{id}',[UtilityCategoryController::class, 'show']);
                 Route::post('update/{id}',[UtilityCategoryController::class, 'update']);
-                Route::post('deactive/{id}',[UtilityCategoryController::class, 'deActive']);
-                Route::post('active/{id}',[UtilityCategoryController::class, 'active']);
+                Route::post('change-status/{id}',[UtilityCategoryController::class, 'status']);
             });
 
             Route::post('/', [UtilityController::class, 'store']);

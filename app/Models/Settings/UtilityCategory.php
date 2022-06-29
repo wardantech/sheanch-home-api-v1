@@ -13,6 +13,6 @@ class UtilityCategory extends Model
 
     public function Utilities(): HasMany
     {
-        return $this->hasMany(Utility::class, 'utility_category_id', 'id');
+        return $this->hasMany(Utility::class, 'facility_category_id', 'id');
     }
 }

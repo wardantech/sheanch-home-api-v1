@@ -15,7 +15,13 @@ return new class extends Migration
     {
         Schema::create('facility_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('status')->index()->default(1);
+            $table->longText('description')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

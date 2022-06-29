@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Models\Settings\UtilityCategory;
+use App\Models\Settings\FacilityCategory;
 use App\Traits\ResponseTrait;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class UtilityCategoryController extends Controller
+class FacilityCategoryController extends Controller
 {
     use ResponseTrait;
 
@@ -28,9 +28,9 @@ class UtilityCategoryController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = UtilityCategory::select('*')->orderBy($columns[$column], $dir);
+        $query = FacilityCategory::select('*')->orderBy($columns[$column], $dir);
 
-        $count = UtilityCategory::count();
+        $count = FacilityCategory::count();
 
         if ($searchValue) {
             $query->where(function($query) use ($searchValue) {
@@ -50,7 +50,7 @@ class UtilityCategoryController extends Controller
     }
 
     /**
-     * Store Utility Category
+     * Store Facility Category
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
@@ -72,7 +72,7 @@ class UtilityCategoryController extends Controller
 
         try {
             // Store Utilities Category
-            $category = new UtilityCategory();
+            $category = new FacilityCategory();
 
             $category->name = $request->name;
             $category->status = $request->status;
@@ -80,14 +80,14 @@ class UtilityCategoryController extends Controller
             $category->created_by = Auth::user()->id;
             $category->save();
 
-            return $this->sendResponse(['id'=>$category->id],'Utility category create successfully');
+            return $this->sendResponse(['id'=>$category->id],'Facility category create successfully');
         }catch (\Exception $exception) {
-            return $this->sendError('Utility category store error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Facility category store error', ['error' => $exception->getMessage()]);
         }
     }
 
     /**
-     * Utility category single data get for update or show
+     * Facility category single data get for update or show
      * @param $id
      * @return \Illuminate\Http\Response
      */
@@ -95,17 +95,17 @@ class UtilityCategoryController extends Controller
     public function show($id)
     {
         try{
-            $category = UtilityCategory::findOrFail($id);
+            $category = FacilityCategory::findOrFail($id);
 
-            return $this->sendResponse($category,'Utility categories data get successfully');
+            return $this->sendResponse($category,'Facility categories data get successfully');
         }
         catch (\Exception $exception){
-            return $this->sendError('Utility categories data error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Facility categories data error', ['error' => $exception->getMessage()]);
         }
     }
 
     /**
-     * Update Utility Category
+     * Update Facility Category
      * @param Request $request
      * @param $id
      */
@@ -126,8 +126,8 @@ class UtilityCategoryController extends Controller
         //--- Validation Section Ends  ---//
 
         try {
-            // Store Utilities Category
-            $category = UtilityCategory::findOrFail($id);
+            // Store Facilities Category
+            $category = FacilityCategory::findOrFail($id);
 
             $category->name = $request->name;
             $category->status = $request->status;
@@ -135,9 +135,9 @@ class UtilityCategoryController extends Controller
             $category->updated_by = Auth::user()->id;
             $category->update();
 
-            return $this->sendResponse(['id'=>$category->id],'Utility category updated successfully');
+            return $this->sendResponse(['id'=>$category->id],'Facility category updated successfully');
         }catch (\Exception $exception) {
-            return $this->sendError('Utility category update error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Facility category update error', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -151,20 +151,20 @@ class UtilityCategoryController extends Controller
     public function status(Request $request, $id)
     {
         try{
-            $category = UtilityCategory::findOrFail($id);
+            $category = FacilityCategory::findOrFail($id);
 
             if($request->status) {
                 $category->status = 0;
                 $category->update();
-                return $this->sendResponse($category,'Utility category inactive successfully');
+                return $this->sendResponse($category,'Facility category inactive successfully');
             }
 
             $category->status = 1;
             $category->update();
-            return $this->sendResponse($category,'Utility category active successfully');
+            return $this->sendResponse($category,'Facility category active successfully');
         }
         catch (\Exception $exception){
-            return $this->sendError('Utility category status error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Facility category status error', ['error' => $exception->getMessage()]);
         }
     }
 }
