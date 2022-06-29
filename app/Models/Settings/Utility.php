@@ -9,4 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Utility extends Model
 {
     use HasFactory, SoftDeletes;
+
+    public function utilityCategory()
+    {
+        return $this->belongsTo(UtilityCategory::class, 'utility_category_id', 'id');
+    }
 }

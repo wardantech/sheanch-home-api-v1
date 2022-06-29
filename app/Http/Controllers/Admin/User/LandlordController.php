@@ -19,7 +19,7 @@ class LandlordController extends Controller
     public function __construct()
     {
         //$this->authRepository = $authRepository;
-        $this->middleware(['auth:api'],
+        $this->middleware(['auth:api']
             //['except' => ['imageUpload']]
         );
     }
@@ -167,7 +167,6 @@ class LandlordController extends Controller
                 'required',
                 Rule::unique('users')->where(function ($query) use ($request, $id) {
                     return $query->whereNull('deleted_at')->where('id','==',$id);
-
                 })
             ],
 

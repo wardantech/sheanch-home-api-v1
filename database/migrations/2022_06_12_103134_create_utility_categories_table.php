@@ -13,9 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('facility_categories', function (Blueprint $table) {
+        Schema::create('utility_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('status')->index()->default(1);
+            $table->longText('description')->nullable();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('facility_categories');
+        Schema::dropIfExists('utility_categories');
     }
 };

@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
+use App\Http\Controllers\Admin\Settings\UtilityCategoryController;
 use App\Http\Controllers\Admin\Settings\UtilityController;
 use App\Http\Controllers\Admin\User\AdminController;
 use App\Http\Controllers\Admin\User\LandlordController;
@@ -58,6 +60,8 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::group(['prefix' => 'tenant'], function(){
         Route::apiResource('/', TenantController::class)->only(['store','show','update']);
         Route::post('list', [TenantController::class,'list']);
+        Route::get('show/{id}',[TenantController::class, 'show']);
+        Route::post('update/{id}',[TenantController::class,'update']);
         Route::post('image-upload/{id}',[TenantController::class,'imageUpload']);
     });
 
@@ -66,14 +70,38 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //facility route
         Route::group(['prefix' => 'facility'], function(){
-            Route::apiResource('/', FacilityController::class)->only(['store','show','update']);
+            // Facility category
+            Route::group(['prefix' => 'category'], function() {
+                Route::post('/', [FacilityCategoryController::class, 'store']);
+                Route::post('list', [FacilityCategoryController::class, 'getList']);
+                Route::get('show/{id}',[FacilityCategoryController::class, 'show']);
+                Route::post('update/{id}',[FacilityCategoryController::class, 'update']);
+                Route::post('change-status/{id}',[FacilityCategoryController::class, 'status']);
+            });
+
+            Route::post('/', [FacilityController::class, 'store']);
             Route::post('list', [FacilityController::class,'list']);
+            Route::get('get-categories', [FacilityController::class, 'getCategories']);
+            Route::get('show/{id}',[FacilityController::class, 'show']);
+            Route::post('update/{id}',[FacilityController::class, 'update']);
         });
 
         //Utility route
         Route::group(['prefix' => 'utility'], function(){
-            Route::apiResource('/', UtilityController::class)->only(['store','show','update']);
+            // Utility Category
+            Route::group(['prefix' => 'category'], function() {
+                Route::post('/', [UtilityCategoryController::class, 'store']);
+                Route::post('list', [UtilityCategoryController::class, 'getList']);
+                Route::get('show/{id}',[UtilityCategoryController::class, 'show']);
+                Route::post('update/{id}',[UtilityCategoryController::class, 'update']);
+                Route::post('change-status/{id}',[UtilityCategoryController::class, 'status']);
+            });
+
+            Route::post('/', [UtilityController::class, 'store']);
             Route::post('list', [UtilityController::class,'list']);
+            Route::get('get-categories', [UtilityController::class, 'getCategories']);
+            Route::get('show/{id}',[UtilityController::class, 'show']);
+            Route::post('update/{id}',[UtilityController::class, 'update']);
         });
 
         //Address route
