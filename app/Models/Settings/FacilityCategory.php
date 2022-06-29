@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Facility extends Model
+class FacilityCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function facilityCategory()
+    public function Facility(): HasMany
     {
-        return $this->belongsTo(FacilityCategory::class, 'facility_category_id', 'id');
+        return $this->hasMany(Facility::class, 'utility_category_id', 'id');
     }
 }
