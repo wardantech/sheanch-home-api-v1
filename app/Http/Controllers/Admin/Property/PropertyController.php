@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin\Property;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property;
+use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PropertyController extends Controller
 {
@@ -52,7 +54,6 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->all();
         //--- Validation Section Start ---//
         $rules = [
             'thana_id' => 'required',
@@ -66,13 +67,8 @@ class PropertyController extends Controller
             'units' => 'integer|nullable',
             'area_size' => 'integer|nullable',
             'rent_amount' => 'required',
-            'description' => 'string|nullable',
             'status' => 'integer|nullable',
             'security_money' => 'required',
-            'utilities_paid_by_landlord' => 'nullable|string',
-            'facilities_paid_by_landlord' => 'nullable|string',
-            'utilities_paid_by_tenant' => 'nullable|string',
-            'facilities_paid_by_tenant' => 'nullable|string',
             'property_type_id' => 'nullable|integer',
             'landlord_id' => 'nullable|integer',
         ];
@@ -82,6 +78,8 @@ class PropertyController extends Controller
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
         }
         //--- Validation Section Ends  ---//
+
+
 
         try {
             // Store Property
@@ -103,10 +101,9 @@ class PropertyController extends Controller
             $property->description = $request->description;
             $property->status = $request->status;
             $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
-            $property->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
-            $property->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
-            $property->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
+            $property->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
+            $property->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
+            $property->facilities = json_encode($request->facilities);
             $property->created_by = Auth::id();
             $property->save();
 
@@ -197,6 +194,51 @@ class PropertyController extends Controller
             return $this->sendResponse(['id'=>$property->id],'Property updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * Get All Property Types
+     */
+
+    public function getPropertyTypes()
+    {
+        try {
+            $propertyTypes = PropertyType::where('status', true)->get();
+
+            return $this->sendResponse($propertyTypes, 'Property type categories list');
+
+        } catch (\Exception $exception) {
+
+            return $this->sendError('Property type list.', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * Status Active or Inactive
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function status(Request $request, $id)
+    {
+        try{
+            $property = Property::findOrFail($id);
+            if($request->status) {
+                $property->status = 0;
+                $property->update();
+
+                return $this->sendResponse(['id'=>$id],'Property inactive successfully');
+            }
+
+            $property->status = 1;
+            $property->update();
+
+            return $this->sendResponse(['id'=>$id],'Property active successfully');
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Property status error', ['error' => $exception->getMessage()]);
         }
     }
 }

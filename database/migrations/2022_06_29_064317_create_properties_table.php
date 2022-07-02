@@ -33,12 +33,12 @@ return new class extends Migration
             $table->integer('status')->default(1)->index();
             $table->double('security_money')->nullable();
             $table->longText('utilities_paid_by_landlord')->nullable();
-            $table->longText('facilities_paid_by_landlord')->nullable();
             $table->longText('utilities_paid_by_tenant')->nullable();
-            $table->longText('facilities_paid_by_tenant')->nullable();
+            $table->longText('facilities')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
