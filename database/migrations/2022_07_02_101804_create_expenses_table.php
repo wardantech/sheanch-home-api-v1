@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->integer('expense_category_id')->index();
-            $table->json('details');
+            $table->longText('details');
+            $table->double('total_amount');
             $table->integer('status')->index();
             $table->text('description')->nullable();
             $table->string('created_by')->nullable();

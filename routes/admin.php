@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
+use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
@@ -66,6 +68,27 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('show/{id}',[TenantController::class, 'show']);
         Route::post('update/{id}',[TenantController::class,'update']);
         Route::post('image-upload/{id}',[TenantController::class,'imageUpload']);
+    });
+
+    //Tenant route
+    Route::group(['prefix' => 'expense'], function(){
+
+        Route::group(['prefix' => 'category'], function() {
+            Route::post('/', [ExpenseCategoryController::class, 'store']);
+            Route::post('list', [ExpenseCategoryController::class, 'getList']);
+            Route::get('show/{id}',[ExpenseCategoryController::class, 'show']);
+            Route::post('update/{id}',[ExpenseCategoryController::class, 'update']);
+            Route::post('change-status/{id}',[ExpenseCategoryController::class, 'changeStatus']);
+        });
+
+        //expense
+        Route::post('store', [ExpenseController::class,'store']);
+        Route::post('list', [ExpenseController::class,'getList']);
+        Route::get('get-categories', [ExpenseController::class, 'getCategories']);
+        Route::get('show/{id}',[ExpenseController::class, 'show']);
+        Route::post('update/{id}',[ExpenseController::class,'update']);
+        Route::post('change-status/{id}',[ExpenseController::class, 'changeStatus']);
+
     });
 
     //Settings route
