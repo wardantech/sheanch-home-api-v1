@@ -148,20 +148,20 @@ class FacilityCategoryController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function status(Request $request, $id)
+    public function changeStatus(Request $request, $id)
     {
         try{
-            $category = FacilityCategory::findOrFail($id);
+            $facilityCategory = FacilityCategory::findOrFail($id);
 
             if($request->status) {
-                $category->status = 0;
-                $category->update();
-                return $this->sendResponse($category,'Facility category inactive successfully');
+                $facilityCategory->status = 0;
+                $facilityCategory->update();
+                return $this->sendResponse($facilityCategory,'Facility category inactive successfully');
             }
 
-            $category->status = 1;
-            $category->update();
-            return $this->sendResponse($category,'Facility category active successfully');
+            $facilityCategory->status = 1;
+            $facilityCategory->update();
+            return $this->sendResponse($facilityCategory,'Facility category active successfully');
         }
         catch (\Exception $exception){
             return $this->sendError('Facility category status error', ['error' => $exception->getMessage()]);
