@@ -16,14 +16,14 @@ return new class extends Migration
         Schema::create('landlords', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->index();
+            $table->string('email')->index()->nullable();
             $table->string('mobile')->index();
             $table->string('nid')->nullable();
             $table->string('status')->index()->comment('1-active,0-deactivated');
             $table->string('image')->nullable();
-            $table->integer('thana_id');
-            $table->integer('district_id');
-            $table->integer('division_id');
+            $table->integer('thana_id')->nullable();
+            $table->integer('district_id')->nullable();
+            $table->integer('division_id')->nullable();
             $table->text('postal_address')->nullable();
             $table->text('residential_address')->nullable();
             $table->text('description')->nullable();

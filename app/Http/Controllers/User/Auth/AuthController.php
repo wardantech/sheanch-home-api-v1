@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\Landlord;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ class AuthController extends Controller
     {
         //--- Validation Section
         $rules = [
-            'email' => 'required|string|email',
+            'mobile' => 'required|string',
             'password' => 'required|string',
         ];
 
@@ -32,7 +34,7 @@ class AuthController extends Controller
         }
         //--- Validation Section Ends
 
-        $user = User::where('email',$request->email)->first();
+        $user = User::where('mobile',$request->mobile)->first();
         if ($user->status == 0){
             return response()->json([
                 'status' => false,
@@ -40,7 +42,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('mobile', 'password');
 
         $token = auth('api')->attempt($credentials);
 
@@ -67,29 +69,60 @@ class AuthController extends Controller
         //--- Validation Section
         $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'type' => 'required|integer',
+            'mobile' => 'required|string|unique:users',
             'password' => 'required|confirmed|string|min:6',
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
+            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
         }
         //--- Validation Section Ends
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user =  new User();
+        $user->name = $request->name;
+        $user->mobile = $request->mobile;
+        $user->status = 0;
+        $user->type = $request->type;
+        $user->password = bcrypt($request->password);
 
-        $token = auth('api')->login($user);
+        if($request->type == 2){
+            $landlord = new Landlord();
+
+            $landlord->name = $request->name;
+            $landlord->mobile = $request->mobile;
+            $landlord->status = 0;
+
+            $landlord->save();
+
+            $user->landlord_id = $landlord->id;
+        }
+
+        if($request->type == 3){
+            $tenant = new Tenant();
+
+            $tenant->name = $request->name;
+            $tenant->mobile = $request->mobile;
+            $tenant->status = 0;
+
+            $tenant->save();
+
+            $user->landlord_id = $tenant->id;
+
+        }
+
+        $user->save();
+
+        //$credentials = $request->only('mobile', 'password');
+        //$token = auth('api')->attempt($credentials);
+
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
             'user' => $user,
-            'access_token' => $token,
+            //'access_token' => $token,
             'type' => 'bearer',
         ]);
     }

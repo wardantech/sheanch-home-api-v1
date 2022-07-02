@@ -26,7 +26,7 @@ class UtilityController extends Controller
      * List api
      * @return \Illuminate\Http\Response
      */
-    public function list(Request $request)
+    public function getList(Request $request)
     {
         $columns = ['id', 'name'];
 
@@ -175,6 +175,26 @@ class UtilityController extends Controller
         } catch (\Exception $exception) {
 
             return $this->sendError('Utility list.', ['error' => $exception->getMessage()]);
+        }
+    }
+    
+    public function changeStatus(Request $request, $id)
+    {
+        try{
+            $utility = Utility::findOrFail($id);
+
+            if($request->status) {
+                $utility->status = 0;
+                $utility->update();
+                return $this->sendResponse($utility,'Utility inactive successfully');
+            }
+
+            $utility->status = 1;
+            $utility->update();
+            return $this->sendResponse($utility,'Utility category active successfully');
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Utility category status error', ['error' => $exception->getMessage()]);
         }
     }
 }
