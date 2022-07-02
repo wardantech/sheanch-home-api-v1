@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Landlord;
+use App\Models\Settings\FacilityCategory;
 use App\Models\User;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -42,16 +43,19 @@ class LandlordController extends Controller
     }
 
 
-    public function list(Request $request){
+    public function getlist(Request $request){
 
-        $columns = ['id', 'name'];
+        $columns = ['id', 'name','mobile','status'];
 
         $length = $request['params']['length'];
         $column = $request['params']['column'];
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = Landlord::select('*')->orderBy($columns[$column], $dir);
+        $query = DB::table('landlords')->where('deleted_at','=',null)
+            ->select('id','name','status','mobile')
+
+            ->orderBy($columns[$column], $dir);
 
         $count = Landlord::count();
         if ($searchValue) {
@@ -67,8 +71,6 @@ class LandlordController extends Controller
         else{
             $fetchData = $query->paginate($count);
         }
-
-        //$footer = $fetchData -> sum('id');
 
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
@@ -218,6 +220,34 @@ class LandlordController extends Controller
         }catch (\Exception $exception){
             DB::rollback();
             return $this->sendError('Landlord update error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function status(Request $request, $id)
+    {
+        try{
+            $landlord = Landlord::findOrFail($id);
+            $user = User::where('type', 2)->where('landlord_id',$id)->first();
+            if($request->status) {
+                $landlord->status = 0;
+                $landlord->update();
+
+
+                $user->status = 0;
+                $user->update();
+
+                return $this->sendResponse(['id'=>$id],'Landlord inactive successfully');
+            }
+
+            $landlord->status = 1;
+            $landlord->update();
+
+            $user->status = 1;
+            $user->update();
+            return $this->sendResponse(['id'=>$id],'Landlord active successfully');
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Landlord status error', ['error' => $exception->getMessage()]);
         }
     }
 

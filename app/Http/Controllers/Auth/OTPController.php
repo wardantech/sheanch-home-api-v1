@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Traits\OTPTrait;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class OTPController extends Controller
@@ -20,30 +16,29 @@ class OTPController extends Controller
     {
         //--- Validation Section
         $rules = [
-            'mobile' => 'required',
+            'mobile' => 'required|string|unique:users',
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
+            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
         }
         //--- Validation Section Ends
 
         try {
             $otp = random_int(1000, 9999);
 
-            $text = "Thank you for sign up at sheanch-home. Your OTP is: ".$otp;
-            $sms =  $this->sendSms($request->mobile, $text);
+            $text = "Thank you for signing up at sheanch-home. Your OTP is: " . $otp;
+            $sms = $this->sendSms($request->mobile, $text);
 
-            if ($sms == true){
-                return $this->sendResponse(['otp'=>$otp],'OTP send successfully');
-            }else{
+            if ($sms == true) {
+                return $this->sendResponse(['otp' => $otp], 'OTP send successfully');
+            } else {
                 return $this->sendError('OTP Send error', ['error' => $sms]);
             }
 
-        }
-        catch (\Exception $exception){
+        } catch (\Exception $exception) {
             return $this->sendError('OTP Send error', ['error' => $exception->getMessage()]);
         }
 

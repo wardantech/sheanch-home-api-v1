@@ -26,7 +26,7 @@ class FacilityController extends Controller
      * List api
      * @return \Illuminate\Http\Response
      */
-    public function list(Request $request)
+    public function getList(Request $request)
     {
         $columns = ['id', 'name'];
 
