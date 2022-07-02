@@ -11,8 +11,8 @@ class UtilityCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function Utilities(): HasMany
+    public function utilities(): HasMany
     {
-        return $this->hasMany(Utility::class, 'facility_category_id', 'id');
+        return $this->hasMany(Utility::class, 'utility_category_id', 'id')->withTrashed();
     }
 }

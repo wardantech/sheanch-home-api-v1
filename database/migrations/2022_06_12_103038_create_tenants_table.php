@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->nullable()->nullable();
+            $table->string('email')->index()->nullable();
             $table->string('mobile')->index();
             $table->integer('status')->nullable()->index()->comment('1-active,0-deactivated');
             $table->integer('gender')->nullable()->comment('1-male,2-female,3-others');
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('postal_code')->nullable();
             $table->text('postal_address')->nullable();
             $table->text('physical_address')->nullable();
+            $table->text('description')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();

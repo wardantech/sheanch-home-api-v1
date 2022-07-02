@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
@@ -54,6 +55,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('show/{id}',[LandlordController::class,'show']);
         Route::post('update/{id}',[LandlordController::class,'update']);
         Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
+        Route::get('get-landlords',[LandlordController::class,'getLandlords']);
         Route::post('change-status/{id}',[LandlordController::class, 'status']);
     });
 
@@ -86,6 +88,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::get('get-categories', [FacilityController::class, 'getCategories']);
             Route::get('show/{id}',[FacilityController::class, 'show']);
             Route::post('update/{id}',[FacilityController::class, 'update']);
+            Route::get('get-facilities',[FacilityController::class, 'getFacilities']);
         });
 
         //Utility route
@@ -105,6 +108,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::get('get-categories', [UtilityController::class, 'getCategories']);
             Route::get('show/{id}',[UtilityController::class, 'show']);
             Route::post('update/{id}',[UtilityController::class, 'update']);
+            Route::get('get-utilities',[UtilityController::class, 'getUtilities']);
             Route::post('change-status/{id}',[UtilityController::class, 'changeStatus']);
         });
 
@@ -126,4 +130,8 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     });
 
+    // Property Route
+    Route::group(['prefix' => 'property'], function(){
+        Route::post('create', [PropertyController::class, 'store']);
+    });
 });

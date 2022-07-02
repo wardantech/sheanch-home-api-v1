@@ -223,6 +223,24 @@ class LandlordController extends Controller
         }
     }
 
+    /**
+     * Get all Landlords
+     * @return \Illuminate\Http\Response
+     */
+
+    public function getLandlords()
+    {
+        try {
+            $landlords = Landlord::where('status', true)->get(['name', 'id']);
+
+            return $this->sendResponse($landlords, 'Landlord list');
+
+        } catch (\Exception $exception) {
+
+            return $this->sendError('Landlord list.', ['error' => $exception->getMessage()]);
+        }
+    }
+    
     public function status(Request $request, $id)
     {
         try{

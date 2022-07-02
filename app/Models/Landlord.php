@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Landlord extends Model
@@ -13,7 +14,11 @@ class Landlord extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'id','landlord_id');
+        return $this->belongsTo(User::class,'id','landlord_id')->withTrashed();
     }
 
+    public function landloard(): HasMany
+    {
+        return $this->hasMany(Property::class, 'id', 'landlord_id')->withTrashed();
+    }
 }
