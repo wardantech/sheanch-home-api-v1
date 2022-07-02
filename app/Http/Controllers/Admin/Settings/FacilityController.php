@@ -183,4 +183,24 @@ class FacilityController extends Controller
             return $this->sendError('Facility list.', ['error' => $exception->getMessage()]);
         }
     }
+
+    public function changeStatus(Request $request, $id)
+    {
+        try{
+            $facility = Facility::findOrFail($id);
+
+            if($request->status) {
+                $facility->status = 0;
+                $facility->update();
+                return $this->sendResponse($facility,'Facility inactive successfully');
+            }
+
+            $facility->status = 1;
+            $facility->update();
+            return $this->sendResponse($facility,'Facility active successfully');
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Facility category status error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

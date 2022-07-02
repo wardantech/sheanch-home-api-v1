@@ -102,7 +102,7 @@ Route::group(['middleware' => ['auth:api']], function(){
                 Route::post('list', [FacilityCategoryController::class, 'getList']);
                 Route::get('show/{id}',[FacilityCategoryController::class, 'show']);
                 Route::post('update/{id}',[FacilityCategoryController::class, 'update']);
-                Route::post('change-status/{id}',[FacilityCategoryController::class, 'status']);
+                Route::post('change-status/{id}',[FacilityCategoryController::class, 'changeStatus']);
             });
 
             // Facility
@@ -112,6 +112,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::get('show/{id}',[FacilityController::class, 'show']);
             Route::post('update/{id}',[FacilityController::class, 'update']);
             Route::get('get-facilities',[FacilityController::class, 'getFacilities']);
+            Route::post('change-status/{id}',[FacilityController::class, 'changeStatus']);
         });
 
         //Utility route

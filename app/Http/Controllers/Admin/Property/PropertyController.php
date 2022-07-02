@@ -67,7 +67,7 @@ class PropertyController extends Controller
             'units' => 'integer|nullable',
             'area_size' => 'integer|nullable',
             'rent_amount' => 'required',
-            'status' => 'integer|nullable',
+            'status' => 'required|integer',
             'security_money' => 'required',
             'property_type_id' => 'nullable|integer',
             'landlord_id' => 'nullable|integer',
