@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('status')->index()->default(1)->comment('1-active,0-deactivated');
-            $table->foreignIdFor(UtilityCategory::class);
+            $table->integer('utility_category_id')->index();
             $table->longText('description')->nullable();
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

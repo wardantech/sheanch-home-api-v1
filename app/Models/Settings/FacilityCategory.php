@@ -10,8 +10,8 @@ class FacilityCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function Facility(): HasMany
+    public function facilities()
     {
-        return $this->hasMany(Facility::class, 'utility_category_id', 'id');
+        return $this->hasMany(Facility::class, 'facility_category_id', 'id')->withTrashed();
     }
 }

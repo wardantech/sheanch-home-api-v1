@@ -13,6 +13,6 @@ class Tenant extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'id','landlord_id');
+        return $this->belongsTo(User::class,'id','landlord_id')->withTrashed();
     }
 }

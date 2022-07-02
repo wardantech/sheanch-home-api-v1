@@ -163,4 +163,24 @@ class FacilityController extends Controller
             return $this->sendError('Facility categories list.', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Get all facilities
+     */
+
+    public function getFacilities()
+    {
+        try {
+            $facility = FacilityCategory::where('status', 1)
+                ->with(['facilities' => function ($query) {
+                    $query->where('status', 1);
+                    $query->select(['id', 'name', 'facility_category_id']);
+                }])->get(['id','name']);
+            return $this->sendResponse($facility, 'Facility list');
+
+        } catch (\Exception $exception) {
+
+            return $this->sendError('Facility list.', ['error' => $exception->getMessage()]);
+        }
+    }
 }

@@ -19,7 +19,7 @@ class UtilityController extends Controller
     public function __construct()
     {
         //$this->authRepository = $authRepository;
-        //$this->middleware(['auth:api'], ['except' => ['login','register']]);
+        $this->middleware(['auth:api'], ['except' => ['login', 'getUtilities']]);
     }
 
     /**
@@ -40,16 +40,15 @@ class UtilityController extends Controller
         $count = Utility::count();
 
         if ($searchValue) {
-            $query->where(function($query) use ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
                 $query->where('id', 'like', '%' . $searchValue . '%')
                     ->orWhere('name', 'like', '%' . $searchValue . '%');
             });
         }
 
-        if($length!='all'){
+        if ($length != 'all') {
             $fetchData = $query->paginate($length);
-        }
-        else{
+        } else {
             $fetchData = $query->paginate($count);
         }
 
@@ -85,7 +84,7 @@ class UtilityController extends Controller
             $utility->created_by = Auth::user()->id;
             $utility->save();
 
-            return $this->sendResponse(['id'=>$utility->id],'Utility create successfully');
+            return $this->sendResponse(['id' => $utility->id], 'Utility create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Utility store error', ['error' => $exception->getMessage()]);
         }
@@ -99,12 +98,11 @@ class UtilityController extends Controller
 
     public function show($id)
     {
-        try{
+        try {
             $category = Utility::findOrFail($id);
 
-            return $this->sendResponse($category,'Utility data get successfully');
-        }
-        catch (\Exception $exception){
+            return $this->sendResponse($category, 'Utility data get successfully');
+        } catch (\Exception $exception) {
             return $this->sendError('Utility data error', ['error' => $exception->getMessage()]);
         }
     }
@@ -141,7 +139,7 @@ class UtilityController extends Controller
             $utility->updated_by = Auth::user()->id;
             $utility->update();
 
-            return $this->sendResponse(['id'=>$utility->id],'Utility updated successfully');
+            return $this->sendResponse(['id' => $utility->id], 'Utility updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Utility updated error', ['error' => $exception->getMessage()]);
         }
@@ -161,6 +159,22 @@ class UtilityController extends Controller
         } catch (\Exception $exception) {
 
             return $this->sendError('Utility categories list.', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function getUtilities()
+    {
+        try {
+            $utility = UtilityCategory::where('status', 1)
+                ->with(['utilities' => function ($query) {
+                    $query->where('status', 1);
+                    $query->select(['id', 'name', 'utility_category_id']);
+                }])->get(['id','name']);
+            return $this->sendResponse($utility, 'Utility list');
+
+        } catch (\Exception $exception) {
+
+            return $this->sendError('Utility list.', ['error' => $exception->getMessage()]);
         }
     }
 }

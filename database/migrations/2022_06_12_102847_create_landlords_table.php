@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('landlords', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email');
-            $table->string('mobile');
+            $table->string('email')->index();
+            $table->string('mobile')->index();
             $table->string('nid')->nullable();
             $table->string('status')->index()->comment('1-active,0-deactivated');
             $table->string('image')->nullable();
@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('division_id');
             $table->text('postal_address')->nullable();
             $table->text('residential_address')->nullable();
+            $table->text('description')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
