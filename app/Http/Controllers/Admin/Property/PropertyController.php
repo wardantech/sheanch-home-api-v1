@@ -59,6 +59,7 @@ class PropertyController extends Controller
             'thana_id' => 'required',
             'district_id' => 'required',
             'division_id' => 'required',
+            'property_type_id' => 'required',
             'name' => 'required|string|max:255',
             'zip_code' => 'required|string|max:255',
             'address' => 'required|string',

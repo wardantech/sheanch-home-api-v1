@@ -4,6 +4,8 @@
 
 use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\Property\PropertyController;
+use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,7 +45,22 @@ Route::group(['middleware' => ['auth:api']], function(){
 //        Route::apiResource('/', AdminController::class)->only(['index','store','show','update']);
 //    });
 
+    // Get Division Districts Thanas
+    //Address route
+    Route::group(['prefix' => 'settings'], function(){
+        Route::get('divisions', [GetDivisionDistrictThanaController::class, 'getDivisions']);
+        Route::post('districts', [GetDivisionDistrictThanaController::class, 'getDistricets']);
+        Route::post('thanas', [GetDivisionDistrictThanaController::class, 'getThanas']);
+    });
 
-
+    // Property Route
+    Route::group(['prefix' => 'property'], function() {
+        Route::post('get-list', [PropertyController::class, 'getList']);
+        Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
+        Route::get('get-utilities', [PropertyController::class, 'getUtilities']);
+        Route::get('get-facilities', [PropertyController::class, 'getFacilities']);
+        Route::post('store', [PropertyController::class, 'store']);
+        Route::post('image-upload/{id}',[PropertyController::class, 'imageUpload']);
+    });
 });
 
