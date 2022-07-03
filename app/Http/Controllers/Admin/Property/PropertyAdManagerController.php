@@ -30,7 +30,8 @@ class PropertyAdManagerController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = PropertyAd::select('*')->orderBy($columns[$column], $dir);
+        $query = PropertyAd::select('*')->with(['landlord','property'])
+            ->orderBy($columns[$column], $dir);
 
         $count = PropertyAd::count();
 
