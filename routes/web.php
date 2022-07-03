@@ -36,3 +36,4 @@ Route::get('otp', function (){
     $p = explode("|",$smsresult);
     $sendstatus = $p[0];
 });
+
