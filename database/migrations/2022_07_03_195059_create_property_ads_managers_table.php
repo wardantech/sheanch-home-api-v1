@@ -13,16 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('property_ads_managers', function (Blueprint $table) {
+        Schema::create('property_ads', function (Blueprint $table) {
             $table->id();
             $table->integer('status');
             $table->string('start_date')->index();
             $table->integer('property_id')->index();
             $table->integer('landlord_id')->index();
-            $table->integer('lease_type')->index()->comment('1 for commercial, 2 for residential');
+            $table->integer('lease_type')->nullable()->index()->comment('1 for commercial, 2 for residential');
             $table->integer('sale_type')->index()->comment('1 for rent, 2 for sale');
-            $table->double('lease_amount')->index();
             $table->double('security_money')->nullable();
+            $table->double('rent_amount');
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->text('description')->nullable();

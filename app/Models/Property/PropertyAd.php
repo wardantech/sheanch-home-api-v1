@@ -4,8 +4,9 @@ namespace App\Models\Property;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PropertyAdsManager extends Model
+class PropertyAd extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 }
