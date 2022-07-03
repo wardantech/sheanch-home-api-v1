@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
+use App\Http\Controllers\Admin\Property\LeaseController;
 use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
@@ -159,7 +160,16 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('store', [PropertyController::class, 'store']);
         Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
         Route::post('list', [PropertyController::class,'getList']);
-        Route::post('change-status/{id}',[PropertyController::class, 'status']);
+        Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
         Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
+    });
+
+    // Lease Route
+    Route::group(['prefix' => 'lease'], function() {
+        Route::post('store', [LeaseController::class, 'store']);
+        Route::get('get-landlord', [LeaseController::class, 'getLandlord']);
+        Route::post('get-property', [LeaseController::class, 'getProperty']);
+        Route::post('list', [LeaseController::class,'getList']);
+        Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
     });
 });

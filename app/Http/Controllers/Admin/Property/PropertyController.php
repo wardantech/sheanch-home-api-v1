@@ -221,7 +221,7 @@ class PropertyController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function status(Request $request, $id)
+    public function changeStatus(Request $request, $id)
     {
         try{
             $property = Property::findOrFail($id);
