@@ -160,5 +160,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
         Route::post('list', [PropertyController::class,'getList']);
         Route::post('change-status/{id}',[PropertyController::class, 'status']);
+        Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
     });
 });
