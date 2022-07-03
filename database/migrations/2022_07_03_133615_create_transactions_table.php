@@ -13,11 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('banks', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->integer('status')->index()->default(1)->comment('1=Active/0=Deactive');
+            $table->integer('account_id')->index();
+            $table->double('amount');
+            $table->string('transaction_date');
+            $table->integer('transactions_type')->index()->comment('1=Debit/2=Credit');
+            $table->text('transaction_info')->nullable();
+            $table->integer('payment_type')->index()->comment('1=Cash/2=Check');
+            $table->string('chick_number')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
@@ -32,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('banks');
+        Schema::dropIfExists('transactions');
     }
 };

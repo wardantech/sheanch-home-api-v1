@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Settings\DashboardController;
+use App\Http\Controllers\Admin\Settings\DashboardSettingController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Accounts\BankController;
@@ -43,6 +45,11 @@ Route::group(['middleware' => ['auth:api'], 'prefix' => 'auth'], function () {
         Route::get('show/{id}',[AccountController::class, 'show']);
         Route::post('update/{id}',[AccountController::class, 'update']);
         Route::post('change-status/{id}',[AccountController::class, 'changeStatus']);
+    });
+
+    Route::group(['prefix' => 'dashboard'], function() {
+        Route::post('store', [DashboardSettingController::class, 'store']);
+        Route::post('update/{id}',[DashboardSettingController::class, 'update']);
     });
 
 });
