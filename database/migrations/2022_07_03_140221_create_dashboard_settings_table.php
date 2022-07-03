@@ -13,11 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('banks', function (Blueprint $table) {
+        Schema::create('dashboard_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->integer('status')->index()->default(1)->comment('1=Active/0=Deactive');
+            $table->string('logo')->nullable();
+            $table->string('favicon')->nullable();
+            $table->string('company_name');
+            $table->string('contact_email');
+            $table->string('contact_number_one');
+            $table->string('contact_number_two')->nullable();
+            $table->string('physical_address')->nullable();
+            $table->string('website_url')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
@@ -32,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('banks');
+        Schema::dropIfExists('dashboard_settings');
     }
 };
