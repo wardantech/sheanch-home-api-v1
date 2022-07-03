@@ -6,14 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Landlord;
 
 use App\Models\Property\Property;
-use App\Models\Property\PropertyAdsManager;
+use App\Models\Property\PropertyAd;
 use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class PropertyAdsManagerController extends Controller
+class PropertyAdManagerController extends Controller
 {
     use ResponseTrait;
 
@@ -30,9 +30,9 @@ class PropertyAdsManagerController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = PropertyAdsManager::select('*')->orderBy($columns[$column], $dir);
+        $query = PropertyAd::select('*')->orderBy($columns[$column], $dir);
 
-        $count = PropertyAdsManager::count();
+        $count = PropertyAd::count();
 
         if ($searchValue) {
             $query->where(function ($query) use ($searchValue) {
@@ -56,13 +56,14 @@ class PropertyAdsManagerController extends Controller
      */
     public function store(Request $request)
     {
+
         //--- Validation Section Start ---//
         $rules = [
             'landlord_id' => 'required',
             'status' => 'required|integer',
             'security_money' => 'required',
             'start_date' => 'required',
-            'property_type_id' => 'nullable|integer',
+            'property_id' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -74,19 +75,20 @@ class PropertyAdsManagerController extends Controller
 
         try {
             // Store Property
-            $PropertyAdsManager = new PropertyAdsManager();
+            $PropertyAd = new PropertyAd();
 
-            $PropertyAdsManager->landlord_id = $request->landlord_id;
-            $PropertyAdsManager->property_type_id = $request->property_type_id;
-            $PropertyAdsManager->rent_amount = $request->rent_amount;
-            $PropertyAdsManager->security_money = $request->security_money;
-            $PropertyAdsManager->description = $request->description;
-            $PropertyAdsManager->start_date = $request->start_date;
-            $PropertyAdsManager->status = $request->status;
-            $PropertyAdsManager->created_by = Auth::id();
-            $PropertyAdsManager->save();
+            $PropertyAd->landlord_id = $request->landlord_id;
+            $PropertyAd->property_id = $request->property_id;
+            $PropertyAd->rent_amount = $request->rent_amount;
+            $PropertyAd->sale_type = $request->sale_type;
+            $PropertyAd->security_money = $request->security_money;
+            $PropertyAd->description = $request->description;
+            $PropertyAd->start_date = $request->start_date;
+            $PropertyAd->status = $request->status;
+            $PropertyAd->created_by = Auth::id();
+            $PropertyAd->save();
 
-            return $this->sendResponse(['id' => $PropertyAdsManager->id], 'Property create successfully');
+            return $this->sendResponse(['id' => $PropertyAd->id], 'Property create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
@@ -101,9 +103,9 @@ class PropertyAdsManagerController extends Controller
     public function show($id)
     {
         try {
-            $PropertyAdsManager = PropertyAdsManager::findOrFail($id);
+            $PropertyAd = PropertyAd::findOrFail($id);
 
-            return $this->sendResponse($PropertyAdsManager, 'Property data get successfully');
+            return $this->sendResponse($PropertyAd, 'Property data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
@@ -148,30 +150,30 @@ class PropertyAdsManagerController extends Controller
 
         try {
             // Update Property
-            $PropertyAdsManager = PropertyAdsManager::findOrFail($id);
+            $PropertyAd = PropertyAd::findOrFail($id);
 
-            $PropertyAdsManager->thana_id = $request->thana_id;
-            $PropertyAdsManager->district_id = $request->district_id;
-            $PropertyAdsManager->division_id = $request->division_id;
-            $PropertyAdsManager->name = $request->name;
-            $PropertyAdsManager->zip_code = $request->zip_code;
-            $PropertyAdsManager->address = $request->address;
-            $PropertyAdsManager->bed_rooms = $request->bed_rooms;
-            $PropertyAdsManager->bath_rooms = $request->bath_rooms;
-            $PropertyAdsManager->units = $request->units;
-            $PropertyAdsManager->area_size = $request->area_size;
-            $PropertyAdsManager->rent_amount = $request->rent_amount;
-            $PropertyAdsManager->description = $request->description;
-            $PropertyAdsManager->status = $request->status;
-            $PropertyAdsManager->security_money = $request->security_money;
-            $PropertyAdsManager->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
-            $PropertyAdsManager->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
-            $PropertyAdsManager->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
-            $PropertyAdsManager->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
-            $PropertyAdsManager->created_by = Auth::id();
-            $PropertyAdsManager->update();
+            $PropertyAd->thana_id = $request->thana_id;
+            $PropertyAd->district_id = $request->district_id;
+            $PropertyAd->division_id = $request->division_id;
+            $PropertyAd->name = $request->name;
+            $PropertyAd->zip_code = $request->zip_code;
+            $PropertyAd->address = $request->address;
+            $PropertyAd->bed_rooms = $request->bed_rooms;
+            $PropertyAd->bath_rooms = $request->bath_rooms;
+            $PropertyAd->units = $request->units;
+            $PropertyAd->area_size = $request->area_size;
+            $PropertyAd->rent_amount = $request->rent_amount;
+            $PropertyAd->description = $request->description;
+            $PropertyAd->status = $request->status;
+            $PropertyAd->security_money = $request->security_money;
+            $PropertyAd->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
+            $PropertyAd->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
+            $PropertyAd->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
+            $PropertyAd->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
+            $PropertyAd->created_by = Auth::id();
+            $PropertyAd->update();
 
-            return $this->sendResponse(['id' => $PropertyAdsManager->id], 'Property updated successfully');
+            return $this->sendResponse(['id' => $PropertyAd->id], 'Property updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
         }
@@ -188,16 +190,16 @@ class PropertyAdsManagerController extends Controller
     public function status(Request $request, $id)
     {
         try {
-            $PropertyAdsManager = Property::findOrFail($id);
+            $PropertyAd = Property::findOrFail($id);
             if ($request->status) {
-                $PropertyAdsManager->status = 0;
-                $PropertyAdsManager->update();
+                $PropertyAd->status = 0;
+                $PropertyAd->update();
 
                 return $this->sendResponse(['id' => $id], 'Property inactive successfully');
             }
 
-            $PropertyAdsManager->status = 1;
-            $PropertyAdsManager->update();
+            $PropertyAd->status = 1;
+            $PropertyAd->update();
 
             return $this->sendResponse(['id' => $id], 'Property active successfully');
         } catch (\Exception $exception) {

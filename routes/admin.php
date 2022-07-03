@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Accounts\BankController;
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Property\LeaseController;
+use App\Http\Controllers\Admin\Property\PropertyAdManagerController;
 use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
@@ -183,12 +184,11 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
         Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
 
-        Route::group(['prefix' => 'ad-manager'], function() {
-            Route::post('store', [PropertyController::class, 'store']);
-            Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
-            Route::post('list', [PropertyController::class,'getList']);
-            Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
-            Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
+        Route::group(['prefix' => 'ad'], function() {
+            Route::post('store', [PropertyAdManagerController::class, 'store']);
+            Route::post('get-property-as-landlord', [PropertyAdManagerController::class, 'getPropertyAsLandlord']);
+            Route::post('list', [PropertyAdManagerController::class,'getList']);
+            Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
         });
 
     });
