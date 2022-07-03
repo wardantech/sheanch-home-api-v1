@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Accounts\BankController;
+use App\Http\Controllers\Admin\Accounts\AccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,4 +27,25 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('me', 'me');
 
 });
+
+Route::group(['middleware' => ['auth:api'], 'prefix' => 'auth'], function () {
+    Route::group(['prefix' => 'bank'], function() {
+        Route::post('store', [BankController::class, 'store']);
+        Route::post('list', [BankController::class,'getList']);
+        Route::get('show/{id}',[BankController::class, 'show']);
+        Route::post('update/{id}',[BankController::class, 'update']);
+        Route::post('change-status/{id}',[BankController::class, 'changeStatus']);
+    });
+
+    Route::group(['prefix' => 'account'], function() {
+        Route::post('store', [AccountController::class, 'store']);
+        Route::post('list', [AccountController::class,'getList']);
+        Route::get('show/{id}',[AccountController::class, 'show']);
+        Route::post('update/{id}',[AccountController::class, 'update']);
+        Route::post('change-status/{id}',[AccountController::class, 'changeStatus']);
+    });
+
+});
+
+
 
