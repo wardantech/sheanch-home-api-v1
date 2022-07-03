@@ -260,7 +260,14 @@ class PropertyController extends Controller
             $request->file->move(public_path('images'), $imageName);
 
             $property = Property::findOrFail($id);
-            $property->image = $imageName;
+
+            if($property->image != ''){
+                $img =  $property->image.','.$imageName;
+            }else{
+                $img = $imageName;
+            }
+
+            $property->image = $img;
             $property->update();
 
             return response()->json(['success'=>'You have successfully upload file.']);
