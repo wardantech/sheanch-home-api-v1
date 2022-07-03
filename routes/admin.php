@@ -178,6 +178,7 @@ Route::group(['middleware' => ['auth:api']], function(){
     // Property Route
     Route::group(['prefix' => 'property'], function() {
         Route::post('store', [PropertyController::class, 'store']);
+        Route::get('show/{id}',[PropertyController::class, 'show']);
         Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
         Route::post('list', [PropertyController::class,'getList']);
         Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
