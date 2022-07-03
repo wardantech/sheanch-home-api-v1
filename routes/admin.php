@@ -182,13 +182,21 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('list', [PropertyController::class,'getList']);
         Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
         Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
+
+        Route::group(['prefix' => 'ad-manager'], function() {
+            Route::post('store', [PropertyController::class, 'store']);
+            Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
+            Route::post('list', [PropertyController::class,'getList']);
+            Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
+            Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
+        });
+
     });
 
     // Lease Route
     Route::group(['prefix' => 'lease'], function() {
         Route::post('store', [LeaseController::class, 'store']);
-        Route::get('get-landlord', [LeaseController::class, 'getLandlord']);
-        Route::post('get-property', [LeaseController::class, 'getProperty']);
+        Route::post('get-property-as-landlord', [LeaseController::class, 'getPropertyAsLandlord']);
         Route::post('list', [LeaseController::class,'getList']);
         Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
     });
