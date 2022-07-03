@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('leases', function (Blueprint $table) {
+        Schema::create('property_ads_managers', function (Blueprint $table) {
             $table->id();
             $table->integer('status');
             $table->string('start_date')->index();
@@ -38,6 +38,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('leases');
+        Schema::dropIfExists('property_ads_managers');
     }
 };
