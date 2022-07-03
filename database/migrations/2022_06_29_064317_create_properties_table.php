@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('sale_type')->index()->nullable()->comment('1 for rent 2 for sale');
             $table->string('house_no')->index()->nullable();
             $table->string('name');
-            $table->string('image')->nullable();
+            $table->longText('image')->nullable();
             $table->string('zip_code')->index();
             $table->text('address');
             $table->integer('bed_rooms')->nullable();
