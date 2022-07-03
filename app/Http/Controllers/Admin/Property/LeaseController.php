@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Property;
 
 use App\Http\Controllers\Controller;
+use App\Models\Property\Lease;
 use App\Models\Property\Property;
 use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class PropertyController extends Controller
+class LeaseController extends Controller
 {
     use ResponseTrait;
 
@@ -27,9 +28,9 @@ class PropertyController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = Property::select('*')->orderBy($columns[$column], $dir);
+        $query = Lease::select('*')->orderBy($columns[$column], $dir);
 
-        $count = Property::count();
+        $count = Lease::count();
 
         if ($searchValue) {
             $query->where(function($query) use ($searchValue) {
@@ -83,31 +84,31 @@ class PropertyController extends Controller
 
         try {
             // Store Property
-            $property = new Property();
+            $lease = new Lease();
 
-            $property->thana_id = $request->thana_id;
-            $property->district_id = $request->district_id;
-            $property->division_id = $request->division_id;
-            $property->property_type_id = $request->property_type_id;
-            $property->landlord_id = $request->landlord_id;
-            $property->name = $request->name;
-            $property->zip_code = $request->zip_code;
-            $property->address = $request->address;
-            $property->bed_rooms = $request->bed_rooms;
-            $property->bath_rooms = $request->bath_rooms;
-            $property->units = $request->units;
-            $property->area_size = $request->area_size;
-            $property->rent_amount = $request->rent_amount;
-            $property->description = $request->description;
-            $property->status = $request->status;
-            $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
-            $property->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
-            $property->facilities = json_encode($request->facilities);
-            $property->created_by = Auth::id();
-            $property->save();
+            $lease->thana_id = $request->thana_id;
+            $lease->district_id = $request->district_id;
+            $lease->division_id = $request->division_id;
+            $lease->property_type_id = $request->property_type_id;
+            $lease->landlord_id = $request->landlord_id;
+            $lease->name = $request->name;
+            $lease->zip_code = $request->zip_code;
+            $lease->address = $request->address;
+            $lease->bed_rooms = $request->bed_rooms;
+            $lease->bath_rooms = $request->bath_rooms;
+            $lease->units = $request->units;
+            $lease->area_size = $request->area_size;
+            $lease->rent_amount = $request->rent_amount;
+            $lease->description = $request->description;
+            $lease->status = $request->status;
+            $lease->security_money = $request->security_money;
+            $lease->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
+            $lease->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
+            $lease->facilities = json_encode($request->facilities);
+            $lease->created_by = Auth::id();
+            $lease->save();
 
-            return $this->sendResponse(['id'=>$property->id],'Property create successfully');
+            return $this->sendResponse(['id'=>$lease->id],'Property create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
@@ -121,9 +122,9 @@ class PropertyController extends Controller
     public function show($id)
     {
         try{
-            $property = Property::findOrFail($id);
+            $lease = Lease::findOrFail($id);
 
-            return $this->sendResponse($property,'Property data get successfully');
+            return $this->sendResponse($lease,'Property data get successfully');
         }
         catch (\Exception $exception){
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
@@ -168,51 +169,35 @@ class PropertyController extends Controller
 
         try {
             // Update Property
-            $property = Property::findOrFail($id);
+            $lease = Lease::findOrFail($id);
 
-            $property->thana_id = $request->thana_id;
-            $property->district_id = $request->district_id;
-            $property->division_id = $request->division_id;
-            $property->name = $request->name;
-            $property->zip_code = $request->zip_code;
-            $property->address = $request->address;
-            $property->bed_rooms = $request->bed_rooms;
-            $property->bath_rooms = $request->bath_rooms;
-            $property->units = $request->units;
-            $property->area_size = $request->area_size;
-            $property->rent_amount = $request->rent_amount;
-            $property->description = $request->description;
-            $property->status = $request->status;
-            $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
-            $property->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
-            $property->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
-            $property->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
-            $property->created_by = Auth::id();
-            $property->update();
+            $lease->thana_id = $request->thana_id;
+            $lease->district_id = $request->district_id;
+            $lease->division_id = $request->division_id;
+            $lease->name = $request->name;
+            $lease->zip_code = $request->zip_code;
+            $lease->address = $request->address;
+            $lease->bed_rooms = $request->bed_rooms;
+            $lease->bath_rooms = $request->bath_rooms;
+            $lease->units = $request->units;
+            $lease->area_size = $request->area_size;
+            $lease->rent_amount = $request->rent_amount;
+            $lease->description = $request->description;
+            $lease->status = $request->status;
+            $lease->security_money = $request->security_money;
+            $lease->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
+            $lease->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
+            $lease->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
+            $lease->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
+            $lease->created_by = Auth::id();
+            $lease->update();
 
-            return $this->sendResponse(['id'=>$property->id],'Property updated successfully');
+            return $this->sendResponse(['id'=>$lease->id],'Property updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
         }
     }
 
-    /**
-     * Get All Property Types
-     */
-
-    public function getPropertyTypes()
-    {
-        try {
-            $propertyTypes = PropertyType::where('status', true)->get();
-
-            return $this->sendResponse($propertyTypes, 'Property type categories list');
-
-        } catch (\Exception $exception) {
-
-            return $this->sendError('Property type list.', ['error' => $exception->getMessage()]);
-        }
-    }
 
     /**
      * Status Active or Inactive
@@ -224,16 +209,16 @@ class PropertyController extends Controller
     public function status(Request $request, $id)
     {
         try{
-            $property = Property::findOrFail($id);
+            $lease = Property::findOrFail($id);
             if($request->status) {
-                $property->status = 0;
-                $property->update();
+                $lease->status = 0;
+                $lease->update();
 
                 return $this->sendResponse(['id'=>$id],'Property inactive successfully');
             }
 
-            $property->status = 1;
-            $property->update();
+            $lease->status = 1;
+            $lease->update();
 
             return $this->sendResponse(['id'=>$id],'Property active successfully');
         }
@@ -249,20 +234,5 @@ class PropertyController extends Controller
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
 
-    public function imageUpload(Request $request, $id)
-    {
-        try{
-            $imageName = uniqid('property-',false).'.'.$request->file->getClientOriginalExtension();
-            $request->file->move(public_path('images'), $imageName);
 
-            $property = Property::findOrFail($id);
-            $property->image = $imageName;
-            $property->update();
-
-            return response()->json(['success'=>'You have successfully upload file.']);
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Property Image error', ['error' => $exception->getMessage()]);
-        }
-    }
 }
