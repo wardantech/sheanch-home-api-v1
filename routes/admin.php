@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\Accounts\AccountController;
+use App\Http\Controllers\Admin\Accounts\BankController;
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
+use App\Http\Controllers\Admin\Property\LeaseController;
 use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
@@ -91,6 +94,24 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     });
 
+
+    Route::group(['prefix' => 'account'], function() {
+        Route::post('store', [AccountController::class, 'store']);
+        Route::post('list', [AccountController::class,'getList']);
+        Route::get('show/{id}',[AccountController::class, 'show']);
+        Route::post('update/{id}',[AccountController::class, 'update']);
+        Route::post('change-status/{id}',[AccountController::class, 'changeStatus']);
+
+        Route::group(['prefix' => 'bank'], function() {
+            Route::post('store', [BankController::class, 'store']);
+            Route::post('list', [BankController::class,'getList']);
+            Route::get('show/{id}',[BankController::class, 'show']);
+            Route::post('update/{id}',[BankController::class, 'update']);
+            Route::post('change-status/{id}',[BankController::class, 'changeStatus']);
+        });
+
+    });
+
     //Settings route
     Route::group(['prefix' => 'settings'], function(){
 
@@ -159,7 +180,16 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('store', [PropertyController::class, 'store']);
         Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
         Route::post('list', [PropertyController::class,'getList']);
-        Route::post('change-status/{id}',[PropertyController::class, 'status']);
+        Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
         Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
+    });
+
+    // Lease Route
+    Route::group(['prefix' => 'lease'], function() {
+        Route::post('store', [LeaseController::class, 'store']);
+        Route::get('get-landlord', [LeaseController::class, 'getLandlord']);
+        Route::post('get-property', [LeaseController::class, 'getProperty']);
+        Route::post('list', [LeaseController::class,'getList']);
+        Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
     });
 });

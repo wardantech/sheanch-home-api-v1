@@ -13,13 +13,6 @@ class BankController extends Controller
 {
     use ResponseTrait;
 
-    public function __construct()
-    {
-        //$this->authRepository = $authRepository;
-        //$this->middleware(['auth:api'], ['except' => ['login','register']]);
-    }
-
-
     /**
      * List api
      * @return \Illuminate\Http\Response
