@@ -241,4 +241,28 @@ class PropertyController extends Controller
             return $this->sendError('Property status error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Image upload for landlord
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
+
+    public function imageUpload(Request $request, $id)
+    {
+        try{
+            $imageName = uniqid('property-',false).'.'.$request->file->getClientOriginalExtension();
+            $request->file->move(public_path('images'), $imageName);
+
+            $property = Property::findOrFail($id);
+            $property->image = $imageName;
+            $property->update();
+
+            return response()->json(['success'=>'You have successfully upload file.']);
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Property Image error', ['error' => $exception->getMessage()]);
+        }
+    }
 }
