@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Accounts\AccountController;
+use App\Http\Controllers\Admin\Accounts\BankController;
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Property\LeaseController;
@@ -89,6 +91,24 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('show/{id}',[ExpenseController::class, 'show']);
         Route::post('update/{id}',[ExpenseController::class,'update']);
         Route::post('change-status/{id}',[ExpenseController::class, 'changeStatus']);
+
+    });
+
+
+    Route::group(['prefix' => 'account'], function() {
+        Route::post('store', [AccountController::class, 'store']);
+        Route::post('list', [AccountController::class,'getList']);
+        Route::get('show/{id}',[AccountController::class, 'show']);
+        Route::post('update/{id}',[AccountController::class, 'update']);
+        Route::post('change-status/{id}',[AccountController::class, 'changeStatus']);
+
+        Route::group(['prefix' => 'bank'], function() {
+            Route::post('store', [BankController::class, 'store']);
+            Route::post('list', [BankController::class,'getList']);
+            Route::get('show/{id}',[BankController::class, 'show']);
+            Route::post('update/{id}',[BankController::class, 'update']);
+            Route::post('change-status/{id}',[BankController::class, 'changeStatus']);
+        });
 
     });
 

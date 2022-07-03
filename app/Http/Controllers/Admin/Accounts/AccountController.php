@@ -13,9 +13,6 @@ class AccountController extends Controller
 {
     use ResponseTrait;
 
-
-
-
     /**
      * List api
      * @return \Illuminate\Http\Response
@@ -90,7 +87,9 @@ class AccountController extends Controller
             $account->status = $request->status;
             $account->created_by = Auth::user()->id;
             $account->save();
+
             return $this->sendResponse(['id'=>$account->id],'Account create successfully');
+
         }catch (\Exception $exception) {
             return $this->sendError('Account store error', ['error' => $exception->getMessage()]);
         }
