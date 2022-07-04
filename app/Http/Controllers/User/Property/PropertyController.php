@@ -25,7 +25,7 @@ class PropertyController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = Property::where('landlord_id', Auth::id())->select('*')->orderBy($columns[$column], $dir);
+        $query = Property::where('landlord_id', Auth::user()->landlord_id)->select('*')->orderBy($columns[$column], $dir);
 
         $count = Property::count();
 
