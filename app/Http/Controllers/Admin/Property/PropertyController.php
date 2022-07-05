@@ -70,8 +70,7 @@ class PropertyController extends Controller
             'rent_amount' => 'required',
             'status' => 'required|integer',
             'security_money' => 'required',
-            'property_type_id' => 'nullable|integer',
-            'landlord_id' => 'nullable|integer',
+            'landlord_id' => 'integer',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -79,7 +78,6 @@ class PropertyController extends Controller
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
         }
         //--- Validation Section Ends  ---//
-
 
 
         try {
@@ -112,6 +110,7 @@ class PropertyController extends Controller
             $property->save();
 
             return $this->sendResponse(['id'=>$property->id],'Property create successfully');
+
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }

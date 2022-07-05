@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\Property\PropertyAdManagerController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use Illuminate\Http\Request;
@@ -61,6 +62,14 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('get-facilities', [PropertyController::class, 'getFacilities']);
         Route::post('store', [PropertyController::class, 'store']);
         Route::post('image-upload/{id}',[PropertyController::class, 'imageUpload']);
+
+        Route::group(['prefix' => 'ad'], function() {
+            Route::post('store', [PropertyAdManagerController::class, 'store']);
+            Route::post('get-property-as-landlord', [PropertyAdManagerController::class, 'getPropertyAsLandlord']);
+            Route::post('list', [PropertyAdManagerController::class,'getList']);
+            Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
+        });
+
     });
 });
 
