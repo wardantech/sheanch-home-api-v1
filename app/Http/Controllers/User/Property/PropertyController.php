@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Property\Property;
 use App\Models\Settings\FacilityCategory;
 use App\Models\Settings\PropertyType;
+use App\Models\Settings\Utility;
 use App\Models\Settings\UtilityCategory;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -15,6 +16,11 @@ use Illuminate\Support\Facades\Validator;
 class PropertyController extends Controller
 {
     use ResponseTrait;
+
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['show']]);
+    }
 
     public function getList(Request $request)
     {
@@ -198,6 +204,23 @@ class PropertyController extends Controller
         } catch (\Exception $exception) {
 
             return $this->sendError('Facility list.', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function show($id)
+    {
+        try{
+            $property = Property::findOrFail($id);
+            $property->load('propertyType','landlord');
+            $utility_paid_by_landlord = Utility::whereIn('id',json_decode($property->utilities_paid_by_landlord))->get();
+            $utilities_paid_by_tenant = Utility::whereIn('id',json_decode($property->utilities_paid_by_tenant))->get();
+            $property['utilities_paid_by_landlord'] = $utility_paid_by_landlord;
+            $property['utilities_paid_by_tenant'] = $utilities_paid_by_tenant;
+
+            return $this->sendResponse($property,'Property data get successfully');
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
 }
