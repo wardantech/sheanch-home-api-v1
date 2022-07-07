@@ -56,17 +56,19 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     // Property Route
     Route::group(['prefix' => 'property'], function() {
-        Route::post('get-list', [PropertyController::class, 'getList']);
+        Route::post('store', [PropertyController::class, 'store']);
+        Route::post('list', [PropertyController::class, 'getList']);
+        Route::get('show/{id}', [PropertyController::class, 'show'])->withoutMiddleware(['auth:api']);
         Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
         Route::get('get-utilities', [PropertyController::class, 'getUtilities']);
         Route::get('get-facilities', [PropertyController::class, 'getFacilities']);
-        Route::post('store', [PropertyController::class, 'store']);
         Route::post('image-upload/{id}',[PropertyController::class, 'imageUpload']);
 
         Route::group(['prefix' => 'ad'], function() {
             Route::post('store', [PropertyAdManagerController::class, 'store']);
             Route::post('get-property-as-landlord', [PropertyAdManagerController::class, 'getPropertyAsLandlord']);
             Route::post('list', [PropertyAdManagerController::class,'getList']);
+            Route::post('active-property/list', [PropertyAdManagerController::class,'getActivePropertyList'])->withoutMiddleware(['auth:api']);
             Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
         });
 

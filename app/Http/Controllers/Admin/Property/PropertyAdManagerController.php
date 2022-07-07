@@ -188,10 +188,10 @@ class PropertyAdManagerController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function status(Request $request, $id)
+    public function changeStatus(Request $request, $id)
     {
         try {
-            $PropertyAd = Property::findOrFail($id);
+            $PropertyAd = PropertyAd::findOrFail($id);
             if ($request->status) {
                 $PropertyAd->status = 0;
                 $PropertyAd->update();
