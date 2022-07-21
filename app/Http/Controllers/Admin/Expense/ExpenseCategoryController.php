@@ -168,4 +168,22 @@ class ExpenseCategoryController extends Controller
             return $this->sendError('Expense category status error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * ExpenseCategory Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $expenseCategory = ExpenseCategory::findOrFail($id);
+            $expenseCategory->delete();
+
+            return $this->sendResponse(['id'=>$id],'Expense category deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Expense category delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

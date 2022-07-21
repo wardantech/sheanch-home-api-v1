@@ -203,4 +203,22 @@ class FacilityController extends Controller
             return $this->sendError('Facility category status error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Facility Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $facility = Facility::findOrFail($id);
+            $facility->delete();
+
+            return $this->sendResponse(['id'=>$id],'Facility deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Facility delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

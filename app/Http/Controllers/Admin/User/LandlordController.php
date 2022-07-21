@@ -269,4 +269,21 @@ class LandlordController extends Controller
         }
     }
 
+    /**
+     * Landloard Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $landlord = Landlord::findOrFail($id);
+            $landlord->delete();
+
+            return $this->sendResponse(['id'=>$id],'Landlord deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Landlord delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 }
