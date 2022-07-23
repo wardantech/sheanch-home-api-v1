@@ -167,4 +167,22 @@ class PropertyTypeController extends Controller
             return $this->sendError('Property Type status error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Property Type Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $propertyType = PropertyType::findOrFail($id);
+            $propertyType->delete();
+
+            return $this->sendResponse(['id'=>$id],'Property type deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Property type delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

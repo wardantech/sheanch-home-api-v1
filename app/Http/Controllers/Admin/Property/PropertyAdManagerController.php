@@ -222,5 +222,22 @@ class PropertyAdManagerController extends Controller
         }
     }
 
+    /**
+     * PropertyAd Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $propertyAd = PropertyAd::findOrFail($id);
+            $propertyAd->delete();
+
+            return $this->sendResponse(['id'=>$id],'Property Ad deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Property Ad delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 
 }

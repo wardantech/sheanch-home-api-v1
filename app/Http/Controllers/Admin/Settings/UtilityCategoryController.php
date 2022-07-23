@@ -167,4 +167,23 @@ class UtilityCategoryController extends Controller
             return $this->sendError('Utility category status error', ['error' => $exception->getMessage()]);
         }
     }
+
+
+    /**
+     * Utility Category Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $utilityCategory = UtilityCategory::findOrFail($id);
+            $utilityCategory->delete();
+
+            return $this->sendResponse(['id'=>$id],'Utility category deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Utility category delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

@@ -275,4 +275,22 @@ class PropertyController extends Controller
             return $this->sendError('Property Image error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Property Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $property = Property::findOrFail($id);
+            $property->delete();
+
+            return $this->sendResponse(['id'=>$id],'Property deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Property delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

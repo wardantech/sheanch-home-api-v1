@@ -268,6 +268,24 @@ class TenantController extends Controller
         }
         catch (\Exception $exception){
             return $this->sendError('Landlord status error', ['error' => $exception->getMessage()]);
+         }
+   }
+
+    /**
+     * Tenant Data Delete
+     * @param $id
+     * @return mixed
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $tenant = Tenant::findOrFail($id);
+            $tenant->delete();
+
+            return $this->sendResponse(['id'=>$id],'Tenant deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Tenant delete error', ['error' => $exception->getMessage()]);
         }
     }
 }
