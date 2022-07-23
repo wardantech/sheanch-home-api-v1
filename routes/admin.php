@@ -62,7 +62,8 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('update/{id}',[LandlordController::class,'update']);
         Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
         Route::get('get-landlords',[LandlordController::class,'getLandlords']);
-        Route::post('change-status/{id}',[LandlordController::class, 'status']);
+
+        Route::post('change-status/{id}',[LandlordController::class, 'changeStatus']);
         Route::post('delete/{id}',[LandlordController::class, 'destroy']);
     });
 
@@ -73,6 +74,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('show/{id}',[TenantController::class, 'show']);
         Route::post('update/{id}',[TenantController::class,'update']);
         Route::post('image-upload/{id}',[TenantController::class,'imageUpload']);
+        Route::post('change-status/{id}',[TenantController::class, 'changeStatus']);
         Route::post('delete/{id}',[TenantController::class, 'destroy']);
     });
 
@@ -201,6 +203,14 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('list', [PropertyAdManagerController::class,'getList']);
             Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
             Route::post('delete/{id}',[PropertyAdManagerController::class, 'destroy']);
+        });
+
+        //Lease route
+        Route::group(['prefix' => 'lease'], function(){
+            Route::post('store', [LeaseController::class, 'store']);
+            Route::post('list', [LeaseController::class, 'getList']);
+            Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
+
         });
 
     });

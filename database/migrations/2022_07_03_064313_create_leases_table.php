@@ -16,15 +16,17 @@ return new class extends Migration
         Schema::create('leases', function (Blueprint $table) {
             $table->id();
             $table->integer('status');
-            $table->string('start_date')->index();
+            $table->string('start_date')->index()->nullable();
             $table->integer('property_id')->index();
+            $table->integer('property_ad_id')->index()->nullable();
             $table->integer('landlord_id')->index();
-            $table->integer('lease_type')->index()->comment('1 for commercial, 2 for residential');
-            $table->integer('sale_type')->index()->comment('1 for rent, 2 for sale');
-            $table->double('lease_amount')->index();
-            $table->double('security_money')->nullable();
+            $table->integer('tenant_id')->index();
+            $table->integer('lease_type')->nullable()->index()->comment('1 for commercial, 2 for residential');
+            $table->integer('sale_type')->nullable()->index()->comment('1 for rent, 2 for sale');
+            $table->double('lease_amount')->nullable()->index();
+            $table->double('security_money')->nullable()->nullable();
             $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->integer('updated_by')->nullable()->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();

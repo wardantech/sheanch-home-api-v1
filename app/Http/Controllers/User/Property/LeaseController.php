@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Property;
+namespace App\Http\Controllers\User\Property;
 
 use App\Http\Controllers\Controller;
-use App\Models\Landlord;
+
+
 use App\Models\Property\Lease;
 use App\Models\Property\Property;
-use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Validator;
 class LeaseController extends Controller
 {
     use ResponseTrait;
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['getActivePropertyList']]);
+    }
 
     /**
      * List api
@@ -30,6 +34,7 @@ class LeaseController extends Controller
         $searchValue = $request['params']['search'];
 
         $query = Lease::select('*')->with(['landlord','property'])
+            ->where('tenant_id', Auth::user()->tenant_id)
             ->orderBy($columns[$column], $dir);
 
         $count = Lease::count();
@@ -56,23 +61,12 @@ class LeaseController extends Controller
      */
     public function store(Request $request)
     {
+
         //--- Validation Section Start ---//
         $rules = [
-            'thana_id' => 'required',
-            'district_id' => 'required',
-            'division_id' => 'required',
-            'name' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:255',
-            'address' => 'required|string',
-            'bed_rooms' => 'integer|nullable',
-            'bath_rooms' => 'integer|nullable',
-            'units' => 'integer|nullable',
-            'area_size' => 'integer|nullable',
-            'rent_amount' => 'required',
-            'status' => 'required|integer',
-            'security_money' => 'required',
-            'property_type_id' => 'nullable|integer',
-            'landlord_id' => 'nullable|integer',
+            'landlord_id' => 'required',
+            'tenant_id' => 'required',
+            'property_id' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -86,25 +80,10 @@ class LeaseController extends Controller
             // Store Property
             $lease = new Lease();
 
-            $lease->thana_id = $request->thana_id;
-            $lease->district_id = $request->district_id;
-            $lease->division_id = $request->division_id;
-            $lease->property_type_id = $request->property_type_id;
             $lease->landlord_id = $request->landlord_id;
-            $lease->name = $request->name;
-            $lease->zip_code = $request->zip_code;
-            $lease->address = $request->address;
-            $lease->bed_rooms = $request->bed_rooms;
-            $lease->bath_rooms = $request->bath_rooms;
-            $lease->units = $request->units;
-            $lease->area_size = $request->area_size;
-            $lease->rent_amount = $request->rent_amount;
-            $lease->description = $request->description;
-            $lease->status = $request->status;
-            $lease->security_money = $request->security_money;
-            $lease->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
-            $lease->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
-            $lease->facilities = json_encode($request->facilities);
+            $lease->property_id = $request->property_id;
+            $lease->tenant_id = $request->tenant_id;
+            $lease->status = 0;
             $lease->created_by = Auth::id();
             $lease->save();
 
@@ -123,9 +102,9 @@ class LeaseController extends Controller
     public function show($id)
     {
         try {
-            $lease = Lease::findOrFail($id);
+            $Lease = Lease::findOrFail($id);
 
-            return $this->sendResponse($lease, 'Property data get successfully');
+            return $this->sendResponse($Lease, 'Property data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
@@ -170,30 +149,30 @@ class LeaseController extends Controller
 
         try {
             // Update Property
-            $lease = Lease::findOrFail($id);
+            $Lease = Lease::findOrFail($id);
 
-            $lease->thana_id = $request->thana_id;
-            $lease->district_id = $request->district_id;
-            $lease->division_id = $request->division_id;
-            $lease->name = $request->name;
-            $lease->zip_code = $request->zip_code;
-            $lease->address = $request->address;
-            $lease->bed_rooms = $request->bed_rooms;
-            $lease->bath_rooms = $request->bath_rooms;
-            $lease->units = $request->units;
-            $lease->area_size = $request->area_size;
-            $lease->rent_amount = $request->rent_amount;
-            $lease->description = $request->description;
-            $lease->status = $request->status;
-            $lease->security_money = $request->security_money;
-            $lease->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
-            $lease->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
-            $lease->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
-            $lease->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
-            $lease->created_by = Auth::id();
-            $lease->update();
+            $Lease->thana_id = $request->thana_id;
+            $Lease->district_id = $request->district_id;
+            $Lease->division_id = $request->division_id;
+            $Lease->name = $request->name;
+            $Lease->zip_code = $request->zip_code;
+            $Lease->address = $request->address;
+            $Lease->bed_rooms = $request->bed_rooms;
+            $Lease->bath_rooms = $request->bath_rooms;
+            $Lease->units = $request->units;
+            $Lease->area_size = $request->area_size;
+            $Lease->rent_amount = $request->rent_amount;
+            $Lease->description = $request->description;
+            $Lease->status = $request->status;
+            $Lease->security_money = $request->security_money;
+            $Lease->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
+            $Lease->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
+            $Lease->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
+            $Lease->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
+            $Lease->created_by = Auth::id();
+            $Lease->update();
 
-            return $this->sendResponse(['id' => $lease->id], 'Property updated successfully');
+            return $this->sendResponse(['id' => $Lease->id], 'Property updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
         }
@@ -210,21 +189,43 @@ class LeaseController extends Controller
     public function changeStatus(Request $request, $id)
     {
         try {
-            $lease = Lease::findOrFail($id);
+            $Lease = Lease::findOrFail($id);
             if ($request->status) {
-                $lease->status = 0;
-                $lease->update();
+                $Lease->status = 0;
+                $Lease->update();
 
-                return $this->sendResponse(['id' => $id], 'Property inactive successfully');
+                return $this->sendResponse(['id' => $id], 'Property ad inactive successfully');
             }
 
-            $lease->status = 1;
-            $lease->update();
+            $Lease->status = 1;
+            $Lease->update();
 
-            return $this->sendResponse(['id' => $id], 'Property active successfully');
+            return $this->sendResponse(['id' => $id], 'Property ad active successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property status error', ['error' => $exception->getMessage()]);
         }
     }
+
+    public function getPropertyAsLandlord(Request $request)
+    {
+        try {
+            $landlords = Property::where('landlord_id', $request->landlordId)
+                ->where('status', true)->get();
+
+            return $this->sendResponse($landlords, 'Landlord list');
+
+        } catch (\Exception $exception) {
+
+            return $this->sendError('Landlord list.', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function getActivePropertyList(){
+        $activeLeases = Lease::where('status',1)
+            ->with('property')
+            ->get();
+        return $activeLeases;
+    }
+
 
 }

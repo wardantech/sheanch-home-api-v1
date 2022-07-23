@@ -240,8 +240,8 @@ class LandlordController extends Controller
             return $this->sendError('Landlord list.', ['error' => $exception->getMessage()]);
         }
     }
-    
-    public function status(Request $request, $id)
+
+    public function changeStatus(Request $request, $id)
     {
         try{
             $landlord = Landlord::findOrFail($id);

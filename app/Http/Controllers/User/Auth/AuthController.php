@@ -109,7 +109,7 @@ class AuthController extends Controller
 
             $tenant->save();
 
-            $user->landlord_id = $tenant->id;
+            $user->tenant_id = $tenant->id;
 
         }
 
