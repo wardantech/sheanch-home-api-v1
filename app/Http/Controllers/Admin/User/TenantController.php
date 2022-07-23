@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Landlord;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -231,7 +232,6 @@ class TenantController extends Controller
             $user->mobile = $request->mobile;
             $user->name = $request->name;
             $user->status = $request->status;
-            $user->type = 3; //Tenant
             $user->update();
 
             DB::commit();
@@ -240,6 +240,34 @@ class TenantController extends Controller
         }catch (\Exception $exception) {
             DB::rollback();
             return $this->sendError('Tenant update error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function changeStatus(Request $request, $id)
+    {
+        try{
+            $landlord = Tenant::findOrFail($id);
+            $user = User::where('type', 3)->where('tenant_id',$id)->first();
+
+            if($request->status) {
+                $landlord->status = 0;
+                $landlord->update();
+
+                $user->status = 0;
+                $user->update();
+
+                return $this->sendResponse(['id'=>$id],'Landlord inactive successfully');
+            }
+
+            $landlord->status = 1;
+            $landlord->update();
+
+            $user->status = 1;
+            $user->update();
+            return $this->sendResponse(['id'=>$id],'Landlord active successfully');
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Landlord status error', ['error' => $exception->getMessage()]);
         }
     }
 }
