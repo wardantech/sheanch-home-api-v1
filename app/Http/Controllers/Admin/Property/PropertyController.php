@@ -3,8 +3,14 @@
 namespace App\Http\Controllers\Admin\Property;
 
 use App\Http\Controllers\Controller;
+use App\Models\Landlord;
 use App\Models\Property\Property;
+use App\Models\Settings\District;
+use App\Models\Settings\Division;
+use App\Models\Settings\FacilityCategory;
 use App\Models\Settings\PropertyType;
+use App\Models\Settings\Thana;
+use App\Models\Settings\UtilityCategory;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,16 +38,15 @@ class PropertyController extends Controller
         $count = Property::count();
 
         if ($searchValue) {
-            $query->where(function($query) use ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
                 $query->where('id', 'like', '%' . $searchValue . '%')
                     ->orWhere('name', 'like', '%' . $searchValue . '%');
             });
         }
 
-        if($length!='all'){
+        if ($length != 'all') {
             $fetchData = $query->paginate($length);
-        }
-        else{
+        } else {
             $fetchData = $query->paginate($count);
         }
 
@@ -54,6 +59,7 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
+
         //--- Validation Section Start ---//
         $rules = [
             'thana_id' => 'required',
@@ -109,12 +115,23 @@ class PropertyController extends Controller
             $property->created_by = Auth::id();
             $property->save();
 
-            return $this->sendResponse(['id'=>$property->id],'Property create successfully');
+            if ($property && count($request->images) > 0) {
+                foreach ($request->images as $image) {
+
+                    $property->addMediaFromBase64($image['data'])
+                        ->usingFileName(uniqid('property', false) . '.png')
+                        ->toMediaCollection();
+
+                }
+            }
+
+            return $this->sendResponse(['id' => $property->id], 'Property create successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
     }
+
     /**
      * Property single data get for update or show
      * @param $id
@@ -123,15 +140,73 @@ class PropertyController extends Controller
 
     public function show($id)
     {
-        try{
+        try {
             $property = Property::with('thana', 'district', 'division', 'propertyType', 'landlord')->findOrFail($id);
 
-            return $this->sendResponse($property,'Property data get successfully');
-        }
-        catch (\Exception $exception){
+            return $this->sendResponse($property, 'Property data get successfully');
+        } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Property single data get for edit
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function edit(Request $request)
+    {
+
+        try {
+
+            $property = Property::findOrFail($request->id);
+            $propertyImages = $property->getMedia();
+            //return $propertyImages;
+            $propertyImagesData = [];
+            //return $propertyImages;
+            foreach($propertyImages as $propertyImage){
+
+                $propertyImagesUrl = [];
+
+                $path   = $propertyImage->getPath();
+                $type   = pathinfo($path, PATHINFO_EXTENSION);
+                $data   = file_get_contents($path);
+                $base64 = 'data:application/' . $type . ';base64,' . base64_encode($data);
+                $propertyImagesUrl ['url'] = $propertyImage->original_url;
+                $propertyImagesUrl ['data'] = $base64;
+                $propertyImagesUrl ['size'] = $propertyImage->size;
+                $propertyImagesUrl ['name'] = $propertyImage->file_name;
+
+                $propertyImagesData [] = $propertyImagesUrl;
+            }
+            $landlords = Landlord::all();
+            $propertyTypes = PropertyType::all();
+            $division = Division::all();
+            $district = District::where('division_id', $property->division_id)->get();
+            $thana = Thana::where('district_id', $property->district_id)->get();
+            $utilityCategories = UtilityCategory::with('utilities')->get();
+            $facilitiesCategories = FacilityCategory::with('facilities')->get();
+
+            return $this->sendResponse(
+                [
+                    'property' => $property,
+                    'propertyImages' => $propertyImagesData,
+                    'landlords' => $landlords,
+                    'propertyTypes' => $propertyTypes,
+                    'divisions' => $division,
+                    'districts' => $district,
+                    'thanas' => $thana,
+                    'utilityCategories' => $utilityCategories,
+                    'facilitiesCategories' => $facilitiesCategories
+                ],
+                'Property data get successfully');
+
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
     /**
      *
      * @param Request $request
@@ -141,6 +216,8 @@ class PropertyController extends Controller
 
     public function update(Request $request, $id)
     {
+        return $request->input();
+
         //--- Validation Section Start ---//
         $rules = [
             'thana_id' => 'required',
@@ -176,8 +253,13 @@ class PropertyController extends Controller
             $property->thana_id = $request->thana_id;
             $property->district_id = $request->district_id;
             $property->division_id = $request->division_id;
+            $property->property_type_id = $request->property_type_id;
+            $property->landlord_id = $request->landlord_id;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
+            $property->lease_type = $request->lease_type;
+            $property->sale_type = $request->sale_type;
+            $property->house_no = $request->house_no;
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;
@@ -187,14 +269,13 @@ class PropertyController extends Controller
             $property->description = $request->description;
             $property->status = $request->status;
             $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
-            $property->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
-            $property->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
-            $property->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
-            $property->created_by = Auth::id();
+            $property->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
+            $property->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
+            $property->facilities = json_encode($request->facilities);
+            $property->updated_by = Auth::id();
             $property->update();
 
-            return $this->sendResponse(['id'=>$property->id],'Property updated successfully');
+            return $this->sendResponse(['id' => $property->id], 'Property updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
         }
@@ -226,55 +307,24 @@ class PropertyController extends Controller
 
     public function changeStatus(Request $request, $id)
     {
-        try{
+        try {
             $property = Property::findOrFail($id);
-            if($request->status) {
+            if ($request->status) {
                 $property->status = 0;
                 $property->update();
 
-                return $this->sendResponse(['id'=>$id],'Property inactive successfully');
+                return $this->sendResponse(['id' => $id], 'Property inactive successfully');
             }
 
             $property->status = 1;
             $property->update();
 
-            return $this->sendResponse(['id'=>$id],'Property active successfully');
-        }
-        catch (\Exception $exception){
+            return $this->sendResponse(['id' => $id], 'Property active successfully');
+        } catch (\Exception $exception) {
             return $this->sendError('Property status error', ['error' => $exception->getMessage()]);
         }
     }
 
-    /**
-     * Image upload for landlord
-     * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
-
-    public function imageUpload(Request $request, $id)
-    {
-        try{
-            $imageName = uniqid('property-',false).'.'.$request->file->getClientOriginalExtension();
-            $request->file->move(public_path('images'), $imageName);
-
-            $property = Property::findOrFail($id);
-
-            if($property->image != ''){
-                $img =  $property->image.','.$imageName;
-            }else{
-                $img = $imageName;
-            }
-
-            $property->image = $img;
-            $property->update();
-
-            return response()->json(['success'=>'You have successfully upload file.']);
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Property Image error', ['error' => $exception->getMessage()]);
-        }
-    }
 
     /**
      * Property Data Delete
@@ -288,8 +338,8 @@ class PropertyController extends Controller
             $property = Property::findOrFail($id);
             $property->delete();
 
-            return $this->sendResponse(['id'=>$id],'Property deleted successfully');
-        }catch (\Exception $exception){
+            return $this->sendResponse(['id' => $id], 'Property deleted successfully');
+        } catch (\Exception $exception) {
             return $this->sendError('Property delete error', ['error' => $exception->getMessage()]);
         }
     }

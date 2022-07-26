@@ -19,7 +19,7 @@ class UtilityController extends Controller
     public function __construct()
     {
         //$this->authRepository = $authRepository;
-        $this->middleware(['auth:api'], ['except' => ['login', 'getUtilities']]);
+        //$this->middleware(['auth:api'], ['except' => ['getUtilities']]);
     }
 
     /**
@@ -99,9 +99,11 @@ class UtilityController extends Controller
     public function show($id)
     {
         try {
-            $category = Utility::findOrFail($id);
 
-            return $this->sendResponse($category, 'Utility data get successfully');
+            $utility = Utility::findOrFail($id);
+
+            return $this->sendResponse($utility, 'Utility data get successfully');
+
         } catch (\Exception $exception) {
             return $this->sendError('Utility data error', ['error' => $exception->getMessage()]);
         }
@@ -170,6 +172,7 @@ class UtilityController extends Controller
                     $query->where('status', 1);
                     $query->select(['id', 'name', 'utility_category_id']);
                 }])->get(['id','name']);
+
             return $this->sendResponse($utility, 'Utility list');
 
         } catch (\Exception $exception) {
@@ -177,7 +180,7 @@ class UtilityController extends Controller
             return $this->sendError('Utility list.', ['error' => $exception->getMessage()]);
         }
     }
-    
+
     public function changeStatus(Request $request, $id)
     {
         try{
