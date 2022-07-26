@@ -119,6 +119,47 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     });
 
+
+    // Property Route
+    Route::group(['prefix' => 'property'], function() {
+        Route::post('store', [PropertyController::class, 'store']);
+        Route::get('show/{id}',[PropertyController::class, 'show']);
+        Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
+        Route::post('get-edit-data', [PropertyController::class, 'edit']);
+        Route::post('list', [PropertyController::class,'getList']);
+        Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
+        //Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
+        Route::post('update/{id}',[PropertyController::class, 'update']);
+        Route::post('delete/{id}',[PropertyController::class, 'destroy']);
+
+        Route::group(['prefix' => 'ad'], function() {
+            Route::post('store', [PropertyAdManagerController::class, 'store']);
+            Route::post('get-property-as-landlord', [PropertyAdManagerController::class, 'getPropertyAsLandlord']);
+            Route::post('list', [PropertyAdManagerController::class,'getList']);
+            Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
+            Route::post('delete/{id}',[PropertyAdManagerController::class, 'destroy']);
+        });
+
+        //Lease route
+        Route::group(['prefix' => 'lease'], function(){
+            Route::post('store', [LeaseController::class, 'store']);
+            Route::post('list', [LeaseController::class, 'getList']);
+            Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
+
+        });
+
+    });
+
+    // Lease Route
+    Route::group(['prefix' => 'lease'], function() {
+        Route::post('store', [LeaseController::class, 'store']);
+        Route::post('get-property-as-landlord', [LeaseController::class, 'getPropertyAsLandlord']);
+        Route::post('list', [LeaseController::class,'getList']);
+        Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
+        Route::post('image-upload/{id}',[LeaseController::class,'imageUpload']);
+        Route::post('delete/{id}',[LeaseController::class, 'destroy']);
+    });
+
     //Settings route
     Route::group(['prefix' => 'settings'], function(){
 
@@ -187,41 +228,5 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     });
 
-    // Property Route
-    Route::group(['prefix' => 'property'], function() {
-        Route::post('store', [PropertyController::class, 'store']);
-        Route::get('show/{id}',[PropertyController::class, 'show']);
-        Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes']);
-        Route::post('list', [PropertyController::class,'getList']);
-        Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
-        Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
-        Route::post('delete/{id}',[PropertyController::class, 'destroy']);
 
-        Route::group(['prefix' => 'ad'], function() {
-            Route::post('store', [PropertyAdManagerController::class, 'store']);
-            Route::post('get-property-as-landlord', [PropertyAdManagerController::class, 'getPropertyAsLandlord']);
-            Route::post('list', [PropertyAdManagerController::class,'getList']);
-            Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
-            Route::post('delete/{id}',[PropertyAdManagerController::class, 'destroy']);
-        });
-
-        //Lease route
-        Route::group(['prefix' => 'lease'], function(){
-            Route::post('store', [LeaseController::class, 'store']);
-            Route::post('list', [LeaseController::class, 'getList']);
-            Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
-
-        });
-
-    });
-
-    // Lease Route
-    Route::group(['prefix' => 'lease'], function() {
-        Route::post('store', [LeaseController::class, 'store']);
-        Route::post('get-property-as-landlord', [LeaseController::class, 'getPropertyAsLandlord']);
-        Route::post('list', [LeaseController::class,'getList']);
-        Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
-        Route::post('image-upload/{id}',[LeaseController::class,'imageUpload']);
-        Route::post('delete/{id}',[LeaseController::class, 'destroy']);
-    });
 });
