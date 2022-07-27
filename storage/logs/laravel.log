@@ -4483,3 +4483,43 @@
 #38 D:\\laragon\\www\\sheanch-home-api-v1\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\esources\\server.php(16): require_once('D:\\\\laragon\\\\www\\\\...')
 #39 {main}
 "} 
+[2022-07-26 10:08:44] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:08:44] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:09:09] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:09:11] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:10:14] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:10:19] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:10:20] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:14:43] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:14:46] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
+[2022-07-26 10:14:48] local.ERROR: Trait "Spatie\MediaLibrary\InteractsWithMedia" not found {"userId":1,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Trait \"Spatie\\MediaLibrary\\InteractsWithMedia\" not found at C:\\laragon\\www\\sheanch-home-api-v1\\app\\Models\\Property\\Property.php:17)
+[stacktrace]
+#0 {main}
+"} 
