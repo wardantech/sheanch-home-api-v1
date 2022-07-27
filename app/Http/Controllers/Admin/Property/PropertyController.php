@@ -7,9 +7,11 @@ use App\Models\Landlord;
 use App\Models\Property\Property;
 use App\Models\Settings\District;
 use App\Models\Settings\Division;
+use App\Models\Settings\Facility;
 use App\Models\Settings\FacilityCategory;
 use App\Models\Settings\PropertyType;
 use App\Models\Settings\Thana;
+use App\Models\Settings\Utility;
 use App\Models\Settings\UtilityCategory;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -53,12 +55,37 @@ class PropertyController extends Controller
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
+    public function create()
+    {
+        try {
+            $landlords = Landlord::all();
+            $propertyTypes = PropertyType::all();
+            $division = Division::all();
+            $utility = Utility::all();
+            $facilities = Facility::all();
+
+            return $this->sendResponse(
+                [
+                    'landlords' => $landlords,
+                    'propertyTypes' => $propertyTypes,
+                    'divisions' => $division,
+                    'utilities' => $utility,
+                    'facilities' => $facilities
+                ],
+                'Property data get successfully');
+
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
     /**
      * Store api
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
+        //return $request->input();
 
         //--- Validation Section Start ---//
         $rules = [
@@ -109,8 +136,7 @@ class PropertyController extends Controller
             $property->description = $request->description;
             $property->status = $request->status;
             $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
-            $property->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
+            $property->utilities = json_encode($request->utilities);
             $property->facilities = json_encode($request->facilities);
             $property->created_by = Auth::id();
             $property->save();
@@ -165,13 +191,13 @@ class PropertyController extends Controller
             //return $propertyImages;
             $propertyImagesData = [];
             //return $propertyImages;
-            foreach($propertyImages as $propertyImage){
+            foreach ($propertyImages as $propertyImage) {
 
                 $propertyImagesUrl = [];
 
-                $path   = $propertyImage->getPath();
-                $type   = pathinfo($path, PATHINFO_EXTENSION);
-                $data   = file_get_contents($path);
+                $path = $propertyImage->getPath();
+                $type = pathinfo($path, PATHINFO_EXTENSION);
+                $data = file_get_contents($path);
                 $base64 = 'data:application/' . $type . ';base64,' . base64_encode($data);
                 $propertyImagesUrl ['url'] = $propertyImage->original_url;
                 $propertyImagesUrl ['data'] = $base64;
@@ -216,7 +242,7 @@ class PropertyController extends Controller
 
     public function update(Request $request, $id)
     {
-        return $request->input();
+        //return $request->input();
 
         //--- Validation Section Start ---//
         $rules = [
@@ -269,8 +295,7 @@ class PropertyController extends Controller
             $property->description = $request->description;
             $property->status = $request->status;
             $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
-            $property->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
+            $property->utilities = json_encode($request->utilities_paid_by_landlord);
             $property->facilities = json_encode($request->facilities);
             $property->updated_by = Auth::id();
             $property->update();
