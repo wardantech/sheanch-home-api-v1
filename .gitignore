@@ -13,4 +13,5 @@ yarn-error.log
 /.idea
 /.vscode
 composer.json
+/storage/app/public
 
