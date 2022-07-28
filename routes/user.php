@@ -52,9 +52,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('store', [PropertyController::class, 'store']);
         Route::post('list', [PropertyController::class, 'getList']);
         Route::get('show/{id}', [PropertyController::class, 'show'])->withoutMiddleware(['auth:api']);
-        Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes'])->withoutMiddleware(['auth:api']);
-        Route::get('get-utilities', [PropertyController::class, 'getUtilities']);
-        Route::get('get-facilities', [PropertyController::class, 'getFacilities']);
+        Route::post('get-create-data', [PropertyController::class, 'create']);
         Route::post('image-upload/{id}',[PropertyController::class, 'imageUpload']);
 
         Route::group(['prefix' => 'ad'], function() {

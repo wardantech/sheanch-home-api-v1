@@ -4,6 +4,8 @@ namespace App\Http\Controllers\User\Property;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property\Property;
+use App\Models\Settings\Division;
+use App\Models\Settings\Facility;
 use App\Models\Settings\FacilityCategory;
 use App\Models\Settings\PropertyType;
 use App\Models\Settings\Utility;
@@ -220,6 +222,28 @@ class PropertyController extends Controller
             return $this->sendResponse($property,'Property data get successfully');
         }
         catch (\Exception $exception){
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function create()
+    {
+        try {
+            $propertyTypes = PropertyType::all();
+            $division = Division::all();
+            $utility = Utility::all();
+            $facilities = Facility::all();
+
+            return $this->sendResponse(
+                [
+                    'propertyTypes' => $propertyTypes,
+                    'divisions' => $division,
+                    'utilities' => $utility,
+                    'facilities' => $facilities
+                ],
+                'Property data get successfully');
+
+        } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
