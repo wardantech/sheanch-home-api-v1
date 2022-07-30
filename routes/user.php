@@ -52,6 +52,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('store', [PropertyController::class, 'store']);
         Route::post('list', [PropertyController::class, 'getList']);
         Route::get('show/{id}', [PropertyController::class, 'show'])->withoutMiddleware(['auth:api']);
+        Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes'])->withoutMiddleware(['auth:api']);
         Route::post('get-create-data', [PropertyController::class, 'create']);
         Route::post('image-upload/{id}',[PropertyController::class, 'imageUpload']);
 

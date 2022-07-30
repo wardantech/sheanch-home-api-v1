@@ -60,6 +60,8 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
+        // return 'hello';
+
         //--- Validation Section Start ---//
         $rules = [
             'thana_id' => 'required',
@@ -74,7 +76,7 @@ class PropertyController extends Controller
             'units' => 'integer|nullable',
             'area_size' => 'integer|nullable',
             'rent_amount' => 'required',
-            'landlord_id' => 'nullable|integer',
+            'security_money' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -91,7 +93,7 @@ class PropertyController extends Controller
             $property->district_id = $request->district_id;
             $property->division_id = $request->division_id;
             $property->property_type_id = $request->property_type_id;
-            $property->landlord_id = $request->landlord_id;
+            $property->landlord_id = 1;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
             $property->lease_type = $request->lease_type;
@@ -106,13 +108,22 @@ class PropertyController extends Controller
             $property->description = $request->description;
             $property->status = 0;
             $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
-            $property->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
+            $property->utilities = json_encode($request->utilities);
             $property->facilities = json_encode($request->facilities);
             $property->created_by = Auth::id();
             $property->save();
 
-            return $this->sendResponse(['id'=>$property->id],'Property create successfully');
+            if ($property && count($request->images) > 0) {
+                foreach ($request->images as $image) {
+
+                    $property->addMediaFromBase64($image['data'])
+                        ->usingFileName(uniqid('property', false) . '.png')
+                        ->toMediaCollection();
+
+                }
+            }
+
+            return $this->sendResponse(['id' => $property->id], 'Property create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
