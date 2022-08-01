@@ -26,6 +26,7 @@ class PropertyController extends Controller
 
     public function getList(Request $request)
     {
+//        return Auth::user()->landlord_id;
         $columns = ['id', 'name'];
 
         $length = $request['params']['length'];
@@ -60,8 +61,6 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        // return 'hello';
-
         //--- Validation Section Start ---//
         $rules = [
             'thana_id' => 'required',
@@ -93,7 +92,7 @@ class PropertyController extends Controller
             $property->district_id = $request->district_id;
             $property->division_id = $request->division_id;
             $property->property_type_id = $request->property_type_id;
-            $property->landlord_id = 1;
+            $property->landlord_id = $request->landlord_id;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
             $property->lease_type = $request->lease_type;
