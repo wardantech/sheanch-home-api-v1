@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('division_id')->index();
             $table->integer('property_type_id')->index();
             $table->integer('landlord_id')->index();
-            $table->integer('lease_type')->index()->nullable()->comment('1 for commercial 2 for residential');
+            $table->integer('property_category')->index()->nullable()->comment('1 for commercial 2 for residential');
             $table->integer('sale_type')->index()->nullable()->comment('1 for rent 2 for sale');
             $table->string('house_no')->index()->nullable();
             $table->string('name');

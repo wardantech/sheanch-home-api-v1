@@ -124,7 +124,7 @@ class PropertyController extends Controller
             $property->landlord_id = $request->landlord_id;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
-            $property->lease_type = $request->lease_type;
+            $property->property_category = $request->property_category;
             $property->sale_type = $request->sale_type;
             $property->house_no = $request->house_no;
             $property->address = $request->address;
@@ -279,7 +279,7 @@ class PropertyController extends Controller
             $property->landlord_id = $request->landlord_id;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
-            $property->lease_type = $request->lease_type;
+            $property->property_category = $request->property_category;
             $property->sale_type = $request->sale_type;
             $property->house_no = $request->house_no;
             $property->address = $request->address;
@@ -294,6 +294,13 @@ class PropertyController extends Controller
             $property->facilities = json_encode($request->facilities);
             $property->updated_by = Auth::id();
             $property->update();
+
+            $mediaItems = $property->getMedia();
+            if(count($mediaItems) > 0){
+                foreach ($mediaItems as $mediaItem) {
+                    $mediaItem->delete();
+                }
+            }
 
             $property->media()->delete();
 
