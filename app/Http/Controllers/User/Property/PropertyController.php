@@ -4,6 +4,8 @@ namespace App\Http\Controllers\User\Property;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property\Property;
+use App\Models\Settings\Division;
+use App\Models\Settings\Facility;
 use App\Models\Settings\FacilityCategory;
 use App\Models\Settings\PropertyType;
 use App\Models\Settings\Utility;
@@ -24,6 +26,7 @@ class PropertyController extends Controller
 
     public function getList(Request $request)
     {
+//        return Auth::user()->landlord_id;
         $columns = ['id', 'name'];
 
         $length = $request['params']['length'];
@@ -72,7 +75,7 @@ class PropertyController extends Controller
             'units' => 'integer|nullable',
             'area_size' => 'integer|nullable',
             'rent_amount' => 'required',
-            'landlord_id' => 'nullable|integer',
+            'security_money' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -104,13 +107,22 @@ class PropertyController extends Controller
             $property->description = $request->description;
             $property->status = 0;
             $property->security_money = $request->security_money;
-            $property->utilities_paid_by_landlord = json_encode($request->utilities_paid_by_landlord);
-            $property->utilities_paid_by_tenant = json_encode($request->utilities_paid_by_tenant);
+            $property->utilities = json_encode($request->utilities);
             $property->facilities = json_encode($request->facilities);
             $property->created_by = Auth::id();
             $property->save();
 
-            return $this->sendResponse(['id'=>$property->id],'Property create successfully');
+            if ($property && count($request->images) > 0) {
+                foreach ($request->images as $image) {
+
+                    $property->addMediaFromBase64($image['data'])
+                        ->usingFileName(uniqid('property', false) . '.png')
+                        ->toMediaCollection();
+
+                }
+            }
+
+            return $this->sendResponse(['id' => $property->id], 'Property create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
@@ -220,6 +232,28 @@ class PropertyController extends Controller
             return $this->sendResponse($property,'Property data get successfully');
         }
         catch (\Exception $exception){
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function create()
+    {
+        try {
+            $propertyTypes = PropertyType::all();
+            $division = Division::all();
+            $utility = Utility::all();
+            $facilities = Facility::all();
+
+            return $this->sendResponse(
+                [
+                    'propertyTypes' => $propertyTypes,
+                    'divisions' => $division,
+                    'utilities' => $utility,
+                    'facilities' => $facilities
+                ],
+                'Property data get successfully');
+
+        } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
