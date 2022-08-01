@@ -211,8 +211,8 @@ class PropertyController extends Controller
             $division = Division::all();
             $district = District::where('division_id', $property->division_id)->get();
             $thana = Thana::where('district_id', $property->district_id)->get();
-            $utilityCategories = UtilityCategory::with('utilities')->get();
-            $facilitiesCategories = FacilityCategory::with('facilities')->get();
+            $utilities = Utility::all();
+            $facilities = Facility::all();
 
             return $this->sendResponse(
                 [
@@ -223,8 +223,8 @@ class PropertyController extends Controller
                     'divisions' => $division,
                     'districts' => $district,
                     'thanas' => $thana,
-                    'utilityCategories' => $utilityCategories,
-                    'facilitiesCategories' => $facilitiesCategories
+                    'utilities' => $utilities,
+                    'facilities' => $facilities
                 ],
                 'Property data get successfully');
 
@@ -260,10 +260,6 @@ class PropertyController extends Controller
             'description' => 'string|nullable',
             'status' => 'integer|nullable',
             'security_money' => 'required',
-            'utilities_paid_by_landlord' => 'nullable|string',
-            'facilities_paid_by_landlord' => 'nullable|string',
-            'utilities_paid_by_tenant' => 'nullable|string',
-            'facilities_paid_by_tenant' => 'nullable|string',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -289,16 +285,34 @@ class PropertyController extends Controller
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;
-            $property->units = $request->units;
             $property->area_size = $request->area_size;
             $property->rent_amount = $request->rent_amount;
             $property->description = $request->description;
             $property->status = $request->status;
             $property->security_money = $request->security_money;
-            $property->utilities = json_encode($request->utilities_paid_by_landlord);
+            $property->utilities = json_encode($request->utilities);
             $property->facilities = json_encode($request->facilities);
             $property->updated_by = Auth::id();
             $property->update();
+
+            $property->media()->delete();
+
+            if ($property && $request->images && count($request->images) > 0) {
+                foreach ($request->images as $image) {
+
+                    $property->addMediaFromBase64($image['data'])
+                        ->usingFileName(uniqid('property', false) . '.png')
+                        ->toMediaCollection();
+                }
+            }
+
+            if ($property && $request->oldImages && count($request->oldImages) > 0) {
+                foreach ($request->oldImages as $image) {
+                    $property->addMediaFromBase64($image['data'])
+                        ->usingFileName(uniqid('property', false) . '.png')
+                        ->toMediaCollection();
+                }
+            }
 
             return $this->sendResponse(['id' => $property->id], 'Property updated successfully');
         } catch (\Exception $exception) {
