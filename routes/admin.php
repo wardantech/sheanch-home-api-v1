@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Property\PropertyAdManagerController;
 use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
+use App\Http\Controllers\Admin\Settings\FrontendSettingController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\Admin\Settings\PropertyTypeController;
 use App\Http\Controllers\Admin\Settings\UtilityCategoryController;
@@ -218,6 +219,10 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('update/{id}',[PropertyTypeController::class, 'update']);
             Route::post('change-status/{id}',[PropertyTypeController::class, 'status']);
             Route::post('delete/{id}',[PropertyTypeController::class, 'destroy']);
+        });
+
+        Route::group(['prefix' => 'frontend'], function () {
+            Route::post('general/store', [FrontendSettingController::class, 'store']);
         });
 
         //Address route
