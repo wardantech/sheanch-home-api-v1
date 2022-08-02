@@ -188,9 +188,8 @@ class PropertyController extends Controller
 
             $property = Property::findOrFail($request->id);
             $propertyImages = $property->getMedia();
-            //return $propertyImages;
             $propertyImagesData = [];
-            //return $propertyImages;
+
             foreach ($propertyImages as $propertyImage) {
 
                 $propertyImagesUrl = [];
@@ -199,6 +198,7 @@ class PropertyController extends Controller
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
                 $base64 = 'data:application/' . $type . ';base64,' . base64_encode($data);
+
                 $propertyImagesUrl ['url'] = $propertyImage->original_url;
                 $propertyImagesUrl ['data'] = $base64;
                 $propertyImagesUrl ['size'] = $propertyImage->size;
@@ -302,7 +302,7 @@ class PropertyController extends Controller
                 }
             }
 
-            $property->media()->delete();
+            //$property->media()->delete();
 
             if ($property && $request->images && count($request->images) > 0) {
                 foreach ($request->images as $image) {
