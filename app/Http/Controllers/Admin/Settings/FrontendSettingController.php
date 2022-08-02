@@ -7,6 +7,7 @@ use App\Models\Settings\FrontendSetting;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class FrontendSettingController extends Controller
 {
@@ -15,6 +16,30 @@ class FrontendSettingController extends Controller
     public function __construct()
     {
         $this->middleware(['auth:api']);
+    }
+
+    public function getData(Request $request)
+    {
+
+        try {
+            $general = FrontendSetting::with('media')
+                ->first();
+
+            if(!$general) {
+                return [
+                    'status' => false,
+                    'data' => 'Data Not Found'
+                ];
+            }
+
+            return [
+                'status' => true,
+                'data' => $general
+            ];
+
+        } catch (\Exception $exception) {
+            return $this->sendError('Frontend general setting get data error', ['error' => $exception->getMessage()]);
+        }
     }
 
     public function store(Request $request)
@@ -34,17 +59,26 @@ class FrontendSettingController extends Controller
 
         try {
             // Store Property
+            $data = FrontendSetting::first();
             $frontendSetting = new FrontendSetting();
-            $frontendSetting->email = $request->email;
-            $frontendSetting->phone = $request->phone;
-            $frontendSetting->address = $request->address;
-            $frontendSetting->save();
+
+            if (is_null($data)) {
+                $frontendSetting->email = $request->email;
+                $frontendSetting->phone = $request->phone;
+                $frontendSetting->address = $request->address;
+                $frontendSetting->save();
+            } else {
+                $data->email = $request->email;
+                $data->phone = $request->phone;
+                $data->address = $request->address;
+                $data->update();
+            }
 
             if ($frontendSetting && count($request->bannerImage) > 0) {
                 foreach ($request->bannerImage as $image) {
                     $frontendSetting->addMediaFromBase64($image['data'])
                         ->usingFileName(uniqid('banner_image', false) . '.png')
-                        ->toMediaCollection();
+                        ->toMediaCollection('banner');
                 }
             }
 
@@ -52,7 +86,7 @@ class FrontendSettingController extends Controller
                 foreach ($request->favicon as $image) {
                     $frontendSetting->addMediaFromBase64($image['data'])
                         ->usingFileName(uniqid('favicon', false) . '.png')
-                        ->toMediaCollection();
+                        ->toMediaCollection('fav');
                 }
             }
 
@@ -60,11 +94,11 @@ class FrontendSettingController extends Controller
                 foreach ($request->logo as $image) {
                     $frontendSetting->addMediaFromBase64($image['data'])
                         ->usingFileName(uniqid('logo', false) . '.png')
-                        ->toMediaCollection();
+                        ->toMediaCollection('logo');
                 }
             }
 
-            return $this->sendResponse(['id' => $frontendSetting->id], 'Frontend general setting updated successfully');
+            return $this->sendResponse($frontendSetting, 'Frontend general setting updated successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError('Frontend general setting store error', ['error' => $exception->getMessage()]);

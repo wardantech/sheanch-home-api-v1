@@ -223,6 +223,7 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         Route::group(['prefix' => 'frontend'], function () {
             Route::post('general/store', [FrontendSettingController::class, 'store']);
+            Route::post('get-data', [FrontendSettingController::class, 'getData']);
         });
 
         //Address route
