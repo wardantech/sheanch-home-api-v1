@@ -11,4 +11,6 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class FrontendSetting extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia;
+
+    protected $fillable = ['email','phone','address'];
 }
