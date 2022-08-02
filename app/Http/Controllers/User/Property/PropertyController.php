@@ -128,36 +128,6 @@ class PropertyController extends Controller
         }
     }
 
-    /**
-     * Image upload for landlord
-     * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
-
-    public function imageUpload(Request $request, $id)
-    {
-        try{
-            $imageName = uniqid('property-',false).'.'.$request->file->getClientOriginalExtension();
-            $request->file->move(public_path('images'), $imageName);
-
-            $property = Property::findOrFail($id);
-
-            if($property->image != ''){
-                $img =  $property->image.','.$imageName;
-            }else{
-                $img = $imageName;
-            }
-
-            $property->image = $img;
-            $property->update();
-
-            return response()->json(['success'=>'You have successfully upload file.']);
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Property Image error', ['error' => $exception->getMessage()]);
-        }
-    }
 
     /**
      * Get all Property Types
@@ -174,48 +144,6 @@ class PropertyController extends Controller
         } catch (\Exception $exception) {
 
             return $this->sendError('Property type list.', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
-     * Get Utilities With Category
-     * @return \Illuminate\Http\Response
-     */
-
-    public function getUtilities()
-    {
-        try {
-            $utility = UtilityCategory::where('status', 1)
-                ->with(['utilities' => function ($query) {
-                    $query->where('status', 1);
-                    $query->select(['id', 'name', 'utility_category_id']);
-                }])->get(['id','name']);
-            return $this->sendResponse($utility, 'Utility list');
-
-        } catch (\Exception $exception) {
-
-            return $this->sendError('Utility list.', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
-     * Get all Facility
-     * @return \Illuminate\Http\Response
-     */
-
-    public function getFacilities()
-    {
-        try {
-            $facility = FacilityCategory::where('status', 1)
-                ->with(['facilities' => function ($query) {
-                    $query->where('status', 1);
-                    $query->select(['id', 'name', 'facility_category_id']);
-                }])->get(['id','name']);
-            return $this->sendResponse($facility, 'Facility list');
-
-        } catch (\Exception $exception) {
-
-            return $this->sendError('Facility list.', ['error' => $exception->getMessage()]);
         }
     }
 
