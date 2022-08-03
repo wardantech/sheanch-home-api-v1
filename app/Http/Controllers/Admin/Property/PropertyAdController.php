@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User\Property;
+namespace App\Http\Controllers\Admin\Property;
 
 use App\Http\Controllers\Controller;
 use App\Models\Landlord;
@@ -13,13 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class PropertyAdManagerController extends Controller
+class PropertyAdController extends Controller
 {
     use ResponseTrait;
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['getActivePropertyList']]);
-    }
 
     /**
      * List api
@@ -35,7 +31,6 @@ class PropertyAdManagerController extends Controller
         $searchValue = $request['params']['search'];
 
         $query = PropertyAd::select('*')->with(['landlord','property'])
-            ->where('landlord_id', Auth::user()->landlord_id)
             ->orderBy($columns[$column], $dir);
 
         $count = PropertyAd::count();
@@ -66,6 +61,7 @@ class PropertyAdManagerController extends Controller
         //--- Validation Section Start ---//
         $rules = [
             'landlord_id' => 'required',
+            'status' => 'required|integer',
             'security_money' => 'required',
             'start_date' => 'required',
             'property_id' => 'required',
@@ -89,7 +85,7 @@ class PropertyAdManagerController extends Controller
             $PropertyAd->security_money = $request->security_money;
             $PropertyAd->description = $request->description;
             $PropertyAd->start_date = $request->start_date;
-            $PropertyAd->status = 0;
+            $PropertyAd->status = $request->status;
             $PropertyAd->created_by = Auth::id();
             $PropertyAd->save();
 
@@ -200,13 +196,13 @@ class PropertyAdManagerController extends Controller
                 $PropertyAd->status = 0;
                 $PropertyAd->update();
 
-                return $this->sendResponse(['id' => $id], 'Property ad inactive successfully');
+                return $this->sendResponse(['id' => $id], 'Property inactive successfully');
             }
 
             $PropertyAd->status = 1;
             $PropertyAd->update();
 
-            return $this->sendResponse(['id' => $id], 'Property ad active successfully');
+            return $this->sendResponse(['id' => $id], 'Property active successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property status error', ['error' => $exception->getMessage()]);
         }
@@ -226,12 +222,22 @@ class PropertyAdManagerController extends Controller
         }
     }
 
-    public function getActivePropertyList(){
-        $activePropertyAds = PropertyAd::where('status',1)
-            ->with('property')
-            ->get();
-        return $activePropertyAds;
-    }
+    /**
+     * PropertyAd Data Delete
+     * @param $id
+     * @return mixed
+     */
 
+    public function destroy($id)
+    {
+        try {
+            $propertyAd = PropertyAd::findOrFail($id);
+            $propertyAd->delete();
+
+            return $this->sendResponse(['id'=>$id],'Property Ad deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Property Ad delete error', ['error' => $exception->getMessage()]);
+        }
+    }
 
 }

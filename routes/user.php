@@ -5,7 +5,7 @@
 use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Property\LeaseController;
-use App\Http\Controllers\User\Property\PropertyAdManagerController;
+use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use Illuminate\Http\Request;
@@ -59,11 +59,11 @@ Route::group(['middleware' => ['auth:api']], function(){
 
 
         Route::group(['prefix' => 'ad'], function() {
-            Route::post('store', [PropertyAdManagerController::class, 'store']);
-            Route::post('get-property-as-landlord', [PropertyAdManagerController::class, 'getPropertyAsLandlord']);
-            Route::post('list', [PropertyAdManagerController::class,'getList']);
-            Route::post('active-property/list', [PropertyAdManagerController::class,'getActivePropertyList'])->withoutMiddleware(['auth:api']);
-            Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
+            Route::post('store', [PropertyAdController::class, 'store']);
+            Route::post('get-property-as-landlord', [PropertyAdController::class, 'getPropertyAsLandlord']);
+            Route::post('list', [PropertyAdController::class,'getList']);
+            Route::post('active-property/list', [PropertyAdController::class,'getActivePropertyList'])->withoutMiddleware(['auth:api']);
+            Route::post('change-status/{id}',[PropertyAdController::class, 'changeStatus']);
         });
 
     });
