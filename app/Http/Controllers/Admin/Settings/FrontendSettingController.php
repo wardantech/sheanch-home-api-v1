@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\Settings\FrontendSetting;
-use App\Service\FrontendSettings;
+use App\Service\FrontendSettingsServices;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -95,60 +95,59 @@ class FrontendSettingController extends Controller
     private function storeSettingsImages($frontendSetting, $request){
         if ($frontendSetting && count($request->bannerImage) > 0) {
             foreach ($request->bannerImage as $image) {
-                FrontendSettings::imageUpload($frontendSetting, $image['data'], 'banner');
+                FrontendSettingsServices::imageUpload($frontendSetting, $image['data'], 'banner');
             }
         }
 
         if ($frontendSetting && count($request->favicon) > 0) {
             foreach ($request->favicon as $image) {
-                FrontendSettings::imageUpload($frontendSetting, $image['data'], 'favicon');
+                FrontendSettingsServices::imageUpload($frontendSetting, $image['data'], 'favicon');
             }
         }
 
         if ($frontendSetting && count($request->logo) > 0) {
             foreach ($request->logo as $image) {
-                FrontendSettings::imageUpload($frontendSetting, $image['data'], 'logo');
+                FrontendSettingsServices::imageUpload($frontendSetting, $image['data'], 'logo');
             }
         }
     }
 
     private function updateSettingsImages($data, $request){
         if($data && count($request->bannerImage) == 0){
-            FrontendSettings::imageDelete($data, 'banner');
+            FrontendSettingsServices::imageDelete($data, 'banner');
         }
 
         if($data && count($request->bannerImage) > 0){
             foreach ($request->bannerImage as $bannerImage) {
                 if(isset($bannerImage['data'])){
-                    FrontendSettings::imageDelete($data,'banner');
-                    FrontendSettings::imageUpload($data, $bannerImage['data'], 'banner');
+                    FrontendSettingsServices::imageDelete($data,'banner');
+                    FrontendSettingsServices::imageUpload($data, $bannerImage['data'], 'banner');
                 }
             }
         }
 
         if($data && count($request->favicon) == 0){
-            FrontendSettings::imageDelete($data, 'favicon');
+            FrontendSettingsServices::imageDelete($data, 'favicon');
         }
 
         if($data && count($request->favicon) > 0){
             foreach ($request->favicon as $favicon) {
                 if(isset($favicon['data'])){
-                    FrontendSettings::imageDelete($data, 'favicon');
-                    FrontendSettings::imageUpload($data, $favicon['data'], 'favicon');
+                    FrontendSettingsServices::imageDelete($data, 'favicon');
+                    FrontendSettingsServices::imageUpload($data, $favicon['data'], 'favicon');
                 }
-
             }
         }
 
         if($data && count($request->logo) == 0){
-            FrontendSettings::imageDelete($data, 'logo');
+            FrontendSettingsServices::imageDelete($data, 'logo');
         }
 
         if($data && count($request->logo) > 0){
             foreach ($request->logo as $logo) {
                 if(isset($logo['data'])){
-                    FrontendSettings::imageDelete($data, 'logo');
-                    FrontendSettings::imageUpload($data, $logo['data'], 'logo');
+                    FrontendSettingsServices::imageDelete($data, 'logo');
+                    FrontendSettingsServices::imageUpload($data, $logo['data'], 'logo');
                 }
             }
         }

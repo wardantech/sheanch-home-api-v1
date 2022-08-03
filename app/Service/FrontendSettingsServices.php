@@ -2,10 +2,8 @@
 
 namespace App\Service;
 
-use App\Traits\ResponseTrait;
 
-
-class FrontendSettings
+class FrontendSettingsServices
 {
 
     /**

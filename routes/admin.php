@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\Accounts\BankController;
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Property\LeaseController;
-use App\Http\Controllers\Admin\Property\PropertyAdManagerController;
+use App\Http\Controllers\Admin\Property\PropertyAdController;
 use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
@@ -135,11 +135,11 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('delete/{id}',[PropertyController::class, 'destroy']);
 
         Route::group(['prefix' => 'ad'], function() {
-            Route::post('store', [PropertyAdManagerController::class, 'store']);
-            Route::post('get-property-as-landlord', [PropertyAdManagerController::class, 'getPropertyAsLandlord']);
-            Route::post('list', [PropertyAdManagerController::class,'getList']);
-            Route::post('change-status/{id}',[PropertyAdManagerController::class, 'changeStatus']);
-            Route::post('delete/{id}',[PropertyAdManagerController::class, 'destroy']);
+            Route::post('store', [PropertyAdController::class, 'store']);
+            Route::post('get-property-as-landlord', [PropertyAdController::class, 'getPropertyAsLandlord']);
+            Route::post('list', [PropertyAdController::class,'getList']);
+            Route::post('change-status/{id}',[PropertyAdController::class, 'changeStatus']);
+            Route::post('delete/{id}',[PropertyAdController::class, 'destroy']);
         });
 
         //Lease route
