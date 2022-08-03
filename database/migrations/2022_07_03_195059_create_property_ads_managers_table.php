@@ -17,10 +17,9 @@ return new class extends Migration
             $table->id();
             $table->integer('status');
             $table->string('start_date')->index();
+            $table->string('end_date')->index();
             $table->integer('property_id')->index();
             $table->integer('landlord_id')->index();
-            $table->integer('lease_type')->nullable()->index()->comment('1 for commercial, 2 for residential');
-            $table->integer('sale_type')->index()->comment('1 for rent, 2 for sale');
             $table->double('security_money')->nullable();
             $table->double('rent_amount');
             $table->integer('created_by')->nullable();
