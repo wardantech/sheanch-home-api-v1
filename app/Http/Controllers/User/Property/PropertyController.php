@@ -95,7 +95,7 @@ class PropertyController extends Controller
             $property->landlord_id = $request->landlord_id;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
-            $property->lease_type = $request->lease_type;
+            $property->property_category = $request->property_category;
             $property->sale_type = $request->sale_type;
             $property->house_no = $request->house_no;
             $property->address = $request->address;
