@@ -54,6 +54,8 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('show/{id}', [PropertyController::class, 'show'])->withoutMiddleware(['auth:api']);
         Route::get('get-property-type', [PropertyController::class, 'getPropertyTypes'])->withoutMiddleware(['auth:api']);
         Route::post('get-create-data', [PropertyController::class, 'create']);
+        Route::post('edit', [PropertyController::class, 'edit']);
+        Route::post('update/{id}', [PropertyController::class, 'update']);
 
 
         Route::group(['prefix' => 'ad'], function() {
