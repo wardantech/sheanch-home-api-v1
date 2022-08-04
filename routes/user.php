@@ -7,6 +7,7 @@ use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Property\LeaseController;
 use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyController;
+use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -76,3 +77,4 @@ Route::group(['middleware' => ['auth:api']], function(){
     });
 });
 
+Route::post('get-general-setting', [GeneralSettingController::class, 'getData']);
