@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('name');
             $table->longText('image')->nullable();
             $table->string('zip_code')->index();
+            $table->text('video_link')->nullable();
             $table->text('address');
             $table->integer('bed_rooms')->nullable();
             $table->integer('bath_rooms')->nullable();

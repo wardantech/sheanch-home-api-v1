@@ -79,6 +79,7 @@ class PropertyController extends Controller
             'area_size' => 'integer|nullable',
             'rent_amount' => 'required',
             'security_money' => 'required',
+            'video_link' => 'nullable',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -101,6 +102,7 @@ class PropertyController extends Controller
             $property->property_category = $request->property_category;
             $property->sale_type = $request->sale_type;
             $property->house_no = $request->house_no;
+            $property->video_link = $request->video_link;
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;
@@ -196,6 +198,7 @@ class PropertyController extends Controller
             'description' => 'string|nullable',
             'status' => 'integer|nullable',
             'security_money' => 'required',
+            'video_link' => 'nullable',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -218,6 +221,7 @@ class PropertyController extends Controller
             $property->property_category = $request->property_category;
             $property->sale_type = $request->sale_type;
             $property->house_no = $request->house_no;
+            $property->video_link = $request->video_link;
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;

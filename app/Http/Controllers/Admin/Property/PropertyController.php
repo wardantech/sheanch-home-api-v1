@@ -104,6 +104,7 @@ class PropertyController extends Controller
             'status' => 'required|integer',
             'security_money' => 'required',
             'landlord_id' => 'integer',
+            'video_link' => 'nullable',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -127,6 +128,7 @@ class PropertyController extends Controller
             $property->property_category = $request->property_category;
             $property->sale_type = $request->sale_type;
             $property->house_no = $request->house_no;
+            $property->video_link = $request->video_link;
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;
@@ -167,7 +169,8 @@ class PropertyController extends Controller
     public function show($id)
     {
         try {
-            $property = Property::with('thana', 'district', 'division', 'propertyType', 'landlord')->findOrFail($id);
+            $property = Property::with('thana', 'district', 'division', 'propertyType', 'landlord', 'media')
+                ->findOrFail($id);
 
             return $this->sendResponse($property, 'Property data get successfully');
         } catch (\Exception $exception) {
@@ -260,6 +263,7 @@ class PropertyController extends Controller
             'description' => 'string|nullable',
             'status' => 'integer|nullable',
             'security_money' => 'required',
+            'video_link' => 'nullable',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -282,6 +286,7 @@ class PropertyController extends Controller
             $property->property_category = $request->property_category;
             $property->sale_type = $request->sale_type;
             $property->house_no = $request->house_no;
+            $property->video_link = $request->video_link;
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;
