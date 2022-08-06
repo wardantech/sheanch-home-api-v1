@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 class GeneralSettingController extends Controller
 {
-    public function getData()
+    public function getGeneralSettingImages(Request $request)
     {
         try {
             $general = FrontendSetting::first();
-            $logo = $general->getMedia('logo');
+            $logo = $general->getMedia($request->data);
             $url = $logo[0]->getFullUrl();
 
             if(!$general) {
