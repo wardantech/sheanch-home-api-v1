@@ -62,7 +62,7 @@ class PropertyAdController extends Controller
      */
     public function store(Request $request)
     {
-
+        return $request->input();
         //--- Validation Section Start ---//
         $rules = [
             'landlord_id' => 'required',
@@ -84,16 +84,20 @@ class PropertyAdController extends Controller
 
             $PropertyAd->landlord_id = $request->landlord_id;
             $PropertyAd->property_id = $request->property_id;
+            $PropertyAd->property_category = $request->property_category_id;
+            $PropertyAd->division_id = $request->division_id;
+            $PropertyAd->district_id = $request->district_id;
+            $PropertyAd->thana_id = $request->thana_id;
             $PropertyAd->rent_amount = $request->rent_amount;
-            $PropertyAd->sale_type = $request->sale_type;
             $PropertyAd->security_money = $request->security_money;
             $PropertyAd->description = $request->description;
             $PropertyAd->start_date = $request->start_date;
+            $PropertyAd->end_date = $request->end_date;
             $PropertyAd->status = 0;
             $PropertyAd->created_by = Auth::id();
             $PropertyAd->save();
 
-            return $this->sendResponse(['id' => $PropertyAd->id], 'Property create successfully');
+            return $this->sendResponse(['id' => $PropertyAd->id], 'Property Ad create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
