@@ -108,7 +108,7 @@ class PropertyController extends Controller
             $property->area_size = $request->area_size;
             $property->rent_amount = $request->rent_amount;
             $property->description = $request->description;
-            $property->status = 0;
+            $property->status = 1;
             $property->security_money = $request->security_money;
             $property->utilities = json_encode($request->utilities);
             $property->facilities = json_encode($request->facilities);
