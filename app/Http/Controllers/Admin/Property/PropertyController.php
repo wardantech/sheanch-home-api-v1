@@ -167,7 +167,8 @@ class PropertyController extends Controller
     public function show($id)
     {
         try {
-            $property = Property::with('thana', 'district', 'division', 'propertyType', 'landlord')->findOrFail($id);
+            $property = Property::with('thana', 'district', 'division', 'propertyType', 'landlord', 'media')
+                ->findOrFail($id);
 
             return $this->sendResponse($property, 'Property data get successfully');
         } catch (\Exception $exception) {
