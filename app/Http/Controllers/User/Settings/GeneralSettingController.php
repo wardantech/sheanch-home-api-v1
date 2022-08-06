@@ -12,19 +12,26 @@ class GeneralSettingController extends Controller
     {
         try {
             $general = FrontendSetting::first();
-            $logo = $general->getMedia($request->data);
-            $url = $logo[0]->getFullUrl();
 
-            if(!$general) {
+            if($general){
+                $logo = $general->getMedia($request->data);
+                if(count($logo) > 0){
+                    $url = $logo[0]->getFullUrl();
+                }else {
+                    $url = 'https://i.ibb.co/1MFFM3W/Image-not-available.png';
+                }
+            }else {
                 return [
                     'status' => false,
+                    'image' => 'Image Not Found',
                     'data' => 'Data Not Found'
                 ];
             }
 
             return [
                 'status' => true,
-                'data' => $url
+                'image' => $url,
+                'data' => $general
             ];
 
         }catch (\Exception $exception) {
