@@ -21,6 +21,9 @@ class FrontendSettingsServices
         elseif($type == 'logo'){
             $images = $data->getMedia('logo');
         }
+        elseif($type == 'footerLogo'){
+            $images = $data->getMedia('footerLogo');
+        }
 
         if(count($images) > 0){
             foreach ($images as $image) {

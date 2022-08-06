@@ -77,4 +77,4 @@ Route::group(['middleware' => ['auth:api']], function(){
     });
 });
 
-Route::post('get-general-setting', [GeneralSettingController::class, 'getData']);
+Route::post('get-general-setting-images', [GeneralSettingController::class, 'getGeneralSettingImages']);

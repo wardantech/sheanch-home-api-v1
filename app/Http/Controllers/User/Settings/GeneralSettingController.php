@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 
 class GeneralSettingController extends Controller
 {
-    public function getData()
+    public function getGeneralSettingImages(Request $request)
     {
         try {
-            $general = FrontendSetting::with('media')->first();
+            $general = FrontendSetting::first();
+            $logo = $general->getMedia($request->data);
+            $url = $logo[0]->getFullUrl();
 
             if(!$general) {
                 return [
@@ -22,7 +24,7 @@ class GeneralSettingController extends Controller
 
             return [
                 'status' => true,
-                'data' => $general
+                'data' => $url
             ];
 
         }catch (\Exception $exception) {

@@ -45,7 +45,7 @@ class FrontendSettingController extends Controller
 
     public function store(Request $request)
     {
-        //return $request->input();
+//        return $request->footerLogo;
         //--- Validation Section Start ---//
         $rules = [
             'email' => 'required',
@@ -59,7 +59,7 @@ class FrontendSettingController extends Controller
         }
         //--- Validation Section Ends  ---//
 
-        try {
+        //try {
             // Store Property
             $data = FrontendSetting::first();
 
@@ -73,23 +73,20 @@ class FrontendSettingController extends Controller
 
                 $this->storeSettingsImages($frontendSetting, $request);
 
-
             } else {
-
                 $data->email = $request->email;
                 $data->phone = $request->phone;
                 $data->address = $request->address;
                 $data->update();
 
                 $this->updateSettingsImages($data, $request);
-
             }
 
             return $this->sendResponse('', 'Frontend general setting updated successfully');
 
-        } catch (\Exception $exception) {
-            return $this->sendError('Frontend general setting store error', ['error' => $exception->getMessage()]);
-        }
+//        } catch (\Exception $exception) {
+//            return $this->sendError('Frontend general setting store error', ['error' => $exception->getMessage()]);
+//        }
     }
 
     private function storeSettingsImages($frontendSetting, $request){
@@ -110,14 +107,21 @@ class FrontendSettingController extends Controller
                 FrontendSettingsServices::imageUpload($frontendSetting, $image['data'], 'logo');
             }
         }
+
+        if ($frontendSetting && count($request->footerLogo) > 0) {
+            foreach ($request->footerLogo as $image) {
+                FrontendSettingsServices::imageUpload($frontendSetting, $image['data'], 'footerLogo');
+            }
+        }
     }
 
     private function updateSettingsImages($data, $request){
+        // Banner Image
         if($data && count($request->bannerImage) == 0){
             FrontendSettingsServices::imageDelete($data, 'banner');
         }
 
-        if($data && count($request->bannerImage) > 0){
+        if($data && count($request->bannerImage) > 0) {
             foreach ($request->bannerImage as $bannerImage) {
                 if(isset($bannerImage['data'])){
                     FrontendSettingsServices::imageDelete($data,'banner');
@@ -126,11 +130,12 @@ class FrontendSettingController extends Controller
             }
         }
 
+        // Title Favicon
         if($data && count($request->favicon) == 0){
             FrontendSettingsServices::imageDelete($data, 'favicon');
         }
 
-        if($data && count($request->favicon) > 0){
+        if($data && count($request->favicon) > 0) {
             foreach ($request->favicon as $favicon) {
                 if(isset($favicon['data'])){
                     FrontendSettingsServices::imageDelete($data, 'favicon');
@@ -139,6 +144,7 @@ class FrontendSettingController extends Controller
             }
         }
 
+        // Header Logo
         if($data && count($request->logo) == 0){
             FrontendSettingsServices::imageDelete($data, 'logo');
         }
@@ -151,7 +157,19 @@ class FrontendSettingController extends Controller
                 }
             }
         }
+
+        // Footer Logo
+        if($data && count($request->footerLogo) == 0){
+            FrontendSettingsServices::imageDelete($data, 'footerLogo');
+        }
+
+        if($data && count($request->footerLogo) > 0){
+            foreach ($request->footerLogo as $footerLogo) {
+                if(isset($footerLogo['data'])){
+                    FrontendSettingsServices::imageDelete($data, 'footerLogo');
+                    FrontendSettingsServices::imageUpload($data, $footerLogo['data'], 'footerLogo');
+                }
+            }
+        }
     }
-
-
 }
