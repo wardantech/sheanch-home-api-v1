@@ -322,4 +322,22 @@ class PropertyController extends Controller
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Show property details
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function details($id)
+    {
+        try {
+            $property = Property::with('thana', 'district', 'division', 'propertyType', 'landlord', 'media')
+                ->findOrFail($id);
+
+            return $this->sendResponse($property, 'Property data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
 }
