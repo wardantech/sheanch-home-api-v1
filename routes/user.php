@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\Profile\ProfileController;
 use App\Http\Controllers\User\Property\LeaseController;
 use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyController;
@@ -75,7 +76,13 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::group(['prefix' => 'lease'], function(){
         Route::post('store', [LeaseController::class, 'store']);
         Route::post('list', [LeaseController::class, 'getList']);
+    });
 
+    //Lease route
+    Route::group(['prefix' => 'profile'], function(){
+        Route::post('landlord', [ProfileController::class, 'getLandlordData']);
+        Route::post('landlord/update/{id}', [ProfileController::class, 'update']);
+        Route::post('landlord/image-upload/{id}', [ProfileController::class, 'imageUpload']);
     });
 });
 
