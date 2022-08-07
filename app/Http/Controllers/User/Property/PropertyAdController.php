@@ -62,7 +62,7 @@ class PropertyAdController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->input();
+        //return $request->input();
         //--- Validation Section Start ---//
         $rules = [
             'landlord_id' => 'required',
@@ -85,6 +85,8 @@ class PropertyAdController extends Controller
             $PropertyAd->landlord_id = $request->landlord_id;
             $PropertyAd->property_id = $request->property_id;
             $PropertyAd->property_category = $request->property_category_id;
+            $PropertyAd->property_type_id = $request->property_type_id;
+            $PropertyAd->sale_type = $request->sale_type;
             $PropertyAd->division_id = $request->division_id;
             $PropertyAd->district_id = $request->district_id;
             $PropertyAd->thana_id = $request->thana_id;

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('end_date')->index();
             $table->integer('property_id')->index();
             $table->integer('property_category')->index();
-            $table->integer('property_type')->index();
+            $table->integer('property_type_id')->index();
             $table->integer('sale_type')->index();
             $table->double('security_money')->nullable();
             $table->double('rent_amount');
