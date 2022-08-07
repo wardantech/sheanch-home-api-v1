@@ -18,12 +18,12 @@ class GeneralSettingController extends Controller
                 if(count($logo) > 0){
                     $url = $logo[0]->getFullUrl();
                 }else {
-                    $url = 'https://i.ibb.co/1MFFM3W/Image-not-available.png';
+                    $url = 'https://flood-ffwc.rimes.int/images/err.image.png';
                 }
             }else {
                 return [
                     'status' => false,
-                    'image' => 'https://i.ibb.co/1MFFM3W/Image-not-available.png',
+                    'image' => 'https://flood-ffwc.rimes.int/images/err.image.png',
                     'data' => 'Data Not Found'
                 ];
             }
