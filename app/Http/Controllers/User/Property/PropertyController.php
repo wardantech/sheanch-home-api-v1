@@ -64,6 +64,7 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
+        //return $request->input();
         //--- Validation Section Start ---//
         $rules = [
             'thana_id' => 'required',
