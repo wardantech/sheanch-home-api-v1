@@ -82,9 +82,15 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     //Lease route
     Route::group(['prefix' => 'profile'], function(){
+        // For landlord
         Route::post('landlord', [ProfileController::class, 'getLandlordData']);
-        Route::post('landlord/update/{id}', [ProfileController::class, 'update']);
+        Route::post('landlord/update/{id}', [ProfileController::class, 'landlordUpdate']);
         Route::post('landlord/image-upload/{id}', [ProfileController::class, 'imageUpload']);
+
+        // For Tenant
+        Route::post('tenant', [ProfileController::class, 'getTenantData']);
+        Route::post('tenant/update/{id}', [ProfileController::class, 'TenantUpdate']);
+        Route::post('tenant/tenant-image-upload/{id}', [ProfileController::class, 'tenantImageUpload']);
     });
 });
 

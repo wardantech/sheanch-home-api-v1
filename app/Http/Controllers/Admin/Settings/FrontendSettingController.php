@@ -96,11 +96,11 @@ class FrontendSettingController extends Controller
             }
         }
 
-        if ($frontendSetting && count($request->favicon) > 0) {
-            foreach ($request->favicon as $image) {
-                FrontendSettingsServices::imageUpload($frontendSetting, $image['data'], 'favicon');
-            }
-        }
+//        if ($frontendSetting && count($request->favicon) > 0) {
+//            foreach ($request->favicon as $image) {
+//                FrontendSettingsServices::imageUpload($frontendSetting, $image['data'], 'favicon');
+//            }
+//        }
 
         if ($frontendSetting && count($request->logo) > 0) {
             foreach ($request->logo as $image) {
@@ -131,18 +131,18 @@ class FrontendSettingController extends Controller
         }
 
         // Title Favicon
-        if($data && count($request->favicon) == 0){
-            FrontendSettingsServices::imageDelete($data, 'favicon');
-        }
+//        if($data && count($request->favicon) == 0){
+//            FrontendSettingsServices::imageDelete($data, 'favicon');
+//        }
 
-        if($data && count($request->favicon) > 0) {
-            foreach ($request->favicon as $favicon) {
-                if(isset($favicon['data'])){
-                    FrontendSettingsServices::imageDelete($data, 'favicon');
-                    FrontendSettingsServices::imageUpload($data, $favicon['data'], 'favicon');
-                }
-            }
-        }
+//        if($data && count($request->favicon) > 0) {
+//            foreach ($request->favicon as $favicon) {
+//                if(isset($favicon['data'])){
+//                    FrontendSettingsServices::imageDelete($data, 'favicon');
+//                    FrontendSettingsServices::imageUpload($data, $favicon['data'], 'favicon');
+//                }
+//            }
+//        }
 
         // Header Logo
         if($data && count($request->logo) == 0){
