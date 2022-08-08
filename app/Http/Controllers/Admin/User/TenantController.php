@@ -136,6 +136,7 @@ class TenantController extends Controller
             $user = new User();
             $user->email = $request->email;
             $user->mobile = $request->mobile;
+            $user->tenant_id = $tenant->id;
             $user->name = $request->name;
             $user->status = $request->status;
             $user->type = 3; //Tenant
