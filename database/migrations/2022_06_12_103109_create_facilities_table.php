@@ -16,7 +16,6 @@ return new class extends Migration
     {
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(FacilityCategory::class);
             $table->string('name');
             $table->longText('description')->nullable();
             $table->integer('status')->index()->default(1)->comment('1-active,0-deactivated');

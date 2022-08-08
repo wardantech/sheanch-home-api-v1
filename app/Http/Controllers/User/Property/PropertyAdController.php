@@ -122,6 +122,24 @@ class PropertyAdController extends Controller
         }
     }
 
+    public function getPropertyEditData(Request $request){
+
+        try {
+            $PropertyAd = PropertyAd::findOrFail($request->id);
+            $properties = Property::where('landlord_id', $request->landlordId)
+                ->where('status', true)->get();
+
+            $data = [
+              'propertyAd' =>  $PropertyAd,
+              'properties' =>  $properties,
+            ];
+
+            return $this->sendResponse($data, 'Property Ad data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property Ad data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
     /**
      *
      * @param Request $request
@@ -131,26 +149,13 @@ class PropertyAdController extends Controller
 
     public function update(Request $request, $id)
     {
+        //return $request->input();
         //--- Validation Section Start ---//
         $rules = [
-            'thana_id' => 'required',
-            'district_id' => 'required',
-            'division_id' => 'required',
-            'name' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:255',
-            'address' => 'required|string',
-            'bed_rooms' => 'integer|nullable',
-            'bath_rooms' => 'integer|nullable',
-            'units' => 'integer|nullable',
-            'area_size' => 'integer|nullable',
-            'rent_amount' => 'required',
-            'description' => 'string|nullable',
-            'status' => 'integer|nullable',
+            'landlord_id' => 'required',
             'security_money' => 'required',
-            'utilities_paid_by_landlord' => 'nullable|string',
-            'facilities_paid_by_landlord' => 'nullable|string',
-            'utilities_paid_by_tenant' => 'nullable|string',
-            'facilities_paid_by_tenant' => 'nullable|string',
+            'start_date' => 'required',
+            'property_id' => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -159,34 +164,29 @@ class PropertyAdController extends Controller
         }
         //--- Validation Section Ends  ---//
 
+
         try {
-            // Update Property
+            // Store Property
             $PropertyAd = PropertyAd::findOrFail($id);
 
-            $PropertyAd->thana_id = $request->thana_id;
-            $PropertyAd->district_id = $request->district_id;
+            $PropertyAd->property_id = $request->property_id;
+            $PropertyAd->property_category = $request->property_category_id;
+            $PropertyAd->property_type_id = $request->property_type_id;
+            $PropertyAd->sale_type = $request->sale_type;
             $PropertyAd->division_id = $request->division_id;
-            $PropertyAd->name = $request->name;
-            $PropertyAd->zip_code = $request->zip_code;
-            $PropertyAd->address = $request->address;
-            $PropertyAd->bed_rooms = $request->bed_rooms;
-            $PropertyAd->bath_rooms = $request->bath_rooms;
-            $PropertyAd->units = $request->units;
-            $PropertyAd->area_size = $request->area_size;
+            $PropertyAd->district_id = $request->district_id;
+            $PropertyAd->thana_id = $request->thana_id;
             $PropertyAd->rent_amount = $request->rent_amount;
-            $PropertyAd->description = $request->description;
-            $PropertyAd->status = $request->status;
             $PropertyAd->security_money = $request->security_money;
-            $PropertyAd->utilities_paid_by_landlord = $request->utilities_paid_by_landlord;
-            $PropertyAd->facilities_paid_by_landlord = $request->facilities_paid_by_landlord;
-            $PropertyAd->utilities_paid_by_tenant = $request->utilities_paid_by_tenant;
-            $PropertyAd->facilities_paid_by_tenant = $request->facilities_paid_by_tenant;
-            $PropertyAd->created_by = Auth::id();
+            $PropertyAd->description = $request->description;
+            $PropertyAd->start_date = $request->start_date;
+            $PropertyAd->end_date = $request->end_date;
+            $PropertyAd->updated_by = Auth::id();
             $PropertyAd->update();
 
-            return $this->sendResponse(['id' => $PropertyAd->id], 'Property updated successfully');
+            return $this->sendResponse(['id' => $PropertyAd->id], 'Property Ad update successfully');
         } catch (\Exception $exception) {
-            return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Property Ad update error', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -221,10 +221,10 @@ class PropertyAdController extends Controller
     public function getPropertyAsLandlord(Request $request)
     {
         try {
-            $landlords = Property::where('landlord_id', $request->landlordId)
+            $properties = Property::where('landlord_id', $request->landlordId)
                 ->where('status', true)->get();
 
-            return $this->sendResponse($landlords, 'Landlord list');
+            return $this->sendResponse($properties, 'Landlord list');
 
         } catch (\Exception $exception) {
 
@@ -238,6 +238,4 @@ class PropertyAdController extends Controller
             ->get();
         return $activePropertyAds;
     }
-
-
 }

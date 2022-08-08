@@ -11,8 +11,4 @@ class Facility extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function facilityCategory(): BelongsTo
-    {
-        return $this->belongsTo(FacilityCategory::class, 'facility_category_id', 'id')->withTrashed();
-    }
 }

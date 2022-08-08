@@ -65,8 +65,6 @@ class FacilityController extends Controller
         //--- Validation Section Start ---//
         $rules = [
             'name' => 'required|string|max:255',
-            'facility_category_id' => 'required',
-            'description' => 'string'
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -81,7 +79,6 @@ class FacilityController extends Controller
             $utility->name = $request->name;
             $utility->description = $request->description;
             $utility->status = $request->status;
-            $utility->facility_category_id = $request->facility_category_id;
             $utility->created_by = Auth::user()->id;
             $utility->save();
 
@@ -121,8 +118,6 @@ class FacilityController extends Controller
         //--- Validation Section Start ---//
         $rules = [
             'name' => 'required|string|max:255',
-            'facility_category_id' => 'required',
-            'description' => 'string'
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -137,7 +132,6 @@ class FacilityController extends Controller
             $utility->name = $request->name;
             $utility->description = $request->description;
             $utility->status = $request->status;
-            $utility->facility_category_id = $request->facility_category_id;
             $utility->updated_by = Auth::user()->id;
             $utility->update();
 
@@ -148,34 +142,13 @@ class FacilityController extends Controller
     }
 
     /**
-     * Get all categories
-     */
-
-    public function getCategories()
-    {
-        try {
-            $facilityCategories = FacilityCategory::where('status', true)->get();
-
-            return $this->sendResponse($facilityCategories, 'Facility categories list');
-
-        } catch (\Exception $exception) {
-
-            return $this->sendError('Facility categories list.', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
      * Get all facilities
      */
 
     public function getFacilities()
     {
         try {
-            $facility = FacilityCategory::where('status', 1)
-                ->with(['facilities' => function ($query) {
-                    $query->where('status', 1);
-                    $query->select(['id', 'name', 'facility_category_id']);
-                }])->get(['id','name']);
+            $facility = Facility::where('status', 1)->get(['id','name']);
             return $this->sendResponse($facility, 'Facility list');
 
         } catch (\Exception $exception) {

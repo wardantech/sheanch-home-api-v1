@@ -24,10 +24,10 @@ return new class extends Migration
             $table->integer('property_type_id')->index();
             $table->integer('sale_type')->index();
             $table->double('security_money')->nullable();
-            $table->double('rent_amount');
-            $table->integer('division_id');
-            $table->integer('district_id');
-            $table->integer('thana_id');
+            $table->double('rent_amount')->index();
+            $table->integer('division_id')->index();
+            $table->integer('district_id')->index();
+            $table->integer('thana_id')->index();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->text('description')->nullable();
