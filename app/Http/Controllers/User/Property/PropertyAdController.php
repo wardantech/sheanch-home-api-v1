@@ -66,7 +66,7 @@ class PropertyAdController extends Controller
         //--- Validation Section Start ---//
         $rules = [
             'landlord_id' => 'required',
-            'security_money' => 'required',
+            'rent_amount' => 'required',
             'start_date' => 'required',
             'property_id' => 'required',
         ];
@@ -153,7 +153,7 @@ class PropertyAdController extends Controller
         //--- Validation Section Start ---//
         $rules = [
             'landlord_id' => 'required',
-            'security_money' => 'required',
+            'rent_amount' => 'required',
             'start_date' => 'required',
             'property_id' => 'required',
         ];

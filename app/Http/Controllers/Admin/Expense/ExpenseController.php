@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Admin\Expense;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Expense\Expense;
 use App\Models\Expense\ExpenseCategory;
-use App\Models\Settings\FacilityCategory;
 use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Support\Facades\Validator;
