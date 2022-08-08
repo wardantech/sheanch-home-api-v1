@@ -7,18 +7,15 @@ use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Property\LeaseController;
 use App\Http\Controllers\Admin\Property\PropertyAdController;
 use App\Http\Controllers\Admin\Property\PropertyController;
-use App\Http\Controllers\Admin\Settings\FacilityCategoryController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Settings\FrontendSettingController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\Admin\Settings\PropertyTypeController;
-use App\Http\Controllers\Admin\Settings\UtilityCategoryController;
 use App\Http\Controllers\Admin\Settings\UtilityController;
 use App\Http\Controllers\Admin\User\AdminController;
 use App\Http\Controllers\Admin\User\LandlordController;
 use App\Http\Controllers\Admin\User\TenantController;
 use App\Http\Controllers\Auth\AuthController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -63,7 +60,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('update/{id}',[LandlordController::class,'update']);
         Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
         Route::get('get-landlords',[LandlordController::class,'getLandlords']);
-
         Route::post('change-status/{id}',[LandlordController::class, 'changeStatus']);
         Route::post('delete/{id}',[LandlordController::class, 'destroy']);
     });
@@ -130,7 +126,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('get-create-data', [PropertyController::class, 'create']);
         Route::post('list', [PropertyController::class,'getList']);
         Route::post('change-status/{id}',[PropertyController::class, 'changeStatus']);
-        //Route::post('image-upload/{id}',[PropertyController::class,'imageUpload']);
         Route::post('update/{id}',[PropertyController::class, 'update']);
         Route::post('delete/{id}',[PropertyController::class, 'destroy']);
 
@@ -138,7 +133,9 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('store', [PropertyAdController::class, 'store']);
             Route::post('get-property-as-landlord', [PropertyAdController::class, 'getPropertyAsLandlord']);
             Route::post('list', [PropertyAdController::class,'getList']);
+            Route::post('get-property-edit-data', [PropertyAdController::class,'getPropertyEditData']);
             Route::post('change-status/{id}',[PropertyAdController::class, 'changeStatus']);
+            Route::post('update/{id}',[PropertyAdController::class, 'update']);
             Route::post('delete/{id}',[PropertyAdController::class, 'destroy']);
         });
 

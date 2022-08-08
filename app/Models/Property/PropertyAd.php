@@ -3,7 +3,6 @@
 namespace App\Models\Property;
 
 use App\Models\Landlord;
-use App\Models\Settings\UtilityCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
