@@ -11,8 +11,4 @@ class Utility extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function utilityCategory(): BelongsTo
-    {
-        return $this->belongsTo(UtilityCategory::class, 'utility_category_id', 'id')->withTrashed();
-    }
 }

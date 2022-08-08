@@ -64,8 +64,6 @@ class UtilityController extends Controller
         //--- Validation Section Start ---//
         $rules = [
             'name' => 'required|string|max:255',
-            'utility_category_id' => 'required',
-            'description' => 'string'
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -80,7 +78,6 @@ class UtilityController extends Controller
             $utility->name = $request->name;
             $utility->description = $request->description;
             $utility->status = $request->status;
-            $utility->utility_category_id = $request->utility_category_id;
             $utility->created_by = Auth::user()->id;
             $utility->save();
 
@@ -121,8 +118,6 @@ class UtilityController extends Controller
         //--- Validation Section Start ---//
         $rules = [
             'name' => 'required|string|max:255',
-            'utility_category_id' => 'required',
-            'description' => 'string'
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -137,7 +132,6 @@ class UtilityController extends Controller
             $utility->name = $request->name;
             $utility->description = $request->description;
             $utility->status = $request->status;
-            $utility->utility_category_id = $request->utility_category_id;
             $utility->updated_by = Auth::user()->id;
             $utility->update();
 
@@ -151,27 +145,17 @@ class UtilityController extends Controller
      * Get all categories
      */
 
-    public function getCategories()
-    {
-        try {
-            $utilityCategories = UtilityCategory::where('status', true)->get();
-
-            return $this->sendResponse($utilityCategories, 'Utility categories list');
-
-        } catch (\Exception $exception) {
-
-            return $this->sendError('Utility categories list.', ['error' => $exception->getMessage()]);
-        }
-    }
 
     public function getUtilities()
     {
         try {
-            $utility = UtilityCategory::where('status', 1)
-                ->with(['utilities' => function ($query) {
-                    $query->where('status', 1);
-                    $query->select(['id', 'name', 'utility_category_id']);
-                }])->get(['id','name']);
+//            $utility = UtilityCategory::where('status', 1)
+//                ->with(['utilities' => function ($query) {
+//                    $query->where('status', 1);
+//                    $query->select(['id', 'name', 'utility_category_id']);
+//                }])->get(['id','name']);
+
+            $utility = Utility::where('status', 1)->get(['id','name']);
 
             return $this->sendResponse($utility, 'Utility list');
 

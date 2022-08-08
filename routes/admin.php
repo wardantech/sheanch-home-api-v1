@@ -167,20 +167,10 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //facility route
         Route::group(['prefix' => 'facility'], function(){
-            // Facility category
-            Route::group(['prefix' => 'category'], function() {
-                Route::post('/', [FacilityCategoryController::class, 'store']);
-                Route::post('list', [FacilityCategoryController::class, 'getList']);
-                Route::get('show/{id}',[FacilityCategoryController::class, 'show']);
-                Route::post('update/{id}',[FacilityCategoryController::class, 'update']);
-                Route::post('change-status/{id}',[FacilityCategoryController::class, 'changeStatus']);
-                Route::post('delete/{id}',[FacilityCategoryController::class, 'destroy']);
-            });
 
             // Facility
             Route::post('/', [FacilityController::class, 'store']);
             Route::post('list', [FacilityController::class,'getList']);
-            Route::get('get-categories', [FacilityController::class, 'getCategories']);
             Route::get('show/{id}',[FacilityController::class, 'show']);
             Route::post('update/{id}',[FacilityController::class, 'update']);
             Route::get('get-facilities',[FacilityController::class, 'getFacilities']);
@@ -190,20 +180,10 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //Utility route
         Route::group(['prefix' => 'utility'], function(){
-            // Utility Category
-            Route::group(['prefix' => 'category'], function() {
-                Route::post('/', [UtilityCategoryController::class, 'store']);
-                Route::post('list', [UtilityCategoryController::class, 'getList']);
-                Route::get('show/{id}',[UtilityCategoryController::class, 'show']);
-                Route::post('update/{id}',[UtilityCategoryController::class, 'update']);
-                Route::post('change-status/{id}',[UtilityCategoryController::class, 'changeStatus']);
-                Route::post('delete/{id}',[UtilityCategoryController::class, 'destroy']);
-            });
 
             // Utility
             Route::post('/', [UtilityController::class, 'store']);
             Route::post('list', [UtilityController::class,'getList']);
-            Route::get('get-categories', [UtilityController::class, 'getCategories']);
             Route::get('show/{id}',[UtilityController::class, 'show']);
             Route::post('update/{id}',[UtilityController::class, 'update']);
             Route::get('get-utilities',[UtilityController::class, 'getUtilities']);
