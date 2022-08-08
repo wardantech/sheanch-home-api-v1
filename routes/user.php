@@ -91,6 +91,9 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('tenant', [ProfileController::class, 'getTenantData']);
         Route::post('tenant/update/{id}', [ProfileController::class, 'TenantUpdate']);
         Route::post('tenant/tenant-image-upload/{id}', [ProfileController::class, 'tenantImageUpload']);
+
+        // Update password
+        Route::post('landlord/password', [ProfileController::class, 'updatePassword']);
     });
 });
 

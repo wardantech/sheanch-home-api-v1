@@ -11,9 +11,11 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -204,8 +206,8 @@ class ProfileController extends Controller
         if ($validator->fails()) {
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
         }
-
         // Tenants Validation End
+
         DB::beginTransaction();
         try {
             // Tenant Update
@@ -266,6 +268,48 @@ class ProfileController extends Controller
         }
         catch (\Exception $exception){
             return $this->sendError('Tenant Image error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * User password change logic
+     * @param Request $request
+     * @return array|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+
+    public function updatePassword(Request $request)
+    {
+        // Password Validation
+        $rules = [
+            'currentPassword' => 'required',
+            'password' => 'required|confirmed'
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
+        }
+        // Password Validation End
+
+        try {
+            $hashedPassword = Auth::user()->password;
+
+            if (Hash::check($request->currentPassword, $hashedPassword)) {
+                Auth::user()->update([
+                    'password' => Hash::make($request->password)
+                ]);
+
+                return [
+                    "status"=> true,
+                    "message" => "Password change successfully"
+                ];
+            } else {
+                return [
+                    "status"=> false,
+                    "message" => "Current password not match"
+                ];
+            }
+        }catch (\Exception $exception){
+            return $this->sendError('Password change error', ['error' => $exception->getMessage()]);
         }
     }
 }
