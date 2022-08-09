@@ -11,6 +11,7 @@ use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PropertyAdController extends Controller
@@ -115,6 +116,24 @@ class PropertyAdController extends Controller
     {
         try {
             $PropertyAd = PropertyAd::findOrFail($id);
+
+            return $this->sendResponse($PropertyAd, 'Property data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * Property single data get for or details
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getDetails($id){
+        try {
+            $PropertyAd = PropertyAd::where('id',$id)
+                ->with(['property' => function ($query) {
+                    $query->with('media');
+                }])->get();
 
             return $this->sendResponse($PropertyAd, 'Property data get successfully');
         } catch (\Exception $exception) {
@@ -233,9 +252,18 @@ class PropertyAdController extends Controller
     }
 
     public function getActivePropertyList(){
-        $activePropertyAds = PropertyAd::where('status',1)
-            ->with('property')
-            ->get();
-        return $activePropertyAds;
+
+        try {
+
+            $activePropertyAds = PropertyAd::where('status',1)
+                ->with(['property' => function ($query) {
+                    $query->with('media');
+                }])->get();
+
+            return $this->sendResponse($activePropertyAds, 'Property data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+
     }
 }
