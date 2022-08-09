@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Accounts\AccountController;
 use App\Http\Controllers\Admin\Accounts\BankController;
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
+use App\Http\Controllers\Admin\Pages\FaqController;
 use App\Http\Controllers\Admin\Property\LeaseController;
 use App\Http\Controllers\Admin\Property\PropertyAdController;
 use App\Http\Controllers\Admin\Property\PropertyController;
@@ -209,8 +210,16 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('districts', [GetDivisionDistrictThanaController::class, 'getDistricets']);
             Route::post('thanas', [GetDivisionDistrictThanaController::class, 'getThanas']);
         });
-
     });
 
+    // Pages route
+    Route::group(['prefix' => 'pages'], function() {
+        // Faq route
+        Route::group(['prefix' => 'faq'], function() {
+            Route::post('get-list', [FaqController::class, 'getLists']);
+            Route::post('store', [FaqController::class, 'store']);
+            Route::post('change-status/{id}', [FaqController::class, 'changeStatus']);
+        });
+    });
 
 });
