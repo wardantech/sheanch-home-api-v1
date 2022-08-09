@@ -19,7 +19,11 @@ class PropertyAdController extends Controller
     use ResponseTrait;
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['getActivePropertyList']]);
+        $this->middleware('auth:api',
+            [
+                'except' => ['getActivePropertyList','getDetails']
+            ]
+        );
     }
 
     /**
@@ -133,7 +137,7 @@ class PropertyAdController extends Controller
             $PropertyAd = PropertyAd::where('id',$id)
                 ->with(['property' => function ($query) {
                     $query->with('media');
-                }])->get();
+                }])->first();
 
             return $this->sendResponse($PropertyAd, 'Property data get successfully');
         } catch (\Exception $exception) {
@@ -141,7 +145,7 @@ class PropertyAdController extends Controller
         }
     }
 
-    public function getPropertyEditData(Request $request){
+    public function getEditData(Request $request){
 
         try {
             $PropertyAd = PropertyAd::findOrFail($request->id);
@@ -254,7 +258,6 @@ class PropertyAdController extends Controller
     public function getActivePropertyList(){
 
         try {
-
             $activePropertyAds = PropertyAd::where('status',1)
                 ->with(['property' => function ($query) {
                     $query->with('media');
