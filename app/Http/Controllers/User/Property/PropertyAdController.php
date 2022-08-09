@@ -137,7 +137,8 @@ class PropertyAdController extends Controller
             $PropertyAd = PropertyAd::where('id',$id)
                 ->with(['property' => function ($query) {
                     $query->with('media');
-                }])->first();
+                }])
+                ->first();
 
             return $this->sendResponse($PropertyAd, 'Property data get successfully');
         } catch (\Exception $exception) {
