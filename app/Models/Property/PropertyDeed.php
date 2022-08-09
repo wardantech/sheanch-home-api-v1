@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Lease extends Model
+class PropertyDeed extends Model
 {
     use HasFactory, SoftDeletes;
 

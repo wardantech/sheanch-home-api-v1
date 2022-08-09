@@ -286,13 +286,7 @@ class PropertyController extends Controller
     public function show($id)
     {
         try{
-            $property = Property::findOrFail($id);
-            $property->load('propertyType','landlord');
-            $utility_paid_by_landlord = Utility::whereIn('id',json_decode($property->utilities_paid_by_landlord))->get();
-            $utilities_paid_by_tenant = Utility::whereIn('id',json_decode($property->utilities_paid_by_tenant))->get();
-            $property['utilities_paid_by_landlord'] = $utility_paid_by_landlord;
-            $property['utilities_paid_by_tenant'] = $utilities_paid_by_tenant;
-
+            $property = Property::where('id',$id)->with('propertyType','landlord','media')->first();
             return $this->sendResponse($property,'Property data get successfully');
         }
         catch (\Exception $exception){
