@@ -17,11 +17,12 @@ use Illuminate\Support\Facades\Validator;
 class PropertyAdController extends Controller
 {
     use ResponseTrait;
+
     public function __construct()
     {
         $this->middleware('auth:api',
             [
-                'except' => ['getActivePropertyList','getDetails']
+                'except' => ['getActivePropertyList', 'getDetails', 'search']
             ]
         );
     }
@@ -39,7 +40,7 @@ class PropertyAdController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = PropertyAd::select('*')->with(['landlord','property'])
+        $query = PropertyAd::select('*')->with(['landlord', 'property'])
             ->where('landlord_id', Auth::user()->landlord_id)
             ->orderBy($columns[$column], $dir);
 
@@ -132,9 +133,10 @@ class PropertyAdController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function getDetails($id){
+    public function getDetails($id)
+    {
         try {
-            $PropertyAd = PropertyAd::where('id',$id)
+            $PropertyAd = PropertyAd::where('id', $id)
                 ->with(['property' => function ($query) {
                     $query->with('media');
                 }])
@@ -146,7 +148,8 @@ class PropertyAdController extends Controller
         }
     }
 
-    public function getEditData(Request $request){
+    public function getEditData(Request $request)
+    {
 
         try {
             $PropertyAd = PropertyAd::findOrFail($request->id);
@@ -154,8 +157,8 @@ class PropertyAdController extends Controller
                 ->where('status', true)->get();
 
             $data = [
-              'propertyAd' =>  $PropertyAd,
-              'properties' =>  $properties,
+                'propertyAd' => $PropertyAd,
+                'properties' => $properties,
             ];
 
             return $this->sendResponse($data, 'Property Ad data get successfully');
@@ -256,10 +259,11 @@ class PropertyAdController extends Controller
         }
     }
 
-    public function getActivePropertyList(){
+    public function getActivePropertyList()
+    {
 
         try {
-            $activePropertyAds = PropertyAd::where('status',1)
+            $activePropertyAds = PropertyAd::where('status', 1)
                 ->with(['property' => function ($query) {
                     $query->with('media');
                 }])->get();
@@ -267,6 +271,44 @@ class PropertyAdController extends Controller
             return $this->sendResponse($activePropertyAds, 'Property data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function search(Request $request)
+    {
+        //return $request->division_id;
+        try {
+            $search = PropertyAd::where('status', 1);
+
+            if (isset($request->min_price)) {
+                $search->where('rent_amount', '>=', $request->min_price);
+            }
+            if (isset($request->max_price)) {
+                $search->where('rent_amount', '<=', $request->max_price);
+            }
+            if (isset($request->property_category)) {
+                $search->where('property_category', $request->property_category);
+            }
+            if (isset($request->property_type_id)) {
+                $search->where('property_type_id', $request->property_type_id);
+            }
+            if (isset($request->division_id)) {
+                $search->where('division_id', $request->division_id);
+            }
+            if (isset($request->district_id)) {
+                $search->where('district_id', $request->district_id);
+            }
+            if (isset($request->thana_id)) {
+                $search->where('thana_id', $request->thana_id);
+            }
+
+            $result = $search->with(['property' => function ($query) {
+                $query->with('media');
+            }])->get();
+
+            return $this->sendResponse($result, 'Search data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Search data error', ['error' => $exception->getMessage()]);
         }
 
     }

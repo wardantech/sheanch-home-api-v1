@@ -105,6 +105,9 @@ class PropertyController extends Controller
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;
+            $property->balcony = $request->balcony;
+            $property->floor = $request->floor;
+            $property->google_map_location = $request->google_map_location;
             $property->units = $request->units;
             $property->area_size = $request->area_size;
             $property->rent_amount = $request->rent_amount;
@@ -224,6 +227,9 @@ class PropertyController extends Controller
             $property->address = $request->address;
             $property->bed_rooms = $request->bed_rooms;
             $property->bath_rooms = $request->bath_rooms;
+            $property->balcony = $request->balcony;
+            $property->floor = $request->floor;
+            $property->google_map_location = $request->google_map_location;
             $property->area_size = $request->area_size;
             $property->rent_amount = $request->rent_amount;
             $property->description = $request->description;

@@ -23,6 +23,11 @@ class PropertyDeed extends Model
         return $this->belongsTo(Property::class, 'property_id', 'id')->withTrashed();
     }
 
+    public function propertyAd(): BelongsTo
+    {
+        return $this->belongsTo(PropertyAd::class, 'property_ad_id', 'id')->withTrashed();
+    }
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class, 'tenant_id', 'id')->withTrashed();

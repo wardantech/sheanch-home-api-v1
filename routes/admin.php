@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Property\LeaseController;
 use App\Http\Controllers\Admin\Property\PropertyAdController;
 use App\Http\Controllers\Admin\Property\PropertyController;
+use App\Http\Controllers\Admin\Property\PropertyDeedController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Settings\FrontendSettingController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
@@ -140,10 +141,11 @@ Route::group(['middleware' => ['auth:api']], function(){
         });
 
         //Lease route
-        Route::group(['prefix' => 'lease'], function(){
-            Route::post('store', [LeaseController::class, 'store']);
-            Route::post('list', [LeaseController::class, 'getList']);
-            Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
+        Route::group(['prefix' => 'deed'], function(){
+            Route::post('store', [PropertyDeedController::class, 'store']);
+            Route::post('list', [PropertyDeedController::class, 'getList']);
+            Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
+            Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
         });
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\User\Profile\ProfileController;
 use App\Http\Controllers\User\Property\LeaseController;
 use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyController;
+use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use Illuminate\Http\Request;
@@ -71,17 +72,22 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('active-property/list', [PropertyAdController::class,'getActivePropertyList'])->withoutMiddleware(['auth:api']);
             Route::post('change-status/{id}',[PropertyAdController::class, 'changeStatus']);
             Route::post('update/{id}',[PropertyAdController::class, 'update']);
+            Route::post('search',[PropertyAdController::class, 'search'])->withoutMiddleware(['auth:api']);
+        });
+
+        //
+        Route::group(['prefix' => 'deed'], function(){
+            Route::post('store', [PropertyDeedController::class, 'store']);
+            Route::post('tenant-list', [PropertyDeedController::class, 'getListTenant']);
+            Route::post('landlord-list', [PropertyDeedController::class, 'getListLandlord']);
+            Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
+            Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
         });
 
     });
 
-    //Lease route
-    Route::group(['prefix' => 'lease'], function(){
-        Route::post('store', [LeaseController::class, 'store']);
-        Route::post('list', [LeaseController::class, 'getList']);
-    });
 
-    //Lease route
+
     Route::group(['prefix' => 'profile'], function(){
         // For landlord
         Route::post('landlord', [ProfileController::class, 'getLandlordData']);
