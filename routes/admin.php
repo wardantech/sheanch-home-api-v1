@@ -4,6 +4,9 @@ use App\Http\Controllers\Admin\Accounts\AccountController;
 use App\Http\Controllers\Admin\Accounts\BankController;
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
+use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
+use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
+use App\Http\Controllers\Admin\Pages\PropertyFaqController;
 use App\Http\Controllers\Admin\Property\LeaseController;
 use App\Http\Controllers\Admin\Property\PropertyAdController;
 use App\Http\Controllers\Admin\Property\PropertyController;
@@ -16,6 +19,7 @@ use App\Http\Controllers\Admin\User\AdminController;
 use App\Http\Controllers\Admin\User\LandlordController;
 use App\Http\Controllers\Admin\User\TenantController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Models\Pages\AboutPropertySelling;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -209,8 +213,42 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('districts', [GetDivisionDistrictThanaController::class, 'getDistricets']);
             Route::post('thanas', [GetDivisionDistrictThanaController::class, 'getThanas']);
         });
-
     });
 
+    // Pages route
+    Route::group(['prefix' => 'pages'], function() {
+        //Property
+        Route::group(['prefix' => 'property'], function() {
+            // Faq route
+            Route::group(['prefix' => 'faq'], function() {
+                Route::post('get-list', [PropertyFaqController::class, 'getLists']);
+                Route::post('store', [PropertyFaqController::class, 'store']);
+                Route::get('edit/{id}', [PropertyFaqController::class, 'edit']);
+                Route::post('update/{id}', [PropertyFaqController::class, 'update']);
+                Route::post('delete/{id}', [PropertyFaqController::class, 'destroy']);
+                Route::post('change-status/{id}', [PropertyFaqController::class, 'changeStatus']);
+            });
 
+            // Customer Experiences
+            Route::group(['prefix' => 'customer-experiences'], function() {
+                Route::post('get-list', [PropertyCustomerExperienceController::class, 'getLists']);
+                Route::post('store', [PropertyCustomerExperienceController::class, 'store']);
+                Route::get('edit/{id}', [PropertyCustomerExperienceController::class, 'edit']);
+                Route::post('update/{id}', [PropertyCustomerExperienceController::class, 'update']);
+                Route::post('delete/{id}', [PropertyCustomerExperienceController::class, 'destroy']);
+                Route::post('change-status/{id}', [PropertyCustomerExperienceController::class, 'changeStatus']);
+            });
+
+            // About property selling
+            Route::group(['prefix' => 'about-selling'], function() {
+                Route::post('get-list', [AboutPropertySellingController::class, 'getLists']);
+                Route::post('store', [AboutPropertySellingController::class, 'store']);
+                Route::get('edit/{id}', [AboutPropertySellingController::class, 'edit']);
+                Route::post('update/{id}', [AboutPropertySellingController::class, 'update']);
+                Route::post('delete/{id}', [AboutPropertySellingController::class, 'destroy']);
+                Route::post('change-status/{id}', [AboutPropertySellingController::class, 'changeStatus']);
+                Route::post('image-upload/{id}',[AboutPropertySellingController::class,'imageUpload']);
+            });
+        });
+    });
 });
