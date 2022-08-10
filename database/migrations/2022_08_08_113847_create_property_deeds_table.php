@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('property_deeds', function (Blueprint $table) {
             $table->id();
-            $table->integer('status');
+            $table->integer('status')->comment('0-pending,1-lend to landlord,2-complete,3-decline');
             $table->string('start_date')->index()->nullable();
             $table->integer('property_id')->index();
             $table->integer('property_ad_id')->index()->nullable();
