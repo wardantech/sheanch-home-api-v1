@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Admin\Pages;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pages\Faq;
+use App\Models\Pages\PropertyFaq;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class FaqController extends Controller
+class PropertyFaqController extends Controller
 {
     use ResponseTrait;
 
     /**
-     * Get all faq lists
+     * Get all PropertyFaq lists
      * @param Request $request
      * @return array
      */
@@ -28,11 +28,11 @@ class FaqController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = DB::table('faqs')->where('deleted_at','=',null)
+        $query = DB::table('property_faqs')->where('deleted_at','=',null)
             ->select('id','title','description','status')
             ->orderBy($columns[$column], $dir);
 
-        $count = Faq::count();
+        $count = PropertyFaq::count();
         if ($searchValue) {
             $query->where(function($query) use ($searchValue) {
                 $query->where('id', 'like', '%' . $searchValue . '%')
@@ -51,7 +51,7 @@ class FaqController extends Controller
     }
 
     /**
-     * Faq Store
+     * PropertyFaq Store
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -73,20 +73,20 @@ class FaqController extends Controller
         //--- Validation Section Ends
 
         try {
-            $faq = new Faq();
+            $propertyFaq = new PropertyFaq();
 
-            $faq->title = $request->title;
-            $faq->status = $request->status;
-            $faq->description = $request->description;
-            $faq->save();
+            $propertyFaq->title = $request->title;
+            $propertyFaq->status = $request->status;
+            $propertyFaq->description = $request->description;
+            $propertyFaq->save();
 
         }catch (\Exception $exception){
-            return $this->sendError('Faq store error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Property faq store error', ['error' => $exception->getMessage()]);
         }
     }
 
     /**
-     * Faq status active inactive
+     * Property faq status active inactive
      * @param Request $request
      * @param $id
      * @return mixed
@@ -95,26 +95,26 @@ class FaqController extends Controller
     public function changeStatus(Request $request, $id)
     {
         try{
-            $faq = Faq::findOrFail($id);
+            $propertyFaq = PropertyFaq::findOrFail($id);
             if($request->status) {
-                $faq->status = 0;
-                $faq->update();
+                $propertyFaq->status = 0;
+                $propertyFaq->update();
 
-                return $this->sendResponse(['id'=>$id],'Faq inactive successfully');
+                return $this->sendResponse(['id'=>$id],'Property faq inactive successfully');
             }
 
-            $faq->status = 1;
-            $faq->update();
+            $propertyFaq->status = 1;
+            $propertyFaq->update();
 
-            return $this->sendResponse(['id'=>$id],'Faq active successfully');
+            return $this->sendResponse(['id'=>$id],'Property faq active successfully');
         }
         catch (\Exception $exception){
-            return $this->sendError('Faq status error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Property faq status error', ['error' => $exception->getMessage()]);
         }
     }
 
     /**
-     * Faq edit
+     * Property faq edit
      * @param $id
      * @return \Illuminate\Http\Response
      */
@@ -122,16 +122,16 @@ class FaqController extends Controller
     public function edit($id)
     {
         try{
-            $faq = Faq::findOrFail($id);
-            return $this->sendResponse($faq,'Faq data get successfully');
+            $propertyFaq = PropertyFaq::findOrFail($id);
+            return $this->sendResponse($propertyFaq,'Property faq data get successfully');
         }
         catch (\Exception $exception){
-            return $this->sendError('Faq data error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Property faq data error', ['error' => $exception->getMessage()]);
         }
     }
 
     /**
-     * Faq Update
+     * Property faq Update
      * @param Request $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
@@ -154,20 +154,20 @@ class FaqController extends Controller
         //--- Validation Section Ends
 
         try {
-            $faq = Faq::findOrFail($id);
+            $propertyFaq = PropertyFaq::findOrFail($id);
 
-            $faq->title = $request->title;
-            $faq->status = $request->status;
-            $faq->description = $request->description;
-            $faq->save();
+            $propertyFaq->title = $request->title;
+            $propertyFaq->status = $request->status;
+            $propertyFaq->description = $request->description;
+            $propertyFaq->update();
 
         }catch (\Exception $exception){
-            return $this->sendError('Faq store error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Property faq store error', ['error' => $exception->getMessage()]);
         }
     }
 
     /**
-     * Faq Delete
+     * Property faq Delete
      * @param $id
      * @return \Illuminate\Http\Response
      */
@@ -175,12 +175,12 @@ class FaqController extends Controller
     public function destroy($id)
     {
         try {
-            $faq = Faq::findOrFail($id);
-            $faq->delete();
+            $propertyFaq = PropertyFaq::findOrFail($id);
+            $propertyFaq->delete();
 
-            return $this->sendResponse(['id'=>$id],'Faq deleted successfully');
+            return $this->sendResponse(['id'=>$id],'Property faq deleted successfully');
         }catch (\Exception $exception){
-            return $this->sendError('Faq delete error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Property faq delete error', ['error' => $exception->getMessage()]);
         }
     }
 }
