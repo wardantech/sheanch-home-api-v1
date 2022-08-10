@@ -61,7 +61,7 @@ class FaqController extends Controller
         //--- Validation Section Starts
         $rules = [
             'title' => 'required|string|max:255',
-            'status' => 'required|string',
+            'status' => 'required',
             'description' => 'required'
         ];
 
@@ -110,6 +110,77 @@ class FaqController extends Controller
         }
         catch (\Exception $exception){
             return $this->sendError('Faq status error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * Faq edit
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function edit($id)
+    {
+        try{
+            $faq = Faq::findOrFail($id);
+            return $this->sendResponse($faq,'Faq data get successfully');
+        }
+        catch (\Exception $exception){
+            return $this->sendError('Faq data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * Faq Update
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
+
+    public function update(Request $request, $id)
+    {
+        //--- Validation Section Starts
+        $rules = [
+            'title' => 'required|string|max:255',
+            'status' => 'required',
+            'description' => 'required'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
+        }
+        //--- Validation Section Ends
+
+        try {
+            $faq = Faq::findOrFail($id);
+
+            $faq->title = $request->title;
+            $faq->status = $request->status;
+            $faq->description = $request->description;
+            $faq->save();
+
+        }catch (\Exception $exception){
+            return $this->sendError('Faq store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * Faq Delete
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function destroy($id)
+    {
+        try {
+            $faq = Faq::findOrFail($id);
+            $faq->delete();
+
+            return $this->sendResponse(['id'=>$id],'Faq deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Faq delete error', ['error' => $exception->getMessage()]);
         }
     }
 }

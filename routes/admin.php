@@ -214,12 +214,17 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     // Pages route
     Route::group(['prefix' => 'pages'], function() {
-        // Faq route
-        Route::group(['prefix' => 'faq'], function() {
-            Route::post('get-list', [FaqController::class, 'getLists']);
-            Route::post('store', [FaqController::class, 'store']);
-            Route::post('change-status/{id}', [FaqController::class, 'changeStatus']);
+        //Property
+        Route::group(['prefix' => 'property'], function() {
+            // Faq route
+            Route::group(['prefix' => 'faq'], function() {
+                Route::post('get-list', [FaqController::class, 'getLists']);
+                Route::post('store', [FaqController::class, 'store']);
+                Route::get('edit/{id}', [FaqController::class, 'edit']);
+                Route::post('update/{id}', [FaqController::class, 'update']);
+                Route::post('delete/{id}', [FaqController::class, 'destroy']);
+                Route::post('change-status/{id}', [FaqController::class, 'changeStatus']);
+            });
         });
     });
-
 });
