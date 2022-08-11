@@ -107,7 +107,7 @@ Route::group(['middleware' => ['auth:api']], function(){
 Route::post('get-general-setting-images', [GeneralSettingController::class, 'getGeneralSettingImages']);
 
 // Get widgets route
-Route::get('get-how-to-work-widget', [WidgetController::class, 'getHowToWork']);
+Route::get('get-how-to-work-widget', [WidgetController::class, 'getHowToWork'])->withoutMiddleware(['auth:api']);
 
 // Get Property Page Data
 Route::get('get-property-faq-data', [PropertyPageController::class, 'getFaq']);
