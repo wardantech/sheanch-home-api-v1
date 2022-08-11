@@ -4,10 +4,13 @@ namespace App\Http\Controllers\User\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\Settings\FrontendSetting;
+use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
 class GeneralSettingController extends Controller
 {
+    use ResponseTrait;
+
     public function getGeneralSettingImages(Request $request)
     {
         try {
