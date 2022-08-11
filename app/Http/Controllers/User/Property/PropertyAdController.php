@@ -276,10 +276,12 @@ class PropertyAdController extends Controller
 
     public function search(Request $request)
     {
-        //return $request->division_id;
         try {
             $search = PropertyAd::where('status', 1);
 
+            if (isset($request->sale_type)) {
+                $search->where('sale_type', $request->sale_type);
+            }
             if (isset($request->min_price)) {
                 $search->where('rent_amount', '>=', $request->min_price);
             }
