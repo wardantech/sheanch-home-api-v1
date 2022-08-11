@@ -1,7 +1,5 @@
 <?php
 
-
-
 use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Profile\ProfileController;
@@ -9,8 +7,10 @@ use App\Http\Controllers\User\Property\LeaseController;
 use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
+use App\Http\Controllers\User\Property\PropertyPageController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
+use App\Http\Controllers\User\Widgets\WidgetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -105,3 +105,11 @@ Route::group(['middleware' => ['auth:api']], function(){
 });
 
 Route::post('get-general-setting-images', [GeneralSettingController::class, 'getGeneralSettingImages']);
+
+// Get widgets route
+Route::get('get-how-to-work-widget', [WidgetController::class, 'getHowToWork']);
+
+// Get Property Page Data
+Route::get('get-property-faq-data', [PropertyPageController::class, 'getFaq']);
+Route::get('get-property-page-data', [PropertyPageController::class, 'getCustomerExperiences']);
+Route::get('get-about-property-selling-data', [PropertyPageController::class, 'getAboutPropertySelling']);
