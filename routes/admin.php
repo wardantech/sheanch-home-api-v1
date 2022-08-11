@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\Settings\UtilityController;
 use App\Http\Controllers\Admin\User\AdminController;
 use App\Http\Controllers\Admin\User\LandlordController;
 use App\Http\Controllers\Admin\User\TenantController;
+use App\Http\Controllers\Admin\Widgets\HowItWorkController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Models\Pages\AboutPropertySelling;
 use Illuminate\Support\Facades\Route;
@@ -251,6 +252,19 @@ Route::group(['middleware' => ['auth:api']], function(){
                 Route::post('change-status/{id}', [AboutPropertySellingController::class, 'changeStatus']);
                 Route::post('image-upload/{id}',[AboutPropertySellingController::class,'imageUpload']);
             });
+        });
+    });
+
+    // Widgets routes
+    Route::group(['prefix' => 'widgets'], function() {
+        // How it work routes
+        Route::group(['prefix' => 'how-it-works'], function() {
+            Route::post('get-list', [HowItWorkController::class, 'getLists']);
+            Route::post('store', [HowItWorkController::class, 'store']);
+            Route::get('edit/{id}', [HowItWorkController::class, 'edit']);
+            Route::post('update/{id}', [HowItWorkController::class, 'update']);
+            Route::post('delete/{id}', [HowItWorkController::class, 'destroy']);
+            Route::post('change-status/{id}', [HowItWorkController::class, 'changeStatus']);
         });
     });
 });
