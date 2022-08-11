@@ -35,5 +35,6 @@ Route::get('otp', function (){
     $smsresult = curl_exec($ch);
     $p = explode("|",$smsresult);
     $sendstatus = $p[0];
+
 });
 
