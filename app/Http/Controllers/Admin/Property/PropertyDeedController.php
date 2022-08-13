@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Property;
 
 use App\Http\Controllers\Controller;
+use App\Models\Property\PropertyAd;
 use App\Models\Property\PropertyDeed;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -135,6 +136,18 @@ class PropertyDeedController extends Controller
             $lease = PropertyDeed::findOrFail($id);
             $lease->status = $request->status;
             $lease->update();
+
+            $property_ad = PropertyAd::findOrFail($lease->property_ad_id);
+
+            if($request->status == 2){
+                $property_ad->status = 2;
+                $property_ad->update();
+            }
+            else{
+
+                $property_ad->status = 1;
+                $property_ad->update();
+            }
 
             return $this->sendResponse(['id' => $id], 'Property active successfully');
         } catch (\Exception $exception) {
