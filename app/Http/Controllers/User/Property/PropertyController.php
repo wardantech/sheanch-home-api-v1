@@ -74,7 +74,6 @@ class PropertyController extends Controller
             'address' => 'required|string',
             'bed_rooms' => 'integer|nullable',
             'bath_rooms' => 'integer|nullable',
-            'units' => 'integer|nullable',
             'area_size' => 'integer|nullable',
             'rent_amount' => 'required',
             'security_money' => 'required',
@@ -108,7 +107,6 @@ class PropertyController extends Controller
             $property->balcony = $request->balcony;
             $property->floor = $request->floor;
             $property->google_map_location = $request->google_map_location;
-            $property->units = $request->units;
             $property->area_size = $request->area_size;
             $property->rent_amount = $request->rent_amount;
             $property->description = $request->description;
@@ -194,7 +192,6 @@ class PropertyController extends Controller
             'address' => 'required|string',
             'bed_rooms' => 'integer|nullable',
             'bath_rooms' => 'integer|nullable',
-            'units' => 'integer|nullable',
             'area_size' => 'integer|nullable',
             'rent_amount' => 'required',
             'description' => 'string|nullable',
