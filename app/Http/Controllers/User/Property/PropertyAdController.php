@@ -143,6 +143,7 @@ class PropertyAdController extends Controller
                 ->first();
 
             return $this->sendResponse($PropertyAd, 'Property data get successfully');
+
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }

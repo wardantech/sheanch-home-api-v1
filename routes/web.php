@@ -38,3 +38,8 @@ Route::get('otp', function (){
 
 });
 
+Route::get('/
+storage-link', function () {
+    \Illuminate\Support\Facades\Artisan::call('storage:link');
+});
+
