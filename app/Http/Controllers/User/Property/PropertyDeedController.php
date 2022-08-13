@@ -202,6 +202,12 @@ class PropertyDeedController extends Controller
             $lease->status = $request->status;
             $lease->update();
 
+            if($request->status == 2){
+                $property_ad = PropertyAd::findOrFail($lease->property_ad_id);
+                $property_ad->status = 2;
+                $property_ad->update();
+            }
+
             return $this->sendResponse(['id' => $id], 'Property Deed status change successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
