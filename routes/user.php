@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
+use App\Http\Controllers\User\Dashboard\TenantDashboardController;
 use App\Http\Controllers\User\Profile\ProfileController;
 use App\Http\Controllers\User\Property\LeaseController;
 use App\Http\Controllers\User\Property\PropertyAdController;
@@ -30,6 +32,10 @@ Route::get('as', function (){
 
 
 Route::post('register',[AuthController::class,'register']);
+
+// Dashboard controller
+Route::post('get-landlord-dashboard-data', [LandlordDashboardController::class, 'getDashboardData']);
+Route::post('get-tenant-dashboard-data', [TenantDashboardController::class, 'getDashboardData']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
 
