@@ -19,17 +19,7 @@ class PropertyPageController extends Controller
             $customerExperience = PropertyCustomerExperience::select('id', 'video_link', 'status')
                 ->where('status', 1)->limit(3)->get();
 
-            if(count($customerExperience) > 0) {
-                return [
-                    'status' => true,
-                    'data' => $customerExperience
-                ];
-            }
-
-            return [
-                'status' => false,
-                'data' => 'Data Not Found'
-            ];
+            return $this->sendResponse($customerExperience, 'Customer experiences get data get successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError('Customer experiences get data error', ['error' => $exception->getMessage()]);
@@ -42,17 +32,7 @@ class PropertyPageController extends Controller
             $faq = PropertyFaq::select('id', 'title', 'description', 'status')
                 ->where('status', 1)->limit(10)->get();
 
-            if(count($faq) > 0) {
-                return [
-                    'status' => true,
-                    'data' => $faq
-                ];
-            }
-
-            return [
-                'status' => false,
-                'data' => 'Data Not Found'
-            ];
+            return $this->sendResponse($faq, 'Faq get data get successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError('Faq get data error', ['error' => $exception->getMessage()]);
@@ -64,17 +44,7 @@ class PropertyPageController extends Controller
         try {
             $aboutPropertySelling = AboutPropertySelling::where('status', 1)->limit(3)->get();
 
-            if(count($aboutPropertySelling) > 0) {
-                return [
-                    'status' => true,
-                    'data' => $aboutPropertySelling
-                ];
-            }
-
-            return [
-                'status' => false,
-                'data' => 'Data Not Found'
-            ];
+            return $this->sendResponse($aboutPropertySelling, 'Faq get data get successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError(
