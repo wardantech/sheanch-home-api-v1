@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Accounts\AccountController;
 use App\Http\Controllers\Admin\Accounts\BankController;
+use App\Http\Controllers\Admin\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
 use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
@@ -40,6 +41,7 @@ Route::get('as', function (){
 
 
 Route::post('register',[AuthController::class, 'register']);
+Route::post('get-dashboard-data',[DashboardController::class, 'getDashbordData']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
 
