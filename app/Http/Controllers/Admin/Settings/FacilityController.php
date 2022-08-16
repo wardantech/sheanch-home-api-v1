@@ -159,16 +159,12 @@ class FacilityController extends Controller
     public function changeStatus(Request $request, $id)
     {
         try{
+
             $facility = Facility::findOrFail($id);
 
-            if($request->status) {
-                $facility->status = 0;
-                $facility->update();
-                return $this->sendResponse($facility,'Facility inactive successfully');
-            }
-
-            $facility->status = 1;
+            $facility->status = $request->status;
             $facility->update();
+
             return $this->sendResponse($facility,'Facility active successfully');
         }
         catch (\Exception $exception){

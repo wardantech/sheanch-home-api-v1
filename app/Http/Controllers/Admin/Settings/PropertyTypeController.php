@@ -153,14 +153,9 @@ class PropertyTypeController extends Controller
         try{
             $propertyType = PropertyType::findOrFail($id);
 
-            if($request->status) {
-                $propertyType->status = 0;
-                $propertyType->update();
-                return $this->sendResponse($propertyType,'Property Type inactive successfully');
-            }
-
-            $propertyType->status = 1;
+            $propertyType->status = $request->status;
             $propertyType->update();
+
             return $this->sendResponse($propertyType,'Property Type active successfully');
         }
         catch (\Exception $exception){
