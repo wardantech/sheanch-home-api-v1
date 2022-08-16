@@ -76,7 +76,7 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::group(['prefix' => 'tenant'], function(){
         Route::post('store', [TenantController::class,'store']);
         Route::post('list', [TenantController::class,'getList']);
-        Route::get('show/{id}',[TenantController::class, 'show']);
+        Route::post('show',[TenantController::class, 'show']);
         Route::post('update/{id}',[TenantController::class,'update']);
         Route::post('image-upload/{id}',[TenantController::class,'imageUpload']);
         Route::post('change-status/{id}',[TenantController::class, 'changeStatus']);

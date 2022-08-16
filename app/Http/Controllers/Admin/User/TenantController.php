@@ -157,12 +157,13 @@ class TenantController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function show($id)
+    public function show(Request $request)
     {
         try{
-            $landlord = Tenant::findOrFail($id);
+            $tenant = Tenant::with('thana', 'district', 'division')
+                    ->findOrFail($request->tenant_id);
 
-            return $this->sendResponse($landlord,'Tenant data get successfully');
+            return $this->sendResponse($tenant,'Tenant data get successfully');
         }
         catch (\Exception $exception){
             DB::rollback();
