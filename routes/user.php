@@ -83,7 +83,7 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //
         Route::group(['prefix' => 'deed'], function(){
-            Route::post('store', [PropertyDeedController::class, 'store']);
+            Route::post('save-data', [PropertyDeedController::class, 'save'])->withoutMiddleware(['auth:api']);
             Route::post('tenant-list', [PropertyDeedController::class, 'getListTenant']);
             Route::post('landlord-list', [PropertyDeedController::class, 'getListLandlord']);
             Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);

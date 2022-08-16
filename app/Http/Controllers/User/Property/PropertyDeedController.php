@@ -12,6 +12,16 @@ use Illuminate\Support\Facades\Validator;
 
 class PropertyDeedController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api',
+            [
+                'except' => ['save']
+            ]
+        );
+    }
+
     use ResponseTrait;
     /**
      * Display a listing of the resource.
@@ -110,7 +120,7 @@ class PropertyDeedController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function save(Request $request)
     {
         //--- Validation Section Start ---//
         $rules = [

@@ -169,14 +169,9 @@ class UtilityController extends Controller
         try{
             $utility = Utility::findOrFail($id);
 
-            if($request->status) {
-                $utility->status = 0;
-                $utility->update();
-                return $this->sendResponse($utility,'Utility inactive successfully');
-            }
-
-            $utility->status = 1;
+            $utility->status = $request->status;
             $utility->update();
+
             return $this->sendResponse($utility,'Utility category active successfully');
         }
         catch (\Exception $exception){
