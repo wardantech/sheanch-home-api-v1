@@ -312,4 +312,30 @@ class ProfileController extends Controller
             return $this->sendError('Password change error', ['error' => $exception->getMessage()]);
         }
     }
+
+    public function showLandlord(Request $request){
+        try{
+            $landlord = Landlord::with('division','district','thana')
+                ->where('id',$request->landlord_id)->first();
+
+            return $this->sendResponse($landlord,'Landlord data get successfully');
+        }
+        catch (\Exception $exception){
+            DB::rollback();
+            return $this->sendError('Landlord data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function showTenant(Request $request){
+        try{
+            $landlord = Tenant::with('division','district','thana')
+                ->where('id',$request->landlord_id)->first();
+
+            return $this->sendResponse($landlord,'Tenant data get successfully');
+        }
+        catch (\Exception $exception){
+            DB::rollback();
+            return $this->sendError('Tenant data error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

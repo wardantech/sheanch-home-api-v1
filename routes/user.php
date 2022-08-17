@@ -93,16 +93,17 @@ Route::group(['middleware' => ['auth:api']], function(){
     });
 
 
-
     Route::group(['prefix' => 'profile'], function(){
         // For landlord
         Route::post('landlord', [ProfileController::class, 'getLandlordData']);
+        Route::post('landlord/show', [ProfileController::class, 'showLandlord']);
         Route::post('landlord/update/{id}', [ProfileController::class, 'landlordUpdate']);
         Route::post('landlord/image-upload/{id}', [ProfileController::class, 'imageUpload']);
 
         // For Tenant
         Route::post('tenant', [ProfileController::class, 'getTenantData']);
         Route::post('tenant/update/{id}', [ProfileController::class, 'TenantUpdate']);
+        Route::post('tenant/show', [ProfileController::class, 'showTenant']);
         Route::post('tenant/tenant-image-upload/{id}', [ProfileController::class, 'tenantImageUpload']);
 
         // Update password
