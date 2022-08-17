@@ -316,7 +316,7 @@ class ProfileController extends Controller
     public function showLandlord(Request $request){
         try{
             $landlord = Landlord::with('division','district','thana')
-                ->where('id',$request->landlord_id)->first();
+                ->where('id',$request->landlordId)->first();
 
             return $this->sendResponse($landlord,'Landlord data get successfully');
         }
@@ -329,7 +329,7 @@ class ProfileController extends Controller
     public function showTenant(Request $request){
         try{
             $landlord = Tenant::with('division','district','thana')
-                ->where('id',$request->landlord_id)->first();
+                ->where('id',$request->tenantId)->first();
 
             return $this->sendResponse($landlord,'Tenant data get successfully');
         }
