@@ -95,13 +95,13 @@ class TenantController extends Controller
             'password' => 'required|confirmed|string|min:6',
             //'image' => 'mimes:jpg,jpeg,png|max:2048',
             'name' => 'required|string|max:255',
-            'gender' => 'required|integer',
+            'status' => 'required',
             'thana_id' => 'required|numeric',
             'district_id' => 'required|numeric',
             'division_id' => 'required|numeric',
             'postal_code' => 'string',
-            'postal_address' => 'string',
-            'physical_address' => 'string',
+//            'postal_address' => 'string',
+//            'physical_address' => 'string',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -190,6 +190,7 @@ class TenantController extends Controller
             //'image' => 'mimes:jpg,jpeg,png|max:2048',
             'name' => 'required|string|max:255',
             'gender' => 'required|integer',
+            'status' => 'required',
             'thana_id' => 'required|numeric',
             'district_id' => 'required|numeric',
             'division_id' => 'required|numeric',

@@ -64,7 +64,7 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::group(['prefix' => 'landlord'], function(){
         Route::post('store', [LandlordController::class,'store']);
         Route::post('list', [LandlordController::class,'getList']);
-        Route::get('show/{id}',[LandlordController::class,'show']);
+        Route::post('show',[LandlordController::class,'show']);
         Route::post('update/{id}',[LandlordController::class,'update']);
         Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
         Route::get('get-landlords',[LandlordController::class,'getLandlords']);

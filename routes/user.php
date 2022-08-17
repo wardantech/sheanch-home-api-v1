@@ -73,7 +73,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('store', [PropertyAdController::class, 'store']);
             Route::post('get-property-as-landlord', [PropertyAdController::class, 'getPropertyAsLandlord']);
             Route::post('list', [PropertyAdController::class,'getList']);
-            Route::post('get-details/{id}', [PropertyAdController::class,'getDetails'])->withoutMiddleware(['auth:api']);
+            Route::post('get-details', [PropertyAdController::class,'getDetails'])->withoutMiddleware(['auth:api']);
             Route::post('get-edit-data', [PropertyAdController::class,'getEditData']);
             Route::post('active-property/list', [PropertyAdController::class,'getActivePropertyList'])->withoutMiddleware(['auth:api']);
             Route::post('change-status/{id}',[PropertyAdController::class, 'changeStatus']);

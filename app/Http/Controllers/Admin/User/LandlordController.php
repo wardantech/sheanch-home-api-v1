@@ -95,6 +95,7 @@ class LandlordController extends Controller
 
             'name' => 'required|string|max:255',
             'mobile' => 'required|string',
+            'status' => 'required',
             'thana_id' => 'required|numeric',
             'district_id' => 'required|numeric',
             'division_id' => 'required|numeric',
@@ -149,9 +150,10 @@ class LandlordController extends Controller
 
     }
 
-    public function show($id){
+    public function show(Request $request){
          try{
-             $landlord = Landlord::findOrFail($id);
+             $landlord = Landlord::with('division','district','thana')
+             ->where('id',$request->landlord_id)->first();
 
              return $this->sendResponse($landlord,'Landlord data get successfully');
          }
@@ -173,6 +175,7 @@ class LandlordController extends Controller
 
             'name' => 'required|string|max:255',
             'mobile' => 'required|string',
+            'status' => 'required',
             'thana_id' => 'required|numeric',
             'district_id' => 'required|numeric',
             'division_id' => 'required|numeric',
