@@ -133,10 +133,10 @@ class PropertyAdController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function getDetails($id)
+    public function getDetails(Request $request)
     {
         try {
-            $PropertyAd = PropertyAd::where('id', $id)
+            $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
                 ->with(['property' => function ($query) {
                     $query->with('media');
                 }])

@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Models\Property\Property;
+use App\Models\Settings\District;
+use App\Models\Settings\Division;
+use App\Models\Settings\Thana;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,8 +21,19 @@ class Landlord extends Model
         return $this->belongsTo(User::class,'id','landlord_id')->withTrashed();
     }
 
-    public function landloard(): HasMany
+    public function thana(): BelongsTo
     {
-        return $this->hasMany(Property::class, 'id', 'landlord_id')->withTrashed();
+        return $this->belongsTo(Thana::class, 'thana_id', 'id');
     }
+
+    public function district(): BelongsTo
+    {
+        return $this->belongsTo(District::class, 'district_id', 'id');
+    }
+
+    public function division(): BelongsTo
+    {
+        return $this->belongsTo(Division::class, 'division_id', 'id');
+    }
+
 }
