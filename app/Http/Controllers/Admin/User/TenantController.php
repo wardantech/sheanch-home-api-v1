@@ -161,7 +161,7 @@ class TenantController extends Controller
     {
         try{
             $tenant = Tenant::with('thana', 'district', 'division')
-                    ->findOrFail($request->tenant_id);
+                ->where('id',$request->tenantId)->first();
 
             return $this->sendResponse($tenant,'Tenant data get successfully');
         }
