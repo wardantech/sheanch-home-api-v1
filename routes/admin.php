@@ -158,16 +158,6 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     });
 
-    // Lease Route
-    Route::group(['prefix' => 'lease'], function() {
-        Route::post('store', [LeaseController::class, 'store']);
-        Route::post('get-property-as-landlord', [LeaseController::class, 'getPropertyAsLandlord']);
-        Route::post('list', [LeaseController::class,'getList']);
-        Route::post('change-status/{id}',[LeaseController::class, 'changeStatus']);
-        Route::post('image-upload/{id}',[LeaseController::class,'imageUpload']);
-        Route::post('delete/{id}',[LeaseController::class, 'destroy']);
-    });
-
     //Settings route
     Route::group(['prefix' => 'settings'], function(){
 

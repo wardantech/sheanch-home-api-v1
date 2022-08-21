@@ -153,7 +153,7 @@ class LandlordController extends Controller
     public function show(Request $request){
          try{
              $landlord = Landlord::with('division','district','thana')
-             ->where('id',$request->landlord_id)->first();
+             ->where('id',$request->landlordId)->first();
 
              return $this->sendResponse($landlord,'Landlord data get successfully');
          }
