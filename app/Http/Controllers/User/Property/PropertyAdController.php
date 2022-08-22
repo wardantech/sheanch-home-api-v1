@@ -275,6 +275,22 @@ class PropertyAdController extends Controller
         }
     }
 
+    public function getActivePropertyListAsType(Request $request)
+    {
+
+        try {
+            $activePropertyAds = PropertyAd::where('status', 1)
+                ->where('sale_type',$request->type)
+                ->with(['property' => function ($query) {
+                    $query->with('media');
+                }])->get();
+
+            return $this->sendResponse($activePropertyAds, 'Property data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
     public function search(Request $request)
     {
         try {
