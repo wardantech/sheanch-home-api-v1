@@ -13,6 +13,7 @@ use App\Http\Controllers\User\Property\PropertyPageController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\User\Widgets\WidgetController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -121,3 +122,6 @@ Route::get('get-how-to-work-widget', [WidgetController::class, 'getHowToWork'])-
 Route::get('get-property-faq-data', [PropertyPageController::class, 'getFaq']);
 Route::get('get-property-page-data', [PropertyPageController::class, 'getCustomerExperiences']);
 Route::get('get-about-property-selling-data', [PropertyPageController::class, 'getAboutPropertySelling']);
+
+// Wishlist route
+Route::post('wishlist/store', [WishlistController::class, 'store']);
