@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('image')->nullable();
             $table->longText('description')->nullable();
             $table->integer('status');
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
