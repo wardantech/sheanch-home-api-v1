@@ -8,10 +8,11 @@ use App\Http\Controllers\Admin\Expense\ExpenseController;
 use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
 use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
 use App\Http\Controllers\Admin\Pages\PropertyFaqController;
-use App\Http\Controllers\Admin\Property\LeaseController;
 use App\Http\Controllers\Admin\Property\PropertyAdController;
 use App\Http\Controllers\Admin\Property\PropertyController;
 use App\Http\Controllers\Admin\Property\PropertyDeedController;
+use App\Http\Controllers\Admin\Review\ReviewCommentController;
+use App\Http\Controllers\Admin\Review\ReviewController;
 use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Settings\FrontendSettingController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
@@ -83,7 +84,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('delete/{id}',[TenantController::class, 'destroy']);
     });
 
-    //Tenant route
+    //Expense route
     Route::group(['prefix' => 'expense'], function(){
 
         Route::group(['prefix' => 'category'], function() {
@@ -156,6 +157,25 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         });
 
+    });
+
+    //Review route
+    Route::group(['prefix' => 'review'], function(){
+        Route::post('store', [ReviewController::class,'store']);
+        Route::post('list', [ReviewController::class,'getList']);
+        Route::post('show',[ReviewController::class, 'show']);
+        Route::post('update/{id}',[ReviewController::class,'update']);
+        Route::post('change-status/{id}',[ReviewController::class, 'changeStatus']);
+        Route::post('delete/{id}',[ReviewController::class, 'destroy']);
+
+        Route::group(['prefix' => 'comment'], function(){
+            Route::post('store', [ReviewCommentController::class,'store']);
+            Route::post('list', [ReviewCommentController::class,'getList']);
+            Route::post('show',[ReviewCommentController::class, 'show']);
+            Route::post('update/{id}',[ReviewCommentController::class,'update']);
+            Route::post('change-status/{id}',[ReviewCommentController::class, 'changeStatus']);
+            Route::post('delete/{id}',[ReviewCommentController::class, 'destroy']);
+        });
     });
 
     //Settings route

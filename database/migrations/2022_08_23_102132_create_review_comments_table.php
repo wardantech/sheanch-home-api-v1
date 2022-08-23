@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('property_customer_experiences', function (Blueprint $table) {
+        Schema::create('review_comments', function (Blueprint $table) {
             $table->id();
-            $table->text('video_link');
             $table->integer('status');
+            $table->integer('user_id');
+            $table->integer('review_id');
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('property_customer_experiences');
+        Schema::dropIfExists('review_comments');
     }
 };

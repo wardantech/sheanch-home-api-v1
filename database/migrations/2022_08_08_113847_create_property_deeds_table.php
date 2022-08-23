@@ -24,9 +24,9 @@ return new class extends Migration
             $table->integer('lease_type')->nullable()->index()->comment('1 for commercial, 2 for residential');
             $table->integer('sale_type')->nullable()->index()->comment('1 for rent, 2 for sale');
             $table->double('lease_amount')->nullable()->index();
-            $table->double('security_money')->nullable()->nullable();
+            $table->double('security_money')->nullable();
             $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable()->nullable();
+            $table->integer('updated_by')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
