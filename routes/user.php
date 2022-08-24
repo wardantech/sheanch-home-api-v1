@@ -127,4 +127,8 @@ Route::get('get-property-page-data', [PropertyPageController::class, 'getCustome
 Route::get('get-about-property-selling-data', [PropertyPageController::class, 'getAboutPropertySelling']);
 
 // Wishlist route
-Route::post('wishlist/store', [WishlistController::class, 'store']);
+Route::group(['prefix' => 'wishlist'], function() {
+    Route::post('get-lists', [WishlistController::class, 'getLists']);
+    Route::post('store', [WishlistController::class, 'store']);
+    Route::post('delete', [WishlistController::class, 'destroy']);
+});
