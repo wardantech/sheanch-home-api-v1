@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\Wishlist;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -17,9 +18,9 @@ class WishlistController extends Controller
             $tenatId = $request->tenantId;
             $propertyAdId = $request->propertyAdId;
 
-
             $check = DB::table('wishlists')->where('tenant_id', $tenatId)
-                    ->where('property_ad_id', $propertyAdId)->first();
+                ->where('property_ad_id', $propertyAdId)
+                ->first() ? true : false;
 
             if($check) {
                 return $this->sendResponse([

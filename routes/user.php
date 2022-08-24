@@ -13,8 +13,7 @@ use App\Http\Controllers\User\Property\PropertyPageController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\User\Widgets\WidgetController;
-use App\Http\Controllers\WishlistController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\User\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
