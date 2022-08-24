@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\User\AdminController;
 use App\Http\Controllers\Admin\User\LandlordController;
 use App\Http\Controllers\Admin\User\TenantController;
 use App\Http\Controllers\Admin\Widgets\HowItWorkController;
+use App\Http\Controllers\Admin\Wishlists\WishlistController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Models\Pages\AboutPropertySelling;
 use Illuminate\Support\Facades\Route;
@@ -278,5 +279,11 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('delete/{id}', [HowItWorkController::class, 'destroy']);
             Route::post('change-status/{id}', [HowItWorkController::class, 'changeStatus']);
         });
+    });
+
+    // Wishlists Routes
+    Route::group(['prefix' => 'wishlist'], function() {
+        Route::post('get-list', [WishlistController::class, 'getLists']);
+        Route::post('delete/{id}',[WishlistController::class, 'destroy']);
     });
 });

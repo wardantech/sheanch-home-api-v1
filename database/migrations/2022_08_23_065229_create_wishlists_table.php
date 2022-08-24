@@ -20,7 +20,6 @@ return new class extends Migration
             $table->foreignIdFor(PropertyAd::class, 'property_ad_id');
             $table->foreignIdFor(Tenant::class, 'tenant_id');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
