@@ -34,6 +34,11 @@ Route::get('as', function (){
 
 Route::post('register',[AuthController::class,'register']);
 
+//Frontend Data
+Route::post('get-frontend-data', [GeneralSettingController::class, 'getFrontendData'])->withoutMiddleware(['auth:api']);
+Route::get('get-frontend-banner-data', [GeneralSettingController::class, 'getFrontendBannerData'])->withoutMiddleware(['auth:api']);
+
+
 // Dashboard controller
 Route::post('get-landlord-dashboard-data', [LandlordDashboardController::class, 'getDashboardData']);
 Route::post('get-tenant-dashboard-data', [TenantDashboardController::class, 'getDashboardData']);
@@ -113,7 +118,6 @@ Route::group(['middleware' => ['auth:api']], function(){
     });
 });
 
-Route::post('get-general-setting-images', [GeneralSettingController::class, 'getGeneralSettingImages']);
 
 // Get widgets route
 Route::get('get-how-to-work-widget', [WidgetController::class, 'getHowToWork'])->withoutMiddleware(['auth:api']);

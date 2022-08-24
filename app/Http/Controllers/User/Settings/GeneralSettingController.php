@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\User\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\Settings\Division;
 use App\Models\Settings\FrontendSetting;
+use App\Models\Settings\PropertyType;
+use App\Models\Wishlist;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
@@ -11,14 +14,40 @@ class GeneralSettingController extends Controller
 {
     use ResponseTrait;
 
-    public function getGeneralSettingImages(Request $request)
+    public function getFrontendData(Request $request)
     {
         try {
-            $general = FrontendSetting::with('media')->first();
-            return $this->sendResponse($general,'Settings data get successfully');
+            $wishlist = '';
+            $frontendData = FrontendSetting::with('media')->first();
+            if($request->tenantId){
+                $wishlist = Wishlist::where('tenant_id', $request->tenantId)->count();
+            }
+            return $this->sendResponse(
+                [
+                    'frontendData' => $frontendData,
+                    'wishlistCount' => $wishlist,
+                ],
+                'Settings data get successfully');
 
         }catch (\Exception $exception) {
             return $this->sendError('Frontend general setting get data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function getFrontendBannerData(){
+        try {
+            $propertyTypes = PropertyType::all();
+            $divisions = Division::all();
+
+            return $this->sendResponse(
+                [
+                    'propertyType' => $propertyTypes,
+                    'divisions' => $divisions,
+                ],
+                'Banner data get successfully');
+
+        }catch (\Exception $exception) {
+            return $this->sendError('Banner data error', ['error' => $exception->getMessage()]);
         }
     }
 }
