@@ -18,6 +18,12 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->text('address');
+            $table->text('facebook_link')->nullable();
+            $table->text('twitter_link')->nullable();
+            $table->text('instagram_link')->nullable();
+            $table->text('linkedin_link')->nullable();
+            $table->text('play_store_link')->nullable();
+            $table->text('app_store_link')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
