@@ -21,6 +21,17 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        if(isset($request->token)){
+            $user = auth('api')->user();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Loged in successfully',
+                'user' => $user,
+                'access_token' => $request->token,
+                'type' => 'bearer',
+            ]);
+        }
+
         //--- Validation Section
         $rules = [
             'mobile' => 'required|string',
