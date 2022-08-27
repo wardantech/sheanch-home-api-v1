@@ -17,6 +17,7 @@ class OTPController extends Controller
         //--- Validation Section
         $rules = [
             'mobile' => 'required|string|unique:users',
+            'otp_code' => 'required|numeric',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -27,13 +28,13 @@ class OTPController extends Controller
         //--- Validation Section Ends
 
         try {
-            $otp = random_int(1000, 9999);
+            $otp = $request->otp_code;
 
             $text = "Thank you for signing up at sheanch-home. Your OTP is: " . $otp;
             $sms = $this->sendSms($request->mobile, $text);
 
             if ($sms == true) {
-                return $this->sendResponse(['otp' => $otp], 'OTP send successfully');
+                return $this->sendResponse('success', 'OTP send successfully');
             } else {
                 return $this->sendError('OTP Send error', ['error' => $sms]);
             }

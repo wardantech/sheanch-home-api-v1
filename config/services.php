@@ -31,4 +31,19 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+
+    'google' => [
+        'client_id' => '522908860794-f3s95fbk115ceqgbtoiin8panpi76jnr.apps.googleusercontent.com',
+        'client_secret' => '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',
+        'redirect' => 'http://127.0.0.1:8000/auth/google/callback',
+    ],
+
+//    $google = \App\Models\Settings\FrontendSetting::first() ,
+//
+//    'google' => [
+//        'client_id' => $google->google_client_id ?? '',
+//        'client_secret' => $google->google_client_secret ?? '',
+//        'redirect' => $google->google_call_back_url ?? '',
+//    ],
+
 ];

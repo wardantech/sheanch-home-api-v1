@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\Auth\AuthController;
+use App\Http\Controllers\User\Auth\SocialLoginController;
 use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
 use App\Http\Controllers\User\Dashboard\TenantDashboardController;
 use App\Http\Controllers\User\Profile\ProfileController;
@@ -51,6 +52,9 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
     Route::post('me', [AuthController::class,'me']);
 });
 
+//Social Login
+Route::get('auth/social/{service}', [SocialLoginController::class, 'redirectToGoogle']);
+Route::get('auth/{service}/callback', [SocialLoginController::class, 'handleGoogleCallback']);
 Route::post('send-otp', [OTPController::class,'sendOTP']);
 //Address route
 Route::group(['prefix' => 'settings'], function(){

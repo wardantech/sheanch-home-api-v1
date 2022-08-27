@@ -24,6 +24,11 @@ return new class extends Migration
             $table->text('linkedin_link')->nullable();
             $table->text('play_store_link')->nullable();
             $table->text('app_store_link')->nullable();
+            $table->text('google_client_id')->nullable();
+            $table->text('google_client_secret')->nullable();
+            $table->text('google_call_back_url')->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
