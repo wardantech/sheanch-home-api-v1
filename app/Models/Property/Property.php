@@ -18,10 +18,10 @@ class Property extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia;
 
-    public function landloard(): BelongsTo
-    {
-        return $this->belongsTo(Landlord::class, 'landloard_id', 'id')->withTrashed();
-    }
+//    public function landloard()
+//    {
+//        return $this->belongsTo(Landlord::class, 'landloard_id', 'id')->withTrashed();
+//    }
 
     public function thana()
     {
@@ -45,6 +45,6 @@ class Property extends Model implements HasMedia
 
     public function landlord()
     {
-        return $this->belongsTo(Landlord::class, 'landlord_id', 'id');
+        return $this->belongsTo(Landlord::class, 'landlord_id', 'id')->withTrashed();
     }
 }

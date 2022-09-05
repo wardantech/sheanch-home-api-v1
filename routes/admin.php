@@ -286,4 +286,10 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('get-list', [WishlistController::class, 'getLists']);
         Route::post('delete/{id}',[WishlistController::class, 'destroy']);
     });
+
+    // Review routes
+    Route::group(['prefix' => 'reviews'], function() {
+        Route::post('get-property-list', [ReviewController::class, 'getPropertyReviews']);
+        Route::post('delete', [ReviewController::class, 'destroy']);
+    });
 });
