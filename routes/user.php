@@ -11,6 +11,7 @@ use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Property\PropertyPageController;
+use App\Http\Controllers\User\Review\ReviewController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\User\Widgets\WidgetController;
@@ -135,4 +136,9 @@ Route::group(['prefix' => 'wishlist'], function() {
     Route::post('get-lists', [WishlistController::class, 'getLists']);
     Route::post('store', [WishlistController::class, 'store']);
     Route::post('delete', [WishlistController::class, 'destroy']);
+});
+
+// Review Routes
+Route::group(['prefix' => 'review'], function() {
+    Route::post('store', [ReviewController::class, 'store']);
 });
