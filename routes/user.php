@@ -76,6 +76,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('edit', [PropertyController::class, 'edit']);
         Route::post('update/{id}', [PropertyController::class, 'update']);
         Route::get('details/{id}', [PropertyController::class, 'details']);
+        Route::get('landlord/details/{id}', [PropertyController::class, 'landlordDetails']);
 
 
 
