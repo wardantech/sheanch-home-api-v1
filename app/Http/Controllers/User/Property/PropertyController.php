@@ -336,4 +336,30 @@ class PropertyController extends Controller
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
+
+    /**
+     * Show property owner details
+     * @param $id
+     * @return mixed
+     */
+
+    public function landlordDetails($id)
+    {
+        try {
+            $property = Property::with(['landlord' => function ($query) {
+                $query->with(['division' => function ($query) {
+                    $query->select('id', 'name');
+                }, 'district' => function ($query) {
+                    $query->select('id', 'name');
+                }, 'thana' => function ($query) {
+                    $query->select('id', 'name');
+                }]);
+            }])->findOrFail($id);
+            $landlord = $property->landlord;
+
+            return $this->sendResponse($landlord, 'Landlord data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Landlord data error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

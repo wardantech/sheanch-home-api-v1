@@ -289,7 +289,8 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     // Review routes
     Route::group(['prefix' => 'reviews'], function() {
-        Route::post('get-property-list', [ReviewController::class, 'getPropertyReviews']);
+        Route::post('get-properties', [ReviewController::class, 'getPropertyReviews']);
+        Route::post('get-landlords', [ReviewController::class, 'getLandlordsReviews']);
         Route::post('delete', [ReviewController::class, 'destroy']);
     });
 });
