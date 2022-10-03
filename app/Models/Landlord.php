@@ -36,5 +36,8 @@ class Landlord extends Model
         return $this->belongsTo(Division::class, 'division_id', 'id');
     }
 
+    public function property()
+    {
+        return $this->hasMany(Property::class, 'landlord_id', 'id')->withTrashed();
+    }
 
-}

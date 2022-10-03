@@ -15,10 +15,13 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->integer('status');
-            $table->integer('type')->comment('1-property,2-landlord,3-tenant');
-            $table->double('rating')->nullable();
+            $table->integer('reviewer_type')->nullable()->comment('2-landlord, 3-tenant');
+            $table->integer('reviewer_type_id')->nullable()->comment('landlord or tenant Id');
+            $table->integer('review_type')->nullable()->comment('1-property,2-landlord,3-tenant');
+            $table->integer('review_type_id')->nullable()->comment('which review - Id');
             $table->longText('review');
+            $table->double('rating')->nullable();
+            $table->integer('status')->comment('0-inactive,1-active');
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();

@@ -4,83 +4,115 @@ namespace App\Http\Controllers\Admin\Review;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review\Review;
+use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+
+    use ResponseTrait;
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Get All Properties Review
+     * @param Request $request
+     * @return array
      */
-    public function index()
+
+    public function getPropertyReviews(Request $request)
     {
-        //
+        $columns = ['id','review','rating','status'];
+
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+
+        $query = Review::with(['tenant' => function ($query) {
+            $query->select('id', 'name');
+        }, 'property' => function ($query) {
+            $query->select('id', 'name', 'landlord_id')->with(['landlord' => function ($query) {
+                $query->select('id', 'name');
+            }]);
+        }])->where('review_type', 1)
+            ->select('id', 'reviewer_type','reviewer_type_id','review_type','review_type_id','review','rating','status')
+            ->orderBy($columns[$column], $dir);
+
+        $count = Review::count();
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('reviews', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if($length!='all'){
+            $fetchData = $query->paginate($length);
+        }
+        else{
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Get All Landlord Review
+     * @param Request $request
+     * @return array
      */
-    public function create()
+
+    public function getLandlordsReviews(Request $request)
     {
-        //
+        $columns = ['id','review','rating','status'];
+
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+
+        $query = Review::with(['tenant' => function ($query) {
+            $query->select('id', 'name');
+        }, 'property' => function ($query) {
+            $query->select('id', 'name', 'landlord_id')->with(['landlord' => function ($query) {
+                $query->select('id', 'name');
+            }]);
+        }])->where('review_type', 2)
+            ->select('id', 'reviewer_type','reviewer_type_id','review_type','review_type_id','review','rating','status')
+            ->orderBy($columns[$column], $dir);
+
+        $count = Review::count();
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('reviews', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if($length!='all'){
+            $fetchData = $query->paginate($length);
+        }
+        else{
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Review Data Delete
+     * @param $id
+     * @return mixed
      */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Review $review)
+    public function destroy($id)
     {
-        //
-    }
+        try {
+            $review = Review::findOrFail($id);
+            $review->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Review $review)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Review $review)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Review $review)
-    {
-        //
+            return $this->sendResponse(['id'=>$id],'Review deleted successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Review delete error', ['error' => $exception->getMessage()]);
+        }
     }
 }
