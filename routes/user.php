@@ -52,9 +52,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
     Route::post('me', [AuthController::class,'me']);
 });
 
-//Social Login
-Route::get('auth/social/{service}', [SocialLoginController::class, 'redirectToGoogle']);
-Route::get('auth/{service}/callback', [SocialLoginController::class, 'handleGoogleCallback']);
 Route::post('send-otp', [OTPController::class,'sendOTP']);
 //Address route
 Route::group(['prefix' => 'settings'], function(){

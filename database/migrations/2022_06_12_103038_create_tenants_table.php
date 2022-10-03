@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->index()->nullable();
-            $table->string('mobile')->index();
+            $table->string('mobile')->nullable()->index();
             $table->integer('status')->nullable()->index()->comment('1-active,0-deactivated');
             $table->integer('gender')->nullable()->comment('1-male,2-female,3-others');
             $table->string('dob')->nullable();
