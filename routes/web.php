@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\Auth\SocialLoginController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,13 +39,5 @@ Route::get('otp', function (){
 
 });
 
-Route::get('/
-storage-link', function () {
-    \Illuminate\Support\Facades\Artisan::call('storage:link');
-});
 
-
-Route::get('/home', 'HomeController@index')->name('home');
-Route::get('auth/google', [\App\Http\Controllers\User\Auth\SocialLoginController::class, 'redirectToGoogle']);
-Route::get('auth/google/callback', [\App\Http\Controllers\User\Auth\SocialLoginController::class, 'handleGoogleCallback']);
 
