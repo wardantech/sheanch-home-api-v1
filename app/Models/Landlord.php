@@ -40,4 +40,4 @@ class Landlord extends Model
     {
         return $this->hasMany(Property::class, 'landlord_id', 'id')->withTrashed();
     }
-
+}
