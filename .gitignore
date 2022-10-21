@@ -14,6 +14,3 @@ yarn-error.log
 /.vscode
 composer.json
 storage/app
-storage/framework
-storage/logs/laravel.log
-
