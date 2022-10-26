@@ -2,6 +2,7 @@
 
 namespace App\Models\Review;
 
+use App\Models\Landlord;
 use App\Models\Property\Property;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +21,11 @@ class Review extends Model
     public function property()
     {
         return $this->belongsTo(Property::class, 'review_type_id', 'id')->withTrashed();
+    }
+
+    public function landlord(): BelongsTo
+    {
+        return $this->belongsTo(Landlord::class, 'review_type_id', 'id')->withTrashed();
     }
 
 }
