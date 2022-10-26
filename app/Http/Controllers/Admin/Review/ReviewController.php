@@ -70,15 +70,14 @@ class ReviewController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = Review::with(['tenant' => function ($query) {
-            $query->select('id', 'name');
-        }, 'property' => function ($query) {
-            $query->select('id', 'name', 'landlord_id')->with(['landlord' => function ($query) {
-                $query->select('id', 'name');
-            }]);
-        }])->where('review_type', 2)
-            ->select('id', 'reviewer_type','reviewer_type_id','review_type','review_type_id','review','rating','status')
-            ->orderBy($columns[$column], $dir);
+        $query = Review::with(['tenant' => function ($tenant) {
+            $tenant->select('id', 'name');
+        }, 'landlord' => function($landlord) {
+            $landlord->select('id', 'name');
+        }])
+        ->where('review_type', 2)
+        ->select('id', 'reviewer_type','reviewer_type_id','review_type','review_type_id','review','rating','status')
+        ->orderBy($columns[$column], $dir);
 
         $count = Review::count();
         if ($searchValue) {
@@ -88,7 +87,7 @@ class ReviewController extends Controller
             });
         }
 
-        if($length!='all'){
+        if($length != 'all'){
             $fetchData = $query->paginate($length);
         }
         else{
