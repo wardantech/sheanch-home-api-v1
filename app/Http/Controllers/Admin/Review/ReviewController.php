@@ -98,6 +98,48 @@ class ReviewController extends Controller
     }
 
     /**
+     * Get All Landlord Review
+     * @param Request $request
+     * @return array
+     */
+
+    public function getTenantReviews(Request $request)
+    {
+        $columns = ['id','review','rating','status'];
+
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+
+        $query = Review::with(['tenant' => function ($tenant) {
+            $tenant->select('id', 'name');
+        }, 'landlord' => function($landlord) {
+            $landlord->select('id', 'name');
+        }])
+        ->where('review_type', 3)
+        ->select('id', 'reviewer_type','reviewer_type_id','review_type','review_type_id','review','rating','status')
+        ->orderBy($columns[$column], $dir);
+
+        $count = Review::count();
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('reviews', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if($length != 'all'){
+            $fetchData = $query->paginate($length);
+        }
+        else{
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+    }
+
+    /**
      * Review Data Delete
      * @param $id
      * @return mixed
