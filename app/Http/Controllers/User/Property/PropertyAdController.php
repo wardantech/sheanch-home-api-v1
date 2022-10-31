@@ -137,12 +137,14 @@ class PropertyAdController extends Controller
     {
         try {
             $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
-                ->with(['property' => function ($query) {
-                    $query->with('media');
-                }])
-                ->first();
+                ->with(['property', 'property.media', 'property.reviews' => function ($review) {
+                    $review->where('review_type', 1)
+                    ->select('id', 'review_type_id', 'review', 'rating', 'reviewer_type_id', 'created_at');
+                }, 'property.reviews.tenant' => function($tenant) {
+                    $tenant->select('id', 'name', 'image');
+                }])->first();
 
-            return $this->sendResponse($PropertyAd, 'Property data get successfully');
+            return $this->sendResponse($PropertyAd, 'Property data successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
