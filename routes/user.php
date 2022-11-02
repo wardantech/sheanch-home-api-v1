@@ -78,8 +78,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('details/{id}', [PropertyController::class, 'details']);
         Route::get('landlord/details/{id}', [PropertyController::class, 'landlordDetails']);
 
-
-
         Route::group(['prefix' => 'ad'], function() {
             Route::post('store', [PropertyAdController::class, 'store']);
             Route::post('get-property-as-landlord', [PropertyAdController::class, 'getPropertyAsLandlord']);

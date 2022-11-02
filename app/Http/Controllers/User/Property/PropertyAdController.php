@@ -138,7 +138,7 @@ class PropertyAdController extends Controller
         try {
             $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
                 ->with(['property', 'property.media', 'property.reviews' => function ($review) {
-                    $review->where('review_type', 1)
+                    $review->where('review_type', 1)->where('reviewer_type', 3)
                     ->select('id', 'review_type_id', 'review', 'rating', 'reviewer_type_id', 'created_at');
                 }, 'property.reviews.tenant' => function($tenant) {
                     $tenant->select('id', 'name', 'image');
@@ -153,7 +153,6 @@ class PropertyAdController extends Controller
 
     public function getEditData(Request $request)
     {
-
         try {
             $PropertyAd = PropertyAd::findOrFail($request->id);
             $properties = Property::where('landlord_id', $request->landlordId)
