@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Review;
 
 use App\Http\Controllers\Controller;
+use App\Models\Property\Property;
 use App\Models\Review\Review;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -33,11 +34,37 @@ class ReviewController extends Controller
             $review->save();
 
             return $this->sendResponse([
-                'status' => true
+                'status' => true,
+                'review' => $review
             ], 'Review store successfully');
 
         }catch (\Exception $exception){
             return $this->sendError('Review Image error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function getReviews(Request $request)
+    {
+        try {
+            $reviewsTenant = Review::where('review_type', 1)
+                ->where('review_type_id', $request->propertyId)
+                ->where('reviewer_type', 3)
+                ->with('tenant')
+                ->latest()
+                ->get();
+
+            $reviewsLandlord = Review::where('review_type', 1)
+                ->where('review_type_id', $request->propertyId)
+                ->where('reviewer_type', 2)
+                ->with('landlord')
+                ->latest()
+                ->get();
+
+            $reviews = $reviewsTenant->merge($reviewsLandlord);
+
+            return $this->sendResponse($reviews, 'Get review data successfully.');
+        } catch (\Exception $exception) {
+            return $this->sendError('There is an error.', ['error' => $exception->getMessage()]);
         }
     }
 }

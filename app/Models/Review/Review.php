@@ -25,7 +25,7 @@ class Review extends Model
 
     public function landlord(): BelongsTo
     {
-        return $this->belongsTo(Landlord::class, 'review_type_id', 'id')->withTrashed();
+        return $this->belongsTo(Landlord::class, 'reviewer_type_id', 'id')->withTrashed();
     }
 
 }

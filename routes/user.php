@@ -140,4 +140,5 @@ Route::group(['prefix' => 'wishlist'], function() {
 // Review Routes
 Route::group(['prefix' => 'review'], function() {
     Route::post('store', [ReviewController::class, 'store']);
+    Route::post('get-reviews', [ReviewController::class, 'getReviews']);
 });
