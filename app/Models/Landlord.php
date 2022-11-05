@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Property\Property;
+use App\Models\Review\Review;
 use App\Models\Settings\District;
 use App\Models\Settings\Division;
 use App\Models\Settings\Thana;
@@ -39,5 +40,11 @@ class Landlord extends Model
     public function property()
     {
         return $this->hasMany(Property::class, 'landlord_id', 'id')->withTrashed();
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'review_type_id', 'id')
+            ->where('review_type', 2);
     }
 }

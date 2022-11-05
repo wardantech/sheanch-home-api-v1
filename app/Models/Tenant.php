@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Review\Review;
+use App\Models\Settings\Thana;
 use App\Models\Settings\District;
 use App\Models\Settings\Division;
-use App\Models\Settings\Thana;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Tenant extends Model
 {
@@ -34,4 +35,9 @@ class Tenant extends Model
         return $this->belongsTo(Division::class, 'division_id', 'id');
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'review_type_id', 'id')
+            ->where('review_type', 3);
+    }
 }

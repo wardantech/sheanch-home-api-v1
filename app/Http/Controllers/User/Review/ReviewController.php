@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Review\Review;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -22,18 +21,14 @@ class ReviewController extends Controller
     {
         try {
             $review = new Review();
-
-            $review->review = $request->review;
-            $review->reviewer_type = $request->reviewer_type;
-            $review->review_type = $request->review_type;
-            $review->review_type_id = $request->review_type_id;
-            $review->reviewer_type_id = $request->reviewer_type_id;
-            $review->rating = $request->rating;
-            $review->status = $request->status;
+            $review->store($request);
             $review->save();
 
+            $review['tenant']['name'];
+
             return $this->sendResponse([
-                'status' => true
+                'status' => true,
+                'review' => $review
             ], 'Review store successfully');
 
         }catch (\Exception $exception){
@@ -41,48 +36,23 @@ class ReviewController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Review $review)
+    public function getReviews(Request $request)
     {
-        //
-    }
+        try {
+            $reviews = Review::where('review_type', 1)
+                ->where('review_type_id', $request->propertyId)
+                ->where('reviewer_type', 3)
+                ->with('tenant', function($query) {
+                    $query->select('id', 'name');
+                })
+                ->latest()
+                ->get();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Review $review)
-    {
-        //
-    }
+            // $avgRating = $reviews->avg('rating');
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Review $review)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Review\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Review $review)
-    {
-        //
+            return $this->sendResponse($reviews, 'Get review data successfully.');
+        } catch (\Exception $exception) {
+            return $this->sendError('There is an error.', ['error' => $exception->getMessage()]);
+        }
     }
 }

@@ -75,8 +75,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::get('details/{id}', [PropertyController::class, 'details']);
         Route::get('landlord/details/{id}', [PropertyController::class, 'landlordDetails']);
 
-
-
         Route::group(['prefix' => 'ad'], function() {
             Route::post('store', [PropertyAdController::class, 'store']);
             Route::post('get-property-as-landlord', [PropertyAdController::class, 'getPropertyAsLandlord']);
@@ -139,4 +137,5 @@ Route::group(['prefix' => 'wishlist'], function() {
 // Review Routes
 Route::group(['prefix' => 'review'], function() {
     Route::post('store', [ReviewController::class, 'store']);
+    Route::post('get-reviews', [ReviewController::class, 'getReviews']);
 });

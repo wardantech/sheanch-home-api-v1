@@ -20,7 +20,8 @@ class PropertyAdController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api',
+        $this->middleware(
+            'auth:api',
             [
                 'except' => ['getActivePropertyList', 'getDetails', 'search']
             ]
@@ -136,14 +137,18 @@ class PropertyAdController extends Controller
     public function getDetails(Request $request)
     {
         try {
+            // $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
+            //     ->with(['property', 'property.media', 'property.reviews' => function ($review) {
+            //         $review->where('review_type', 1)
+            //             ->select('id', 'review_type_id', 'review', 'rating', 'reviewer_type_id', 'created_at');
+            //     }, 'property.reviews.tenant' => function ($tenant) {
+            //         $tenant->select('id', 'name', 'image');
+            //     }])->first();
+
             $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
-                ->with(['property' => function ($query) {
-                    $query->with('media');
-                }])
-                ->first();
+                ->with(['property', 'property.media'])->first();
 
-            return $this->sendResponse($PropertyAd, 'Property data get successfully');
-
+            return $this->sendResponse($PropertyAd, 'Property data successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
@@ -151,7 +156,6 @@ class PropertyAdController extends Controller
 
     public function getEditData(Request $request)
     {
-
         try {
             $PropertyAd = PropertyAd::findOrFail($request->id);
             $properties = Property::where('landlord_id', $request->landlordId)
@@ -253,7 +257,6 @@ class PropertyAdController extends Controller
                 ->where('status', true)->get();
 
             return $this->sendResponse($properties, 'Landlord list');
-
         } catch (\Exception $exception) {
 
             return $this->sendError('Landlord list.', ['error' => $exception->getMessage()]);
@@ -280,7 +283,7 @@ class PropertyAdController extends Controller
 
         try {
             $activePropertyAds = PropertyAd::where('status', 1)
-                ->where('sale_type',$request->type)
+                ->where('sale_type', $request->type)
                 ->with(['property' => function ($query) {
                     $query->with('media');
                 }])->get();
@@ -329,6 +332,5 @@ class PropertyAdController extends Controller
         } catch (\Exception $exception) {
             return $this->sendError('Search data error', ['error' => $exception->getMessage()]);
         }
-
     }
 }
