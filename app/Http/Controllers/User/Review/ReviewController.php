@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\User\Review;
 
 use App\Http\Controllers\Controller;
-use App\Models\Property\Property;
 use App\Models\Review\Review;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -23,15 +21,10 @@ class ReviewController extends Controller
     {
         try {
             $review = new Review();
-
-            $review->review = $request->review;
-            $review->reviewer_type = $request->reviewer_type;
-            $review->review_type = $request->review_type;
-            $review->review_type_id = $request->review_type_id;
-            $review->reviewer_type_id = $request->reviewer_type_id;
-            $review->rating = $request->rating;
-            $review->status = $request->status;
+            $review->store($request);
             $review->save();
+
+            $review['tenant']['name'];
 
             return $this->sendResponse([
                 'status' => true,
@@ -46,21 +39,16 @@ class ReviewController extends Controller
     public function getReviews(Request $request)
     {
         try {
-            $reviewsTenant = Review::where('review_type', 1)
+            $reviews = Review::where('review_type', 1)
                 ->where('review_type_id', $request->propertyId)
                 ->where('reviewer_type', 3)
-                ->with('tenant')
+                ->with('tenant', function($query) {
+                    $query->select('id', 'name');
+                })
                 ->latest()
                 ->get();
 
-            $reviewsLandlord = Review::where('review_type', 1)
-                ->where('review_type_id', $request->propertyId)
-                ->where('reviewer_type', 2)
-                ->with('landlord')
-                ->latest()
-                ->get();
-
-            $reviews = $reviewsTenant->merge($reviewsLandlord);
+            // $avgRating = $reviews->avg('rating');
 
             return $this->sendResponse($reviews, 'Get review data successfully.');
         } catch (\Exception $exception) {

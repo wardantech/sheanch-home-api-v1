@@ -28,4 +28,14 @@ class Review extends Model
         return $this->belongsTo(Landlord::class, 'reviewer_type_id', 'id')->withTrashed();
     }
 
+    public function store($value)
+    {
+        $this->review = $value->review;
+        $this->reviewer_type = $value->reviewer_type;
+        $this->review_type = $value->review_type;
+        $this->review_type_id = $value->review_type_id;
+        $this->reviewer_type_id = $value->reviewer_type_id;
+        $this->rating = $value->rating;
+        $this->status = $value->status;
+    }
 }

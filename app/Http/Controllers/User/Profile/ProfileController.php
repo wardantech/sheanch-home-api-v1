@@ -328,10 +328,21 @@ class ProfileController extends Controller
 
     public function showTenant(Request $request){
         try{
-            $landlord = Tenant::with('division','district','thana')
-                ->where('id',$request->tenantId)->first();
+            $tenant = Tenant::with(['division' => function($query) {
+                $query->select('id', 'name');
+            },'district' => function($query) {
+                $query->select('id', 'name');
+            },'thana' => function($query) {
+                $query->select('id', 'name');
+            }, 'reviews'])
+            ->where('id',$request->tenantId)->first();
 
-            return $this->sendResponse($landlord,'Tenant data get successfully');
+            $rating = $tenant->reviews()->avg('rating');
+
+            return $this->sendResponse([
+                'tenant' => $tenant,
+                'rating' => $rating
+            ],'Tenant data get successfully');
         }
         catch (\Exception $exception){
             DB::rollback();

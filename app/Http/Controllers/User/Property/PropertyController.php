@@ -353,11 +353,16 @@ class PropertyController extends Controller
                     $query->select('id', 'name');
                 }, 'thana' => function ($query) {
                     $query->select('id', 'name');
-                }]);
+                }, 'reviews']);
             }])->findOrFail($id);
-            $landlord = $property->landlord;
 
-            return $this->sendResponse($landlord, 'Landlord data get successfully');
+            $landlord = $property->landlord;
+            $rating = $landlord->reviews()->avg('rating');
+
+            return $this->sendResponse([
+                'landlord' => $landlord,
+                'rating' => $rating
+            ], 'Landlord data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Landlord data error', ['error' => $exception->getMessage()]);
         }
