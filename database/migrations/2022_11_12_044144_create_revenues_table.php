@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('expense_categories', function (Blueprint $table) {
+        Schema::create('revenues', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('status')->index();
-            $table->text('description')->nullable();
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
+            $table->foreignId('property_id')->constrained('properties');
+            $table->double('amount');
+            $table->date('date');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('expense_categories');
+        Schema::dropIfExists('revenues');
     }
 };

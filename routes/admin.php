@@ -1,31 +1,30 @@
 <?php
 
-use App\Http\Controllers\Admin\Accounts\AccountController;
-use App\Http\Controllers\Admin\Accounts\BankController;
-use App\Http\Controllers\Admin\Dashboard\DashboardController;
-use App\Http\Controllers\Admin\Expense\ExpenseCategoryController;
-use App\Http\Controllers\Admin\Expense\ExpenseController;
-use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
-use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
-use App\Http\Controllers\Admin\Pages\PropertyFaqController;
-use App\Http\Controllers\Admin\Property\PropertyAdController;
-use App\Http\Controllers\Admin\Property\PropertyController;
-use App\Http\Controllers\Admin\Property\PropertyDeedController;
-use App\Http\Controllers\Admin\Review\ReviewCommentController;
-use App\Http\Controllers\Admin\Review\ReviewController;
-use App\Http\Controllers\Admin\Settings\FacilityController;
-use App\Http\Controllers\Admin\Settings\FrontendSettingController;
-use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
-use App\Http\Controllers\Admin\Settings\PropertyTypeController;
-use App\Http\Controllers\Admin\Settings\UtilityController;
+use Illuminate\Support\Facades\Route;
+use App\Models\Pages\AboutPropertySelling;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\User\AdminController;
-use App\Http\Controllers\Admin\User\LandlordController;
 use App\Http\Controllers\Admin\User\TenantController;
+use App\Http\Controllers\Admin\Review\ReviewController;
+use App\Http\Controllers\Admin\User\LandlordController;
+use App\Http\Controllers\Admin\Accounts\ExpanseController;
+use App\Http\Controllers\Admin\Accounts\RevenueController;
+use App\Http\Controllers\Admin\Settings\UtilityController;
+use App\Http\Controllers\Admin\Pages\PropertyFaqController;
+use App\Http\Controllers\Admin\Property\PropertyController;
+use App\Http\Controllers\Admin\Settings\FacilityController;
 use App\Http\Controllers\Admin\Widgets\HowItWorkController;
 use App\Http\Controllers\Admin\Wishlists\WishlistController;
-use App\Http\Controllers\Auth\AuthController;
-use App\Models\Pages\AboutPropertySelling;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Dashboard\DashboardController;
+use App\Http\Controllers\Admin\Property\PropertyAdController;
+use App\Http\Controllers\Admin\Accounts\ExpanseItemController;
+use App\Http\Controllers\Admin\Review\ReviewCommentController;
+use App\Http\Controllers\Admin\Property\PropertyDeedController;
+use App\Http\Controllers\Admin\Settings\PropertyTypeController;
+use App\Http\Controllers\Admin\Settings\FrontendSettingController;
+use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
+use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
+use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,47 +84,26 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('delete/{id}',[TenantController::class, 'destroy']);
     });
 
-    //Expense route
-    Route::group(['prefix' => 'expense'], function(){
-
-        Route::group(['prefix' => 'category'], function() {
-            Route::post('/', [ExpenseCategoryController::class, 'store']);
-            Route::post('list', [ExpenseCategoryController::class, 'getList']);
-            Route::get('show/{id}',[ExpenseCategoryController::class, 'show']);
-            Route::post('update/{id}',[ExpenseCategoryController::class, 'update']);
-            Route::post('change-status/{id}',[ExpenseCategoryController::class, 'changeStatus']);
-            Route::post('delete/{id}',[ExpenseCategoryController::class, 'destroy']);
-        });
-
-        //expense
-        Route::post('store', [ExpenseController::class,'store']);
-        Route::post('list', [ExpenseController::class,'getList']);
-        Route::get('get-categories', [ExpenseController::class, 'getCategories']);
-        Route::get('show/{id}',[ExpenseController::class, 'show']);
-        Route::post('update/{id}',[ExpenseController::class,'update']);
-        Route::post('change-status/{id}',[ExpenseController::class, 'changeStatus']);
-        Route::post('delete/{id}',[ExpenseController::class, 'destroy']);
-
-    });
-
-
+    // Account Routes
     Route::group(['prefix' => 'account'], function() {
-        Route::post('store', [AccountController::class, 'store']);
-        Route::post('list', [AccountController::class,'getList']);
-        Route::get('show/{id}',[AccountController::class, 'show']);
-        Route::post('update/{id}',[AccountController::class, 'update']);
-        Route::post('change-status/{id}',[AccountController::class, 'changeStatus']);
+        // Expance Item Routes
+        Route::get('expanse-item', [ExpanseItemController::class, 'index']);
+        Route::post('expanse-item', [ExpanseItemController::class, 'store']);
+        Route::put('expanse-item/{expanseItem}', [ExpanseItemController::class, 'update']);
+        Route::delete('expanse-item/{expanseItem}', [ExpanseItemController::class, 'destroy']);
 
-        Route::group(['prefix' => 'bank'], function() {
-            Route::post('store', [BankController::class, 'store']);
-            Route::post('list', [BankController::class,'getList']);
-            Route::get('show/{id}',[BankController::class, 'show']);
-            Route::post('update/{id}',[BankController::class, 'update']);
-            Route::post('change-status/{id}',[BankController::class, 'changeStatus']);
-        });
+        // Expanse Route
+        Route::get('expanses', [ExpanseController::class, 'index']);
+        Route::post('expanses', [ExpanseController::class, 'store']);
+        Route::put('expanses/{expanse}', [ExpanseController::class, 'update']);
+        Route::delete('expanses/{expanse}', [ExpanseController::class, 'destroy']);
 
+        // Revenue Route
+        Route::get('revenues', [RevenueController::class, 'index']);
+        Route::post('revenues', [RevenueController::class, 'store']);
+        Route::put('revenues/{revenue}', [RevenueController::class, 'update']);
+        Route::delete('revenues/{revenue}', [RevenueController::class, 'destroy']);
     });
-
 
     // Property Route
     Route::group(['prefix' => 'property'], function() {

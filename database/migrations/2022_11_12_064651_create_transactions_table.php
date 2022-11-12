@@ -15,15 +15,13 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->integer('account_id')->index();
-            $table->double('amount');
-            $table->string('transaction_date');
-            $table->integer('transactions_type')->index()->comment('1=Debit/2=Credit');
-            $table->text('transaction_info')->nullable();
-            $table->integer('payment_type')->index()->comment('1=Cash/2=Check');
-            $table->string('chick_number')->nullable();
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->foreignId('property_id')->constrained('properties');
+            $table->foreignId('revenue_id')->constrained('revenues');
+            $table->foreignId('expanse_id')->constrained('expanses');
+            $table->double('cash_in')->nullable();
+            $table->double('cash_out')->nullable();
+            $table->text('remark')->nullable();
+            $table->date('date');
             $table->timestamps();
             $table->softDeletes();
         });
