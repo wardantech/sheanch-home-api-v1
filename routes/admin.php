@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\Wishlists\WishlistController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
 use App\Http\Controllers\Admin\Property\PropertyAdController;
 use App\Http\Controllers\Admin\Accounts\ExpanseItemController;
+use App\Http\Controllers\Admin\Accounts\TransactionController;
 use App\Http\Controllers\Admin\Review\ReviewCommentController;
 use App\Http\Controllers\Admin\Property\PropertyDeedController;
 use App\Http\Controllers\Admin\Settings\PropertyTypeController;
@@ -103,6 +104,9 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('revenues', [RevenueController::class, 'store']);
         Route::put('revenues/{revenue}', [RevenueController::class, 'update']);
         Route::delete('revenues/{revenue}', [RevenueController::class, 'destroy']);
+
+        // Transactions Route
+        Route::get('transactions', [TransactionController::class, 'index']);
     });
 
     // Property Route
