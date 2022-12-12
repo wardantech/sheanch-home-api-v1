@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('expanses', function (Blueprint $table) {
+        Schema::create('mobile_bankings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained('properties');
-            $table->foreignId('expanse_item_id')->constrained('expanse_items');
-            $table->double('amount');
-            $table->date('date');
+            $table->string('name');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('expanses');
+        Schema::dropIfExists('mobile_bankings');
     }
 };

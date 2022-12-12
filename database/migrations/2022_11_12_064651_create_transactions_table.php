@@ -15,13 +15,17 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained('properties');
-            $table->foreignId('revenue_id')->nullable()->constrained('revenues')->onDelete('cascade');
-            $table->foreignId('expanse_id')->nullable()->constrained('expanses');
+            $table->foreignId('user_id')->nullable()->constrained('users');
+            $table->foreignId('property_id')->nullable()->constrained('properties');
+            $table->foreignId('account_id')->nullable()->constrained('accounts');
+            $table->foreignId('mobile_banking_id')->nullable()->constrained('mobile_bankings');
+            $table->foreignId('property_deed_id')->nullable()->constrained('property_deeds');
+            $table->foreignId('due_id')->nullable()->constrained('dues');
             $table->tinyInteger('transaction_purpose')->comment('1 = Revenue | 2 = Expanse');
             $table->double('cash_in')->default(0);
             $table->double('cash_out')->default(0);
             $table->text('remark')->nullable();
+            $table->tinyInteger('payment_method')->comment('1 = Cash | 2 = Bank | 3 = Mobile Bank');
             $table->date('date');
             $table->timestamps();
             $table->softDeletes();

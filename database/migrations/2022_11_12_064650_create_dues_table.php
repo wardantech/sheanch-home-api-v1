@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('revenues', function (Blueprint $table) {
+        Schema::create('dues', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users');
             $table->foreignId('property_id')->constrained('properties');
+            $table->foreignId('property_deed_id')->constrained('property_deeds');
             $table->double('amount');
             $table->date('date');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('revenues');
+        Schema::dropIfExists('dues');
     }
 };

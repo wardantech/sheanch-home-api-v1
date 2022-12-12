@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\User\TenantController;
 use App\Http\Controllers\Admin\Review\ReviewController;
 use App\Http\Controllers\Admin\User\LandlordController;
 use App\Http\Controllers\Admin\Accounts\ExpanseController;
-use App\Http\Controllers\Admin\Accounts\RevenueController;
 use App\Http\Controllers\Admin\Settings\UtilityController;
 use App\Http\Controllers\Admin\Pages\PropertyFaqController;
 use App\Http\Controllers\Admin\Property\PropertyController;
@@ -22,6 +21,7 @@ use App\Http\Controllers\Admin\Accounts\TransactionController;
 use App\Http\Controllers\Admin\Review\ReviewCommentController;
 use App\Http\Controllers\Admin\Property\PropertyDeedController;
 use App\Http\Controllers\Admin\Settings\PropertyTypeController;
+use App\Http\Controllers\Admin\Accounts\Users\RevenueController;
 use App\Http\Controllers\Admin\Settings\FrontendSettingController;
 use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
 use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
@@ -100,10 +100,10 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::delete('expanses/{expanse}', [ExpanseController::class, 'destroy']);
 
         // Revenue Route
-        Route::get('revenues', [RevenueController::class, 'index']);
-        Route::post('revenues', [RevenueController::class, 'store']);
-        Route::put('revenues/{revenue}', [RevenueController::class, 'update']);
-        Route::delete('revenues/{revenue}', [RevenueController::class, 'destroy']);
+        // Route::get('revenues', [RevenueController::class, 'index']);
+        // Route::post('revenues', [RevenueController::class, 'store']);
+        // Route::put('revenues/{transaction}', [RevenueController::class, 'update']);
+        // Route::delete('revenues/{transaction}', [RevenueController::class, 'destroy']);
 
         // Transactions Route
         Route::get('transactions', [TransactionController::class, 'index']);
