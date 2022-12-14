@@ -3,30 +3,26 @@
 namespace App\Http\Controllers\User\Accounts;
 
 use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
-use App\Rules\BeforeMonthRule;
-use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserExpanseResourse;
 use App\Models\Accounts\Transaction;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\UserRevenueResource;
-use App\Rules\UniqueDeedDateRule;
+use App\Traits\ResponseTrait;
 
-class RevenueController extends Controller
+class ExpanseController extends Controller
 {
     use ResponseTrait;
 
     public function index()
     {
         try {
-            $revenues = Transaction::where('transaction_purpose', 1)
+            $expanses = Transaction::where('transaction_purpose', 2)
                 ->where('user_id', 1)->get();
 
             return $this->sendResponse([
-                'revenues' => UserRevenueResource::collection($revenues)
-            ], 'Revenues Show Successfully');
+                'expanses' => UserExpanseResourse::collection($expanses)
+            ], 'Expanses Show Successfully');
         }catch (\Exception $exception) {
-            return $this->sendError('Revenues Error', [
+            return $this->sendError('Expanses Error', [
                 'error' => $exception->getMessage()
             ]);
         }
@@ -35,19 +31,16 @@ class RevenueController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'cash_in' => 'required',
+            'date' => 'required',
+            'cash_out' => 'required',
             'account_id' => 'nullable',
             'remark' => 'nullable|string',
             'user_id' => 'required|integer',
             'mobile_banking_id' => 'nullable',
             'property_id' => 'required|integer',
             'payment_method' => 'required|integer',
+            'expanse_item_id' => 'required|integer',
             'property_deed_id' => 'required|integer',
-            'date' => [
-                'required',
-                new BeforeMonthRule,
-                new UniqueDeedDateRule($request->property_deed_id, $request->user_id)
-            ]
         ]);
 
         try {
@@ -62,15 +55,15 @@ class RevenueController extends Controller
                 unset($data['mobile_banking_id']);
             }
 
-            $data['transaction_purpose'] = 1;
-            $revenues = Transaction::create($data);
+            $data['transaction_purpose'] = 2;
+            $expanse = Transaction::create($data);
 
             return $this->sendResponse([
-                'revenue' => new UserRevenueResource($revenues),
-            ], 'Revenue Store Successfully');
+                'expanse' => new UserExpanseResourse($expanse),
+            ], 'Expanse Store Successfully');
 
         }catch (\Exception $exception) {
-            return $this->sendError('Revenue Store Error', [
+            return $this->sendError('Expanse Store Error', [
                 'error' => $exception->getMessage()
             ]);
         }
@@ -79,22 +72,17 @@ class RevenueController extends Controller
     public function update(Request $request,Transaction $transaction)
     {
         $data = $request->validate([
-            'cash_in' => 'required',
+            'date' => 'required',
+            'cash_out' => 'required',
             'account_id' => 'nullable',
             'remark' => 'nullable|string',
             'user_id' => 'required|integer',
             'mobile_banking_id' => 'nullable',
             'property_id' => 'required|integer',
             'payment_method' => 'required|integer',
+            'expanse_item_id' => 'required|integer',
             'property_deed_id' => 'required|integer',
-            'date' => [
-                'required',
-                new BeforeMonthRule,
-                new UniqueDeedDateRule($request->property_deed_id, $request->user_id)
-            ]
         ]);
-
-        return 1;
 
         try {
             if($data['payment_method'] === 2) {
@@ -108,15 +96,15 @@ class RevenueController extends Controller
                 unset($data['mobile_banking_id']);
             }
 
-            $data['transaction_purpose'] = 1;
+            $data['transaction_purpose'] = 2;
             $transaction->update($data);
 
             return $this->sendResponse([
-                'revenue' => new UserRevenueResource($transaction),
-            ], 'Revenue Updated Successfully');
+                'expanse' => new UserExpanseResourse($transaction),
+            ], 'Expanse Updated Successfully');
 
         }catch (\Exception $exception) {
-            return $this->sendError('Revenue Updated Error', [
+            return $this->sendError('Expanse Update Error', [
                 'error' => $exception->getMessage()
             ]);
         }

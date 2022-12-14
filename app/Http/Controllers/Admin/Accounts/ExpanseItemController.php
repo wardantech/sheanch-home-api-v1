@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Accounts\ExpanseItem;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ExpanseItemController extends Controller
 {
@@ -33,10 +34,8 @@ class ExpanseItemController extends Controller
         ]);
 
         try {
-            $expanseItem = new ExpanseItem();
-
-            $expanseItem->name = $data['name'];
-            $expanseItem->save();
+            $data['created_by'] = Auth::id();
+            $expanseItem = ExpanseItem::create($data);
 
             return $this->sendResponse([
                 'expanseItems' => $expanseItem
@@ -56,8 +55,8 @@ class ExpanseItemController extends Controller
         ]);
 
         try {
-            $expanseItem->name = $data['name'];
-            $expanseItem->update();
+            $data['updated_by'] = Auth::id();
+            $expanseItem->update($data);
 
             return $this->sendResponse([
                 'expanseItem' => $expanseItem
@@ -71,16 +70,7 @@ class ExpanseItemController extends Controller
 
     public function destroy(ExpanseItem $expanseItem)
     {
-        try {
-            $expanseItem->delete();
-
-            return $this->sendResponse([
-                'expanseItem' => $expanseItem
-            ], 'Expanse Item Deleted Successfully');
-        }catch (\Exception $exception) {
-            return $this->sendError('Expanse Item Delete Error', [
-                'error' => $exception->getMessage()
-            ]);
-        }
+        $expanseItem->delete();
+        return response('', 204);
     }
 }

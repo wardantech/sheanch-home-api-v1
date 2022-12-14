@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('expanse_items', function (Blueprint $table) {
             $table->id();
             $table->string('name', 191);
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });

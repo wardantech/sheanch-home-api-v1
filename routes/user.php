@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\OTPController;
+use App\Http\Controllers\User\Accounts\ExpanseController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Review\ReviewController;
@@ -141,9 +142,16 @@ Route::group(['prefix' => 'review'], function() {
 });
 
 // Accounts
-Route::group(['prefix' => 'accounts'], function() {
+Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
+    // Revenues Route
     Route::get('revenues', [RevenueController::class, 'index']);
     Route::post('revenues', [RevenueController::class, 'store']);
     Route::put('revenues/{transaction}', [RevenueController::class, 'update']);
     Route::delete('revenues/{transaction}', [RevenueController::class, 'destroy']);
+
+    // Expanse Route
+    Route::get('expanses', [ExpanseController::class, 'index']);
+    Route::post('expanses', [ExpanseController::class, 'store']);
+    Route::put('expanses/{transaction}', [ExpanseController::class, 'update']);
+    Route::delete('expanses/{transaction}', [ExpanseController::class, 'destroy']);
 });

@@ -86,12 +86,12 @@ Route::group(['middleware' => ['auth:api']], function(){
     });
 
     // Account Routes
-    Route::group(['prefix' => 'account'], function() {
+    Route::group(['prefix' => 'accounts'], function() {
         // Expance Item Routes
-        Route::get('expanse-item', [ExpanseItemController::class, 'index']);
-        Route::post('expanse-item', [ExpanseItemController::class, 'store']);
-        Route::put('expanse-item/{expanseItem}', [ExpanseItemController::class, 'update']);
-        Route::delete('expanse-item/{expanseItem}', [ExpanseItemController::class, 'destroy']);
+        Route::get('expanse-items', [ExpanseItemController::class, 'index']);
+        Route::post('expanse-items', [ExpanseItemController::class, 'store']);
+        Route::put('expanse-items/{expanseItem}', [ExpanseItemController::class, 'update']);
+        Route::delete('expanse-items/{expanseItem}', [ExpanseItemController::class, 'destroy']);
 
         // Expanse Route
         Route::get('expanses', [ExpanseController::class, 'index']);
