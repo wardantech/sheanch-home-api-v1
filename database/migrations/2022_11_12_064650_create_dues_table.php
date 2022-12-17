@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('expense_categories', function (Blueprint $table) {
+        Schema::create('dues', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('status')->index();
-            $table->text('description')->nullable();
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('property_id')->constrained('properties');
+            $table->foreignId('property_deed_id')->constrained('property_deeds');
+            $table->double('amount');
+            $table->date('date');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('expense_categories');
+        Schema::dropIfExists('dues');
     }
 };

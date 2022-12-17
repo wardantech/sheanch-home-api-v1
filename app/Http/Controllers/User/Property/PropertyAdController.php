@@ -302,24 +302,29 @@ class PropertyAdController extends Controller
             if (isset($request->sale_type)) {
                 $search->where('sale_type', $request->sale_type);
             }
+
             if (isset($request->min_price)) {
                 $search->where('rent_amount', '>=', $request->min_price);
             }
+
             if (isset($request->max_price)) {
                 $search->where('rent_amount', '<=', $request->max_price);
             }
+
             if (isset($request->property_category)) {
                 $search->where('property_category', $request->property_category);
             }
             if (isset($request->property_type_id)) {
                 $search->where('property_type_id', $request->property_type_id);
             }
+
             if (isset($request->division_id)) {
                 $search->where('division_id', $request->division_id);
             }
             if (isset($request->district_id)) {
                 $search->where('district_id', $request->district_id);
             }
+            
             if (isset($request->thana_id)) {
                 $search->where('thana_id', $request->thana_id);
             }

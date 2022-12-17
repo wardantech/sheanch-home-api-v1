@@ -1,22 +1,24 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\OTPController;
+use App\Http\Controllers\User\Accounts\ExpanseController;
+use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\Auth\AuthController;
-use App\Http\Controllers\User\Auth\SocialLoginController;
-use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
-use App\Http\Controllers\User\Dashboard\TenantDashboardController;
-use App\Http\Controllers\User\Profile\ProfileController;
+use App\Http\Controllers\User\Review\ReviewController;
 use App\Http\Controllers\User\Property\LeaseController;
-use App\Http\Controllers\User\Property\PropertyAdController;
+use App\Http\Controllers\User\Widgets\WidgetController;
+use App\Http\Controllers\User\Profile\ProfileController;
+use App\Http\Controllers\User\Accounts\RevenueController;
+use App\Http\Controllers\User\Auth\SocialLoginController;
 use App\Http\Controllers\User\Property\PropertyController;
+use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Property\PropertyPageController;
-use App\Http\Controllers\User\Review\ReviewController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
+use App\Http\Controllers\User\Dashboard\TenantDashboardController;
+use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
-use App\Http\Controllers\User\Widgets\WidgetController;
-use App\Http\Controllers\User\WishlistController;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +47,6 @@ Route::post('get-landlord-dashboard-data', [LandlordDashboardController::class, 
 Route::post('get-tenant-dashboard-data', [TenantDashboardController::class, 'getDashboardData']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
-
     Route::post('login', [AuthController::class,'login']);
     //Route::get('login', [AuthController::class,'login'])->name('login');
     Route::post('logout', [AuthController::class,'logout']);
@@ -138,4 +139,19 @@ Route::group(['prefix' => 'wishlist'], function() {
 Route::group(['prefix' => 'review'], function() {
     Route::post('store', [ReviewController::class, 'store']);
     Route::post('get-reviews', [ReviewController::class, 'getReviews']);
+});
+
+// Accounts
+Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
+    // Revenues Route
+    Route::get('revenues', [RevenueController::class, 'index']);
+    Route::post('revenues', [RevenueController::class, 'store']);
+    Route::put('revenues/{transaction}', [RevenueController::class, 'update']);
+    Route::delete('revenues/{transaction}', [RevenueController::class, 'destroy']);
+
+    // Expanse Route
+    Route::get('expanses', [ExpanseController::class, 'index']);
+    Route::post('expanses', [ExpanseController::class, 'store']);
+    Route::put('expanses/{transaction}', [ExpanseController::class, 'update']);
+    Route::delete('expanses/{transaction}', [ExpanseController::class, 'destroy']);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Models\Property;
 
+use App\Models\Accounts\Revenue;
 use App\Models\Landlord;
 use App\Models\Review\Review;
 use App\Models\Settings\District;
@@ -48,5 +49,10 @@ class Property extends Model implements HasMedia
     public function reviews()
     {
         return $this->hasMany(Review::class, 'review_type_id', 'id');
+    }
+
+    public function revenue()
+    {
+        return $this->hasMany(Revenue::class);
     }
 }
