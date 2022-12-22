@@ -16,12 +16,8 @@ return new class extends Migration
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->integer('status')->index()->default(1)->comment('1=Active/0=Deactive');
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->string('category');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

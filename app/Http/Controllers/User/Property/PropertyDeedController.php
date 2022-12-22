@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers\User\Property;
 
-use App\Http\Controllers\Controller;
-use App\Models\Property\PropertyAd;
-use App\Models\Property\PropertyDeed;
-use App\Traits\ResponseTrait;
+use App\Models\Accounts\Due;
 use Illuminate\Http\Request;
+use App\Models\Accounts\Bank;
+use App\Traits\ResponseTrait;
+use App\Rules\BeforeMonthRule;
+use App\Rules\UniqueDeedDateRule;
+use Illuminate\Support\Facades\DB;
+use App\Models\Property\PropertyAd;
+use App\Http\Controllers\Controller;
+use App\Models\Accounts\Transaction;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Property\PropertyDeed;
+use App\Models\Accounts\MobileBanking;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\UserRevenueResource;
 
 class PropertyDeedController extends Controller
 {
@@ -227,6 +235,83 @@ class PropertyDeedController extends Controller
             return $this->sendResponse(['id' => $id], 'Property Deed status change successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function getRentProperty(Request $request)
+    {
+        try {
+            $propertyDeed = PropertyDeed::with('property', 'tenant')->findOrFail($request->deedId);
+            $banks = Bank::all();
+            $mobileBanks = MobileBanking::all();
+
+            return $this->sendResponse([
+                'deed'=> $propertyDeed,
+                'banks' => $banks,
+                'mobiles' => $mobileBanks
+            ],'Property deed get successfully');
+
+        } catch (\Exception $exception) {
+            return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    // Store Rent By Deed
+    public function RentPropertyStore(Request $request)
+    {
+        $data = $request->validate([
+            'cash_in' => 'required',
+            'bank_id' => 'nullable',
+            'remark' => 'nullable|string',
+            'user_id' => 'required|integer',
+            'mobile_banking_id' => 'nullable',
+            'property_id' => 'required|integer',
+            'payment_method' => 'required|integer',
+            'property_deed_id' => 'required|integer',
+            'date' => [
+                'required',
+                new BeforeMonthRule,
+                new UniqueDeedDateRule($request->property_deed_id, $request->user_id)
+            ]
+        ]);
+
+        DB::beginTransaction();
+        try {
+            if($data['payment_method'] == 2) {
+                $data['bank_id'] = $request->bank_id;
+                unset($data['mobile_banking_id']);
+            } elseif ($data['payment_method'] == 3) {
+                $data['mobile_banking_id'] = $request->mobile_banking_id;
+                unset($data['bank_id']);
+            }else {
+                unset($data['bank_id']);
+                unset($data['mobile_banking_id']);
+            }
+
+            if (!$request->due) {
+                $due = new Due();
+
+                $due->user_id = $request->user_id;
+                $due->property_id = $request->property_id;
+                $due->property_deed_id = $request->property_deed_id;
+                $due->amount = $request->due_amount;
+                $due->date = $request->date;
+                $due->save();
+            }
+
+            $data['transaction_purpose'] = 1;
+            $revenues = Transaction::create($data);
+
+            DB::commit();
+            return $this->sendResponse([
+                'revenue' => new UserRevenueResource($revenues),
+            ], 'Payment Successfully Added');
+
+        }catch (\Exception $exception) {
+            DB::rollback();
+            return $this->sendError('Payment Store Error', [
+                'error' => $exception->getMessage()
+            ]);
         }
     }
 

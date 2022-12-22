@@ -96,6 +96,9 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('landlord-list', [PropertyDeedController::class, 'getListLandlord']);
             Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
+
+            Route::post('get-rent-property', [PropertyDeedController::class, 'getRentProperty']);
+            Route::post('rent-property/store', [PropertyDeedController::class, 'RentPropertyStore']);
         });
 
     });

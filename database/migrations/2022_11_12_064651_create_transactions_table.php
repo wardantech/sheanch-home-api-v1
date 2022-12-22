@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('property_id')->nullable()->constrained('properties');
-            $table->foreignId('account_id')->nullable()->constrained('accounts');
+            $table->foreignId('bank_id')->nullable()->constrained('banks');
             $table->foreignId('mobile_banking_id')->nullable()->constrained('mobile_bankings');
             $table->foreignId('property_deed_id')->nullable()->constrained('property_deeds');
             $table->foreignId('expanse_item_id')->nullable()->constrained('expanse_items');
