@@ -99,6 +99,7 @@ Route::group(['middleware' => ['auth:api']], function(){
 
             Route::post('get-rent-property', [PropertyDeedController::class, 'getRentProperty']);
             Route::post('rent-property/store', [PropertyDeedController::class, 'RentPropertyStore']);
+            Route::post('get-property-payments', [PropertyDeedController::class, 'getPropertyPayments']);
         });
 
     });

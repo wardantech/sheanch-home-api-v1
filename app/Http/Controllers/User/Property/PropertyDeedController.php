@@ -20,25 +20,11 @@ use App\Http\Resources\UserRevenueResource;
 
 class PropertyDeedController extends Controller
 {
+    use ResponseTrait;
 
     public function __construct()
     {
-        $this->middleware('auth:api',
-            [
-                'except' => ['save']
-            ]
-        );
-    }
-
-    use ResponseTrait;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+        $this->middleware('auth:api', [ 'except' => ['save']]);
     }
 
     /**
@@ -113,16 +99,6 @@ class PropertyDeedController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
@@ -160,40 +136,6 @@ class PropertyDeedController extends Controller
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Property\PropertyDeed $propertyDeed
-     * @return \Illuminate\Http\Response
-     */
-    public function show(PropertyDeed $propertyDeed)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\Models\Property\PropertyDeed $propertyDeed
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(PropertyDeed $propertyDeed)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Property\PropertyDeed $propertyDeed
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, PropertyDeed $propertyDeed)
-    {
-        //
     }
 
     /**
@@ -288,7 +230,7 @@ class PropertyDeedController extends Controller
                 unset($data['mobile_banking_id']);
             }
 
-            if (!$request->due) {
+            if ($request->due_amount) {
                 $due = new Due();
 
                 $due->user_id = $request->user_id;
@@ -297,6 +239,8 @@ class PropertyDeedController extends Controller
                 $due->amount = $request->due_amount;
                 $due->date = $request->date;
                 $due->save();
+
+                $data['due_id'] = $due->id;
             }
 
             $data['transaction_purpose'] = 1;
@@ -313,6 +257,37 @@ class PropertyDeedController extends Controller
                 'error' => $exception->getMessage()
             ]);
         }
+    }
+
+    public function getPropertyPayments(Request $request)
+    {
+        $columns = ['id', 'name'];
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+        $userId = $request['params']['userId'];
+
+        $query = Transaction::with('due', 'property')
+            ->where('user_id', $userId)
+            ->orderBy($columns[$column], $dir);
+
+        $count = PropertyDeed::count();
+
+        if ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if ($length != 'all') {
+            $fetchData = $query->paginate($length);
+        } else {
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Accounts;
 
+use App\Models\Property\Property;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,4 +30,15 @@ class Transaction extends Model
         'created_by',
         'updated_by'
     ];
+
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function due()
+    {
+        return $this->belongsTo(Due::class, 'due_id', 'id');
+    }
+
 }

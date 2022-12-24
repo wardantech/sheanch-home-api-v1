@@ -11,4 +11,9 @@ class Due extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['user_id', 'property_id', 'property_deed_id', 'amount', 'date'];
+
+    public function transection()
+    {
+        return $this->hasOne(Transaction::class);
+    }
 }
