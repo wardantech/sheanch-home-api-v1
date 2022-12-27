@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\User\Property;
 
-use App\Http\Controllers\Controller;
 use App\Models\Landlord;
+use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Models\Settings\Thana;
+use App\Models\Settings\Utility;
 use App\Models\Property\Property;
 use App\Models\Settings\District;
 use App\Models\Settings\Division;
 use App\Models\Settings\Facility;
-use App\Models\Settings\PropertyType;
-use App\Models\Settings\Thana;
-use App\Models\Settings\Utility;
-use App\Traits\ResponseTrait;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Accounts\Transaction;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Property\PropertyDeed;
+use App\Models\Settings\PropertyType;
 use Illuminate\Support\Facades\Validator;
 
 class PropertyController extends Controller
@@ -366,5 +368,36 @@ class PropertyController extends Controller
         } catch (\Exception $exception) {
             return $this->sendError('Landlord data error', ['error' => $exception->getMessage()]);
         }
+    }
+
+    public function paymentReports(Request $request)
+    {
+        $columns = ['id', 'name'];
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+        $propertyId = $request['params']['propertyId'];
+
+        $query = Transaction::with('due', 'property')
+            ->where('property_id', $propertyId)
+            ->orderBy($columns[$column], $dir);
+
+        $count = PropertyDeed::count();
+
+        if ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if ($length != 'all') {
+            $fetchData = $query->paginate($length);
+        } else {
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 }
