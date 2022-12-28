@@ -8,7 +8,7 @@ use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Models\Accounts\AddPaymentMethod;
 
-class AddPaymentMethodController extends Controller
+class AddBankMethodController extends Controller
 {
     use ResponseTrait;
 
@@ -22,6 +22,7 @@ class AddPaymentMethodController extends Controller
         $userId = $request['params']['userId'];
 
         $query = AddPaymentMethod::with('bank')
+            ->whereNotNull('bank_id')
             ->where('user_id', $userId)
             ->orderBy($columns[$column], $dir);
 

@@ -16,4 +16,9 @@ class AddPaymentMethod extends Model
     {
         return $this->belongsTo(Bank::class, 'bank_id', 'id');
     }
+
+    public function mobileBank()
+    {
+        return $this->belongsTo(MobileBanking::class, 'mobile_banking_id', 'id');
+    }
 }
