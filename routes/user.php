@@ -103,6 +103,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
             Route::post('get-rent-property', [PropertyPaymentController::class, 'getRentProperty']);
+            Route::post('get-payment-method', [PropertyPaymentController::class, 'getPaymentMethod']);
             Route::post('rent-property/store', [PropertyPaymentController::class, 'RentPropertyStore']);
             Route::post('get-property-payments', [PropertyPaymentController::class, 'getPropertyPayments']);
             Route::post('delete-property-payment', [PropertyPaymentController::class, 'destroyPropertyPayment']);

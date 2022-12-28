@@ -13,6 +13,7 @@ use App\Models\Accounts\Transaction;
 use App\Models\Property\PropertyDeed;
 use App\Models\Accounts\MobileBanking;
 use App\Http\Resources\UserRevenueResource;
+use App\Models\Accounts\AddPaymentMethod;
 use App\Traits\ResponseTrait;
 
 class PropertyPaymentController extends Controller
@@ -28,14 +29,37 @@ class PropertyPaymentController extends Controller
     {
         try {
             $propertyDeed = PropertyDeed::with('property', 'tenant')->findOrFail($request->deedId);
-            $banks = Bank::all();
-            $mobileBanks = MobileBanking::all();
 
             return $this->sendResponse([
-                'deed'=> $propertyDeed,
-                'banks' => $banks,
-                'mobiles' => $mobileBanks
+                'deed'=> $propertyDeed
             ],'Property deed get successfully');
+
+        } catch (\Exception $exception) {
+            return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function getPaymentMethod(Request $request)
+    {
+        try {
+            $paymentMethod = null;
+            if ($request->method == 2) {
+                $paymentMethod = AddPaymentMethod::with('bank')
+                    ->whereNotNull('bank_id')
+                    ->where('user_id', $request->userId)
+                    ->get();
+            }
+
+            if ($request->method == 3) {
+                $paymentMethod = AddPaymentMethod::with('mobileBank')
+                    ->whereNotNull('mobile_banking_id')
+                    ->where('user_id', $request->userId)
+                    ->get();
+            }
+
+            return $this->sendResponse([
+                'banks'=> $paymentMethod
+            ],'Payment method get successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
