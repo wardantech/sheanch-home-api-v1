@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\OTPController;
+use App\Http\Controllers\User\Accounts\AddPaymentMethodController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Review\ReviewController;
@@ -161,4 +162,12 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
     Route::post('expanses', [ExpanseController::class, 'store']);
     Route::put('expanses/{transaction}', [ExpanseController::class, 'update']);
     Route::delete('expanses/{transaction}', [ExpanseController::class, 'destroy']);
+
+    // Add bank account for user
+    Route::post('get-payment-method', [AddPaymentMethodController::class, 'index']);
+    Route::post('get-banks', [AddPaymentMethodController::class, 'getBanks']);
+    Route::post('bank-method-store', [AddPaymentMethodController::class, 'store']);
+    Route::post('bank-method-edit', [AddPaymentMethodController::class, 'edit']);
+    Route::put('bank-method-update/{id}', [AddPaymentMethodController::class, 'update']);
+    Route::delete('bank-method-delete/{id}', [AddPaymentMethodController::class, 'destroy']);
 });
