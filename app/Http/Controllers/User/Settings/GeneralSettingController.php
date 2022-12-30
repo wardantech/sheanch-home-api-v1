@@ -19,16 +19,15 @@ class GeneralSettingController extends Controller
         try {
             $wishlist = '';
             $frontendData = FrontendSetting::with('media')->first();
+
             if($request->tenantId){
                 $wishlist = Wishlist::where('tenant_id', $request->tenantId)->count();
             }
-            return $this->sendResponse(
-                [
-                    'frontendData' => $frontendData,
-                    'wishlistCount' => $wishlist,
-                ],
-                'Settings data get successfully');
 
+            return $this->sendResponse([
+                'frontendData' => $frontendData,
+                'wishlistCount' => $wishlist,
+            ], 'Settings data get successfully');
         }catch (\Exception $exception) {
             return $this->sendError('Frontend general setting get data error', ['error' => $exception->getMessage()]);
         }
