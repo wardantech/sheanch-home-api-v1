@@ -2,35 +2,22 @@
 
 namespace App\Http\Controllers\User\Property;
 
-use App\Http\Controllers\Controller;
-use App\Models\Property\PropertyAd;
-use App\Models\Property\PropertyDeed;
-use App\Traits\ResponseTrait;
+
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Models\Property\PropertyAd;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Property\PropertyDeed;
 use Illuminate\Support\Facades\Validator;
 
 class PropertyDeedController extends Controller
 {
+    use ResponseTrait;
 
     public function __construct()
     {
-        $this->middleware('auth:api',
-            [
-                'except' => ['save']
-            ]
-        );
-    }
-
-    use ResponseTrait;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+        $this->middleware('auth:api', [ 'except' => ['save']]);
     }
 
     /**
@@ -105,16 +92,6 @@ class PropertyDeedController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param \Illuminate\Http\Request $request
@@ -152,40 +129,6 @@ class PropertyDeedController extends Controller
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Property\PropertyDeed $propertyDeed
-     * @return \Illuminate\Http\Response
-     */
-    public function show(PropertyDeed $propertyDeed)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\Models\Property\PropertyDeed $propertyDeed
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(PropertyDeed $propertyDeed)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Property\PropertyDeed $propertyDeed
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, PropertyDeed $propertyDeed)
-    {
-        //
     }
 
     /**
@@ -229,5 +172,4 @@ class PropertyDeedController extends Controller
             return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
         }
     }
-
 }

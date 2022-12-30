@@ -34,6 +34,8 @@ class RevenueController extends Controller
 
     public function store(Request $request)
     {
+        return $request->all();
+
         $data = $request->validate([
             'cash_in' => 'required',
             'account_id' => 'nullable',

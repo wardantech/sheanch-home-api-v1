@@ -2,20 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\OTPController;
-use App\Http\Controllers\User\Accounts\ExpanseController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Review\ReviewController;
 use App\Http\Controllers\User\Property\LeaseController;
 use App\Http\Controllers\User\Widgets\WidgetController;
 use App\Http\Controllers\User\Profile\ProfileController;
+use App\Http\Controllers\User\Accounts\ExpanseController;
 use App\Http\Controllers\User\Accounts\RevenueController;
 use App\Http\Controllers\User\Auth\SocialLoginController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Property\PropertyPageController;
+use App\Http\Controllers\User\Accounts\AddBankMethodController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
+use App\Http\Controllers\User\Accounts\AddMobileMethodController;
+use App\Http\Controllers\User\Property\PropertyPaymentController;
+use App\Http\Controllers\User\Accounts\AddPaymentMethodController;
 use App\Http\Controllers\User\Dashboard\TenantDashboardController;
 use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
@@ -75,6 +79,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('update/{id}', [PropertyController::class, 'update']);
         Route::get('details/{id}', [PropertyController::class, 'details']);
         Route::get('landlord/details/{id}', [PropertyController::class, 'landlordDetails']);
+        Route::post('payment-reports', [PropertyController::class, 'paymentReports']);
 
         Route::group(['prefix' => 'ad'], function() {
             Route::post('store', [PropertyAdController::class, 'store']);
@@ -96,6 +101,12 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('landlord-list', [PropertyDeedController::class, 'getListLandlord']);
             Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
+
+            Route::post('get-rent-property', [PropertyPaymentController::class, 'getRentProperty']);
+            Route::post('get-payment-method', [PropertyPaymentController::class, 'getPaymentMethod']);
+            Route::post('rent-property/store', [PropertyPaymentController::class, 'RentPropertyStore']);
+            Route::post('get-property-payments', [PropertyPaymentController::class, 'getPropertyPayments']);
+            Route::post('delete-property-payment', [PropertyPaymentController::class, 'destroyPropertyPayment']);
         });
 
     });
@@ -154,4 +165,20 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
     Route::post('expanses', [ExpanseController::class, 'store']);
     Route::put('expanses/{transaction}', [ExpanseController::class, 'update']);
     Route::delete('expanses/{transaction}', [ExpanseController::class, 'destroy']);
+
+    // Add bank account for user
+    Route::post('get-bank-payment-method', [AddBankMethodController::class, 'index']);
+    Route::post('get-banks', [AddBankMethodController::class, 'getBanks']);
+    Route::post('bank-method-store', [AddBankMethodController::class, 'store']);
+    Route::post('bank-method-edit', [AddBankMethodController::class, 'edit']);
+    Route::put('bank-method-update/{id}', [AddBankMethodController::class, 'update']);
+    Route::delete('bank-method-delete/{id}', [AddBankMethodController::class, 'destroy']);
+
+    // Add bank account for user
+    Route::post('get-mobile-payment-method', [AddMobileMethodController::class, 'index']);
+    Route::post('get-mobile-banks', [AddMobileMethodController::class, 'getMobileBanks']);
+    Route::post('mobile-method-store', [AddMobileMethodController::class, 'store']);
+    Route::post('mobile-method-edit', [AddMobileMethodController::class, 'edit']);
+    Route::put('mobile-method-update/{id}', [AddMobileMethodController::class, 'update']);
+    Route::delete('mobile-method-delete/{id}', [AddMobileMethodController::class, 'destroy']);
 });
