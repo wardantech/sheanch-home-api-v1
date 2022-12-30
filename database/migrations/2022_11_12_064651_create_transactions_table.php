@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('property_deed_id')->nullable()->constrained('property_deeds');
             $table->foreignId('expanse_item_id')->nullable()->constrained('expanse_items');
             $table->foreignId('due_id')->nullable()->constrained('dues');
+            $table->string('transaction_id')->nullable();
             $table->tinyInteger('transaction_purpose')->comment('1 = Revenue | 2 = Expanse');
             $table->double('cash_in')->default(0);
             $table->double('cash_out')->default(0);

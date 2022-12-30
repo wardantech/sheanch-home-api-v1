@@ -78,6 +78,7 @@ class PropertyPaymentController extends Controller
             'property_id' => 'required|integer',
             'payment_method' => 'required|integer',
             'property_deed_id' => 'required|integer',
+            'transaction_id' => 'required|string',
             'date' => [
                 'required',
                 new BeforeMonthRule,

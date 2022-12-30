@@ -22,6 +22,7 @@ class Transaction extends Model
         'property_deed_id',
         'expanse_item_id',
         'due_id',
+        'transaction_id',
         'transaction_purpose',
         'cash_in',
         'cash_out',
