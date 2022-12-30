@@ -25,7 +25,9 @@ use App\Http\Controllers\Admin\Accounts\Users\RevenueController;
 use App\Http\Controllers\Admin\Settings\FrontendSettingController;
 use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
 use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
+use App\Http\Controllers\Admin\Settings\AreaController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
+use App\Models\Area;
 
 /*
 |--------------------------------------------------------------------------
@@ -210,6 +212,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::get('divisions', [GetDivisionDistrictThanaController::class, 'getDivisions']);
             Route::post('districts', [GetDivisionDistrictThanaController::class, 'getDistricets']);
             Route::post('thanas', [GetDivisionDistrictThanaController::class, 'getThanas']);
+            Route::apiResource('area', AreaController::class)->only(['index','store','show','update','destroy']);
         });
     });
 
