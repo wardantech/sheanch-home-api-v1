@@ -3,6 +3,7 @@
 namespace App\Models\Accounts;
 
 use App\Models\Property\Property;
+use App\Models\Property\PropertyDeed;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,6 +41,11 @@ class Transaction extends Model
     public function due()
     {
         return $this->belongsTo(Due::class, 'due_id', 'id');
+    }
+
+    public function deed()
+    {
+        return $this->belongsTo(PropertyDeed::class, 'property_deed_id', 'id');
     }
 
 }
