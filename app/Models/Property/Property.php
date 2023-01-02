@@ -46,13 +46,19 @@ class Property extends Model implements HasMedia
         return $this->belongsTo(Landlord::class, 'landlord_id', 'id')->withTrashed();
     }
 
-    public function reviews()
+    public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'review_type_id', 'id');
     }
 
-    public function revenue()
+    public function revenue(): HasMany
     {
         return $this->hasMany(Revenue::class);
     }
+
+    public function deed(): HasMany
+    {
+        return $this->hasMany(PropertyDeed::class, 'property_id', 'id');
+    }
+
 }

@@ -378,8 +378,10 @@ class PropertyController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
         $propertyId = $request['params']['propertyId'];
+        $userId = $request['params']['userId'];
 
         $query = Transaction::with('due', 'property')
+            ->where('user_id', $userId)
             ->where('property_id', $propertyId)
             ->orderBy($columns[$column], $dir);
 

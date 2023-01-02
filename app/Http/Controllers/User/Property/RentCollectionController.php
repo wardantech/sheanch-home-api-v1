@@ -14,6 +14,7 @@ use App\Models\Accounts\Transaction;
 use App\Models\Property\PropertyDeed;
 use App\Http\Resources\UserRevenueResource;
 use App\Models\Accounts\AddPaymentMethod;
+use App\Models\Property\Property;
 use App\Traits\ResponseTrait;
 
 class RentCollectionController extends Controller
@@ -302,6 +303,46 @@ class RentCollectionController extends Controller
 
                 return $transaction->due->id;
             }
+        }
+    }
+
+
+
+
+
+
+
+
+    // For another loginc;
+    public function getRentDeed(Request $request)
+    {
+        try {
+            $deeds = PropertyDeed::with('property', 'tenant')
+                ->where('status', 2)
+                ->where('landlord_id', $request->userId)->get();
+
+            return $this->sendResponse([
+                'deeds' => $deeds,
+            ], 'All deed successfully get');
+        }catch (\Exception $exception){
+            return $this->sendError('Deed Error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function getPropertyInfo(Request $request)
+    {
+        try {
+            $property = Property::with(['deed' => function($query) {
+                $query->where('status', 2);
+            }])->where('id', $request->propertyId)->first();
+
+            // return $property->deed[0]->updated_at;
+
+            return $this->sendResponse([
+                'property' => $property,
+            ], 'Property get successfully');
+        }catch (\Exception $exception){
+            return $this->sendError('Property error', ['error' => $exception->getMessage()]);
         }
     }
 }
