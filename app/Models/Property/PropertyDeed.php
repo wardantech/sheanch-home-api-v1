@@ -4,6 +4,7 @@ namespace App\Models\Property;
 
 use App\Models\Landlord;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,8 +29,8 @@ class PropertyDeed extends Model
         return $this->belongsTo(PropertyAd::class, 'property_ad_id', 'id')->withTrashed();
     }
 
-    public function tenant(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id', 'id')->withTrashed();
+        return $this->belongsTo(User::class, 'tenant_id', 'id')->withTrashed();
     }
 }
