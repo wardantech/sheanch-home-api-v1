@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Models\Property\PropertyAd;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DeedDetailsResource;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Property\PropertyDeed;
 use Illuminate\Support\Facades\Validator;
@@ -24,54 +25,22 @@ class PropertyDeedController extends Controller
      * List api
      * @return \Illuminate\Http\Response
      */
-    public function getListTenant(Request $request)
-    {
-        $columns = ['id', 'name'];
-
-        $length = $request['params']['length'];
-        $column = $request['params']['column'];
-        $dir = $request['params']['dir'];
-        $searchValue = $request['params']['search'];
-
-        $query = PropertyDeed::select('*')->with(['landlord','property','propertyAd'])
-            ->where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy($columns[$column], $dir);
-
-        $count = PropertyDeed::count();
-
-        if ($searchValue) {
-            $query->where(function ($query) use ($searchValue) {
-                $query->where('id', 'like', '%' . $searchValue . '%')
-                    ->orWhere('name', 'like', '%' . $searchValue . '%');
-            });
-        }
-
-        if ($length != 'all') {
-            $fetchData = $query->paginate($length);
-        } else {
-            $fetchData = $query->paginate($count);
-        }
-
-        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
-    }
-
-    /**
-     * List api
-     * @return \Illuminate\Http\Response
-     */
     public function getListLandlord(Request $request)
     {
         $columns = ['id', 'name'];
-
         $length = $request['params']['length'];
         $column = $request['params']['column'];
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
+        $userId = $request['params']['userId'];
 
-        $query = PropertyDeed::select('*')->with(['tenant','property','propertyAd'])
-            ->where('landlord_id', Auth::user()->landlord_id)
-            ->whereIn('status', [1,2,3])
-            ->orderBy($columns[$column], $dir);
+        $query = PropertyDeed::with(['tenant' => function($query){
+            $query->select('id', 'name');
+        }, 'property' => function($query){
+            $query->select('id', 'name');
+        }])
+        ->where('landlord_id', $userId)
+        ->orderBy($columns[$column], $dir);
 
         $count = PropertyDeed::count();
 
@@ -99,33 +68,33 @@ class PropertyDeedController extends Controller
      */
     public function save(Request $request)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $request->validate([
             'landlord_id' => 'required',
-            'tenant_id' => 'required',
+            'tenant_id' => 'required|unique:property_deeds',
             'property_id' => 'required',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-
+            'property_ad_id' => 'required',
+        ], [
+            'tenant_id.unique' => 'You already apply on this advertisement.',
+        ]);
 
         try {
-            // Store Property
-            $deed = new PropertyDeed();
+            $data['status'] = 0;
+            $deed = PropertyDeed::create($data);
 
-            $deed->landlord_id = $request->landlord_id;
-            $deed->property_id = $request->property_id;
-            $deed->property_ad_id = $request->property_ad_id;
-            $deed->tenant_id = $request->tenant_id;
-            $deed->status = 0;
-            $deed->created_by = Auth::id();
-            $deed->save();
+            return $this->sendResponse(['id' => $deed], 'Property create successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
 
-            return $this->sendResponse(['id' => $deed->id], 'Property create successfully');
+    public function show(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            return $this->sendResponse([
+                'deed' => new DeedDetailsResource($deed)
+            ], 'Property create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }

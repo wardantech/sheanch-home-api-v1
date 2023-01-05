@@ -14,6 +14,7 @@ use App\Http\Controllers\User\Property\PropertyAdController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Property\PropertyPageController;
 use App\Http\Controllers\User\Accounts\AddBankMethodController;
+use App\Http\Controllers\User\Dashboard\UserDasboardController;
 use App\Http\Controllers\User\Property\RentCollectionController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Accounts\AddMobileMethodController;
@@ -44,7 +45,7 @@ Route::get('get-frontend-banner-data', [GeneralSettingController::class, 'getFro
 
 
 // Dashboard controller
-Route::post('get-landlord-dashboard-data', [LandlordDashboardController::class, 'getDashboardData']);
+Route::post('get-dashboard-data', [UserDasboardController::class, 'getDashboardData']);
 Route::post('get-tenant-dashboard-data', [TenantDashboardController::class, 'getDashboardData']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
@@ -94,8 +95,8 @@ Route::group(['middleware' => ['auth:api']], function(){
         //
         Route::group(['prefix' => 'deed'], function(){
             Route::post('save-data', [PropertyDeedController::class, 'save'])->withoutMiddleware(['auth:api']);
-            Route::post('tenant-list', [PropertyDeedController::class, 'getListTenant']);
             Route::post('landlord-list', [PropertyDeedController::class, 'getListLandlord']);
+            Route::post('show', [PropertyDeedController::class, 'show']);
             Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
@@ -116,19 +117,14 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     Route::group(['prefix' => 'profile'], function(){
         // For landlord
-        Route::post('landlord', [ProfileController::class, 'getLandlordData']);
-        Route::post('landlord/show', [ProfileController::class, 'showLandlord']);
-        Route::post('landlord/update/{id}', [ProfileController::class, 'landlordUpdate']);
-        Route::post('landlord/image-upload/{id}', [ProfileController::class, 'imageUpload']);
-
-        // For Tenant
-        Route::post('tenant', [ProfileController::class, 'getTenantData']);
-        Route::post('tenant/update/{id}', [ProfileController::class, 'TenantUpdate']);
-        Route::post('tenant/show', [ProfileController::class, 'showTenant']);
-        Route::post('tenant/tenant-image-upload/{id}', [ProfileController::class, 'tenantImageUpload']);
+        Route::post('/', [ProfileController::class, 'getUser']);
+        Route::post('/sidebar', [ProfileController::class, 'sidebar']);
+        Route::post('/show', [ProfileController::class, 'show']);
+        Route::post('update/{id}', [ProfileController::class, 'update']);
+        Route::post('image-upload/{id}', [ProfileController::class, 'imageUpload']);
 
         // Update password
-        Route::post('landlord/password', [ProfileController::class, 'updatePassword']);
+        Route::post('password', [ProfileController::class, 'updatePassword']);
     });
 });
 

@@ -233,9 +233,9 @@ class LandlordController extends Controller
     public function getLandlords()
     {
         try {
-            $landlords = Landlord::where('status', true)->get(['name', 'id']);
+            $users = User::all(['name', 'id']);
 
-            return $this->sendResponse($landlords, 'Landlord list');
+            return $this->sendResponse($users, 'Users get successfully');
 
         } catch (\Exception $exception) {
 

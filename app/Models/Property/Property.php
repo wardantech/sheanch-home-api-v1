@@ -9,6 +9,7 @@ use App\Models\Settings\District;
 use App\Models\Settings\Division;
 use App\Models\Settings\PropertyType;
 use App\Models\Settings\Thana;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,7 +44,7 @@ class Property extends Model implements HasMedia
 
     public function landlord(): BelongsTo
     {
-        return $this->belongsTo(Landlord::class, 'landlord_id', 'id')->withTrashed();
+        return $this->belongsTo(User::class, 'user_id', 'id')->withTrashed();
     }
 
     public function reviews(): HasMany

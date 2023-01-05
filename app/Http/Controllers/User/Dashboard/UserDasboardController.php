@@ -9,18 +9,16 @@ use App\Models\Property\PropertyDeed;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
-class LandlordDashboardController extends Controller
+class UserDasboardController extends Controller
 {
     use ResponseTrait;
 
     public function getDashboardData(Request $request)
     {
         try {
-            $totalProperties = Property::where('landlord_id', $request->landlordId)->where('status',1)->count();
-            $totalPoropertyAds = PropertyAd::where('landlord_id', $request->landlordId)->where('status',1)->count();
-            $totalCompleteDeed = PropertyDeed::where('landlord_id', $request->landlordId)->where('status',2)
-                ->count();
-
+            $totalProperties = Property::where('user_id', $request->userId)->where('status',1)->count();
+            $totalPoropertyAds = PropertyAd::where('user_id', $request->userId)->where('status',1)->count();
+            $totalCompleteDeed = PropertyDeed::where('landlord_id', $request->userId)->where('status',2)->count();
 
             return $this->sendResponse([
                 'totalProperties' => $totalProperties,

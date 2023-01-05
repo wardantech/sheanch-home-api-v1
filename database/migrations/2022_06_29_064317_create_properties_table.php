@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('status')->default(1)->index();
             $table->string('name');
-            $table->integer('landlord_id')->index();
+            $table->foreignId('user_id')->constrained('users');
             $table->integer('property_category')->index()->nullable()->comment('1 for commercial 2 for residential');
             $table->integer('property_type_id')->index();
             $table->integer('sale_type')->index()->nullable()->comment('1 for rent 2 for sale');

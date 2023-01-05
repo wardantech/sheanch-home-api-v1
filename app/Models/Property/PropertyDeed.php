@@ -14,9 +14,11 @@ class PropertyDeed extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['landlord_id', 'tenant_id', 'property_id', 'property_ad_id', 'status', 'start_date'];
+
     public function landlord(): BelongsTo
     {
-        return $this->belongsTo(Landlord::class, 'landlord_id', 'id')->withTrashed();
+        return $this->belongsTo(User::class, 'landlord_id', 'id')->withTrashed();
     }
 
     public function property(): BelongsTo
@@ -29,7 +31,7 @@ class PropertyDeed extends Model
         return $this->belongsTo(PropertyAd::class, 'property_ad_id', 'id')->withTrashed();
     }
 
-    public function user(): BelongsTo
+    public function tenant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tenant_id', 'id')->withTrashed();
     }

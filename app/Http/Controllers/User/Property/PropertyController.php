@@ -29,7 +29,6 @@ class PropertyController extends Controller
 
     public function getList(Request $request)
     {
-//        return Auth::user()->landlord_id;
         $columns = ['id', 'name'];
 
         $length = $request['params']['length'];
@@ -37,7 +36,7 @@ class PropertyController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
 
-        $query = Property::where('landlord_id', Auth::user()->landlord_id)->select('*')->orderBy($columns[$column], $dir);
+        $query = Property::where('user_id', Auth::id())->select('*')->orderBy($columns[$column], $dir);
 
         $count = Property::count();
 
@@ -96,7 +95,7 @@ class PropertyController extends Controller
             $property->district_id = $request->district_id;
             $property->division_id = $request->division_id;
             $property->property_type_id = $request->property_type_id;
-            $property->landlord_id = $request->landlord_id;
+            $property->user_id = $request->user_id;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
             $property->property_category = $request->property_category;
@@ -216,7 +215,7 @@ class PropertyController extends Controller
             $property->district_id = $request->district_id;
             $property->division_id = $request->division_id;
             $property->property_type_id = $request->property_type_id;
-            $property->landlord_id = $request->landlord_id;
+            $property->user_id = $request->user_id;
             $property->name = $request->name;
             $property->zip_code = $request->zip_code;
             $property->property_category = $request->property_category;
