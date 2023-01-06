@@ -95,9 +95,11 @@ Route::group(['middleware' => ['auth:api']], function(){
         //
         Route::group(['prefix' => 'deed'], function(){
             Route::post('save-data', [PropertyDeedController::class, 'save'])->withoutMiddleware(['auth:api']);
-            Route::post('landlord-list', [PropertyDeedController::class, 'getListLandlord']);
+            Route::post('request-list', [PropertyDeedController::class, 'requestDeed']);
+            Route::post('apply-list', [PropertyDeedController::class, 'applyDeed']);
             Route::post('show', [PropertyDeedController::class, 'show']);
-            Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
+            Route::post('accept', [PropertyDeedController::class, 'accept']);
+            Route::post('decline', [PropertyDeedController::class, 'decline']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
             Route::post('get-rent-deed', [RentCollectionController::class, 'getRentDeed']);

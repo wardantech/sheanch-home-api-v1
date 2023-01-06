@@ -15,6 +15,7 @@ class DeedDetailsResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'status' => $this->status,
             'name' => $this->tenant->name,
             'mobile' => $this->tenant->mobile,
             'email' => $this->tenant->email,
