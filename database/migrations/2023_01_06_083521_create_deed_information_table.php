@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('religion');
             $table->string('edu_qualif')->comment('Education Qualification');
             $table->string('phone');
+            $table->string('email');
             $table->string('nid');
             $table->string('passport')->nullable();
             $table->text('emergency_contact')->comment('name,relation,address,phone');

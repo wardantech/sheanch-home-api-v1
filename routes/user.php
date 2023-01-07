@@ -20,6 +20,7 @@ use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Accounts\AddMobileMethodController;
 use App\Http\Controllers\User\Dashboard\TenantDashboardController;
 use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
+use App\Http\Controllers\User\Property\DeedInformationController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 
 /*
@@ -101,6 +102,9 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('accept', [PropertyDeedController::class, 'accept']);
             Route::post('decline', [PropertyDeedController::class, 'decline']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
+
+            // Deed Information
+            Route::post('information/store', [DeedInformationController::class, 'store']);
 
             Route::post('get-rent-deed', [RentCollectionController::class, 'getRentDeed']);
             Route::post('get-property-info', [RentCollectionController::class, 'getPropertyInfo']);
