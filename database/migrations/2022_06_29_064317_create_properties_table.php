@@ -32,6 +32,8 @@ return new class extends Migration
             $table->longText('utilities')->nullable();
             $table->longText('facilities')->nullable();
             $table->string('house_no')->index()->nullable();
+            $table->string('holding_number')->index()->nullable();
+            $table->string('road_number')->index()->nullable();
             $table->string('zip_code')->index()->nullable();
             $table->integer('thana_id')->index();
             $table->integer('district_id')->index();

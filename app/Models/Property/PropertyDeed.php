@@ -2,8 +2,6 @@
 
 namespace App\Models\Property;
 
-use App\Models\Landlord;
-use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

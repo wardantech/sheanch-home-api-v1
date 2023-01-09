@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained('users');
             $table->foreignId('property_id')->constrained('properties');
             $table->foreignId('property_ad_id')->constrained('property_ads');
-            $table->tinyInteger('status')->comment('0-pending, 1-view, 2-Accept, 3-decline');
+            $table->tinyInteger('status')->comment('0-pending, 1-view, 2-Accept, 3-decline, 4-info-submit');
             $table->string('start_date')->index()->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -104,7 +104,9 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
             // Deed Information
+            Route::post('information-data', [DeedInformationController::class, 'getData']);
             Route::post('information/store', [DeedInformationController::class, 'store']);
+            Route::post('information/image/{id}', [DeedInformationController::class, 'imageUpload']);
 
             Route::post('get-rent-deed', [RentCollectionController::class, 'getRentDeed']);
             Route::post('get-property-info', [RentCollectionController::class, 'getPropertyInfo']);

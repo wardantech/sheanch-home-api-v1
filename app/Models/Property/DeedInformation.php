@@ -13,6 +13,7 @@ class DeedInformation extends Model
     protected $fillable = [
         'property_deed_id',
         'image',
+        'email',
         'tenant_name',
         'fathers_name',
         'date_of_birth',

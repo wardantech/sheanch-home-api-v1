@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('deed_information', function (Blueprint $table) {
             $table->id();
             $table->foreignId('property_deed_id')->constrained('property_deeds');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->string('tenant_name');
             $table->string('fathers_name');
             $table->date('date_of_birth');
