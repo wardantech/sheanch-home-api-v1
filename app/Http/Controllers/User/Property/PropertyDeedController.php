@@ -9,10 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\DeedDetailsResource;
 use App\Http\Resources\DeedTenantInfoResource;
 use App\Models\Property\PropertyDeed;
+use App\Traits\OTPTrait;
 
 class PropertyDeedController extends Controller
 {
-    use ResponseTrait;
+    use ResponseTrait, OTPTrait;
 
     public function __construct()
     {
@@ -188,6 +189,9 @@ class PropertyDeedController extends Controller
             if ($deed->landlord_id !== $request->userId) {
                 throw new \Exception("User or landlord not same");
             }
+
+            $text = "Dear $request->name, Thank you so mutch. Your lease will start on $request->date";
+            $this->sendSms($request->mobile, $text);
 
             $deed->status = 5;
             $deed->start_date = now();
