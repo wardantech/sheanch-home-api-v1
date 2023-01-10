@@ -33,4 +33,9 @@ class PropertyDeed extends Model
     {
         return $this->belongsTo(User::class, 'tenant_id', 'id')->withTrashed();
     }
+
+    public function deedInfo()
+    {
+        return $this->hasOne(DeedInformation::class, 'property_deed_id', 'id');
+    }
 }

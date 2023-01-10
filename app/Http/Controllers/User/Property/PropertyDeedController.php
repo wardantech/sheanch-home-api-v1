@@ -5,12 +5,10 @@ namespace App\Http\Controllers\User\Property;
 
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use App\Models\Property\PropertyAd;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DeedDetailsResource;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\DeedTenantInfoResource;
 use App\Models\Property\PropertyDeed;
-use Illuminate\Support\Facades\Validator;
 
 class PropertyDeedController extends Controller
 {
@@ -113,7 +111,7 @@ class PropertyDeedController extends Controller
         ]);
 
         try {
-            $data['status'] = 0;
+            $data['status'] = 1;
             $deed = PropertyDeed::create($data);
 
             return $this->sendResponse(['id' => $deed], 'Property create successfully');
@@ -132,7 +130,7 @@ class PropertyDeedController extends Controller
             }
 
             if ($deed->status === 0) {
-                $deed->status = 1;
+                $deed->status = 2;
                 $deed->update();
             }
 
@@ -153,13 +151,51 @@ class PropertyDeedController extends Controller
                 throw new \Exception("User or landlord not same");
             }
 
-            $deed->status = 2;
+            $deed->status = 3;
             $deed->start_date = now();
             $deed->update();
 
             return $this->sendResponse([
                 'deed' => new DeedDetailsResource($deed)
-            ], 'Property create successfully');
+            ], 'Deed accept successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function tenantInfo(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            if ($deed->landlord_id !== $request->userId) {
+                throw new \Exception("User or landlord not same");
+            }
+
+            return $this->sendResponse([
+                'tenant' => new DeedTenantInfoResource($deed)
+            ], 'Get tenant information successfully.');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function approve(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            if ($deed->landlord_id !== $request->userId) {
+                throw new \Exception("User or landlord not same");
+            }
+
+            $deed->status = 5;
+            $deed->start_date = now();
+            $deed->update();
+
+            return $this->sendResponse([
+                'deed' => new DeedDetailsResource($deed)
+            ], 'deed approved successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
@@ -174,12 +210,12 @@ class PropertyDeedController extends Controller
                 throw new \Exception("User or landlord not same");
             }
 
-            $deed->status = 3;
+            $deed->status = 0;
             $deed->update();
 
             return $this->sendResponse([
                 'deed' => new DeedDetailsResource($deed)
-            ], 'Property create successfully');
+            ], 'deed declined successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }

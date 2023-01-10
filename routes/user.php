@@ -100,6 +100,8 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('apply-list', [PropertyDeedController::class, 'applyDeed']);
             Route::post('show', [PropertyDeedController::class, 'show']);
             Route::post('accept', [PropertyDeedController::class, 'accept']);
+            Route::post('approve', [PropertyDeedController::class, 'approve']);
+            Route::post('tenant-info', [PropertyDeedController::class, 'tenantInfo']);
             Route::post('decline', [PropertyDeedController::class, 'decline']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
