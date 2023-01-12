@@ -22,6 +22,36 @@ class Property extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia;
 
+    protected $fillable = [
+        'name',
+        'user_id',
+        'thana_id',
+        'district_id',
+        'division_id',
+        'property_category',
+        'property_type_id',
+        'sale_type',
+        'bed_rooms',
+        'balcony',
+        'floor',
+        'bath_rooms',
+        'holding_number',
+        'road_number',
+        'zip_code',
+        'address',
+        'rent_amount',
+        'total_amount',
+        'security_money',
+        'area_size',
+        'video_link',
+        'utilities',
+        'facilitie_ids',
+        'google_map_location',
+        'description',
+        'created_by',
+        'updated_by'
+    ];
+
     public function thana(): BelongsTo
     {
         return $this->belongsTo(Thana::class, 'thana_id', 'id');

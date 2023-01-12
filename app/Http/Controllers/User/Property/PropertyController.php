@@ -12,6 +12,8 @@ use App\Models\Settings\District;
 use App\Models\Settings\Division;
 use App\Models\Settings\Facility;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePropertyRequest;
+use App\Http\Resources\FacilityResource;
 use App\Models\Accounts\Transaction;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Property\PropertyDeed;
@@ -24,7 +26,7 @@ class PropertyController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['show','getPropertyTypes']]);
+        $this->middleware('auth:api', ['except' => ['show', 'getPropertyTypes']]);
     }
 
     public function getList(Request $request)
@@ -41,90 +43,66 @@ class PropertyController extends Controller
         $count = Property::count();
 
         if ($searchValue) {
-            $query->where(function($query) use ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
                 $query->where('id', 'like', '%' . $searchValue . '%')
                     ->orWhere('name', 'like', '%' . $searchValue . '%');
             });
         }
 
-        if($length!='all'){
+        if ($length != 'all') {
             $fetchData = $query->paginate($length);
-        }
-        else{
+        } else {
             $fetchData = $query->paginate($count);
         }
 
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
+    public function create()
+    {
+        try {
+            $propertyTypes = PropertyType::all();
+            $division = Division::all();
+            $utility = Utility::all();
+            $facilities = Facility::all();
+
+            return $this->sendResponse(
+                [
+                    'propertyTypes' => $propertyTypes,
+                    'divisions' => $division,
+                    'utilities' => $utility,
+                    'facilities' => FacilityResource::collection($facilities)
+                ],
+                'Property data get successfully'
+            );
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
     /**
-     * Store api
+     * Store properties
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePropertyRequest $request)
     {
-        //return $request->input();
-        //--- Validation Section Start ---//
-        $rules = [
-            'thana_id' => 'required',
-            'district_id' => 'required',
-            'division_id' => 'required',
-            'property_type_id' => 'required',
-            'name' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:255',
-            'address' => 'required|string',
-            'bed_rooms' => 'integer|nullable',
-            'bath_rooms' => 'integer|nullable',
-            'area_size' => 'integer|nullable',
-            'rent_amount' => 'required',
-            'security_money' => 'required',
-            'video_link' => 'nullable',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-
         try {
-            // Store Property
-            $property = new Property();
+            $data = $request->validated();
 
-            $property->thana_id = $request->thana_id;
-            $property->district_id = $request->district_id;
-            $property->division_id = $request->division_id;
-            $property->property_type_id = $request->property_type_id;
-            $property->user_id = $request->user_id;
-            $property->name = $request->name;
-            $property->zip_code = $request->zip_code;
-            $property->property_category = $request->property_category;
-            $property->sale_type = $request->sale_type;
-            $property->house_no = $request->house_no;
-            $property->video_link = $request->video_link;
-            $property->address = $request->address;
-            $property->bed_rooms = $request->bed_rooms;
-            $property->bath_rooms = $request->bath_rooms;
-            $property->balcony = $request->balcony;
-            $property->floor = $request->floor;
-            $property->google_map_location = $request->google_map_location;
-            $property->area_size = $request->area_size;
-            $property->rent_amount = $request->rent_amount;
-            $property->description = $request->description;
-            $property->status = 1;
-            $property->security_money = $request->security_money;
-            $property->utilities = json_encode($request->utilities);
-            $property->facilities = json_encode($request->facilities);
-            $property->created_by = Auth::id();
-            $property->save();
+            $totalRent = $this->totalRentAmount($data['utilities'], $data['rent_amount']);
+
+            $data['total_amount'] = $totalRent;
+            $data['utilities'] = json_encode($data['utilities']);
+            $data['facilitie_ids'] = json_encode($data['facilitie_ids']);
+            $data['created_by'] = $data['user_id'];
+
+            $property = Property::create($data);
 
             if ($property && count($request->images) > 0) {
                 foreach ($request->images as $image) {
-
                     $property->addMediaFromBase64($image['data'])
                         ->usingFileName(uniqid('property', false) . '.png')
                         ->toMediaCollection();
-
                 }
             }
 
@@ -138,6 +116,7 @@ class PropertyController extends Controller
     {
         try {
             $property = Property::findOrFail($request->id);
+
             $propertyImages = $property->getMedia();
             $propertyImagesData = [];
 
@@ -149,15 +128,14 @@ class PropertyController extends Controller
                 $data = file_get_contents($path);
                 $base64 = 'data:application/' . $type . ';base64,' . base64_encode($data);
 
-                $propertyImagesUrl ['url'] = $propertyImage->original_url;
-                $propertyImagesUrl ['data'] = $base64;
-                $propertyImagesUrl ['size'] = $propertyImage->size;
-                $propertyImagesUrl ['name'] = $propertyImage->file_name;
+                $propertyImagesUrl['url'] = $propertyImage->original_url;
+                $propertyImagesUrl['data'] = $base64;
+                $propertyImagesUrl['size'] = $propertyImage->size;
+                $propertyImagesUrl['name'] = $propertyImage->file_name;
 
-                $propertyImagesData [] = $propertyImagesUrl;
+                $propertyImagesData[] = $propertyImagesUrl;
             }
 
-            $landlords = Landlord::all();
             $propertyTypes = PropertyType::all();
             $division = Division::all();
             $district = District::where('division_id', $property->division_id)->get();
@@ -168,78 +146,35 @@ class PropertyController extends Controller
             return $this->sendResponse([
                 'property' => $property,
                 'propertyImages' => $propertyImagesData,
-                'landlords' => $landlords,
                 'propertyTypes' => $propertyTypes,
                 'divisions' => $division,
                 'districts' => $district,
                 'thanas' => $thana,
                 'utilities' => $utilities,
-                'facilities' => $facilities
+                'facilities' => FacilityResource::collection($facilities)
             ], 'Property edit data get successfully');
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(StorePropertyRequest $request, $id)
     {
-        //--- Validation Section Start ---//
-        $rules = [
-            'thana_id' => 'required',
-            'district_id' => 'required',
-            'division_id' => 'required',
-            'name' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:255',
-            'address' => 'required|string',
-            'bed_rooms' => 'integer|nullable',
-            'bath_rooms' => 'integer|nullable',
-            'area_size' => 'integer|nullable',
-            'rent_amount' => 'required',
-            'description' => 'string|nullable',
-            'status' => 'integer|nullable',
-            'security_money' => 'required',
-            'video_link' => 'nullable',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-
         try {
-            // Update Property
-            $property = Property::findOrFail($id);
+            $data = $request->validated();
 
-            $property->thana_id = $request->thana_id;
-            $property->district_id = $request->district_id;
-            $property->division_id = $request->division_id;
-            $property->property_type_id = $request->property_type_id;
-            $property->user_id = $request->user_id;
-            $property->name = $request->name;
-            $property->zip_code = $request->zip_code;
-            $property->property_category = $request->property_category;
-            $property->sale_type = $request->sale_type;
-            $property->house_no = $request->house_no;
-            $property->video_link = $request->video_link;
-            $property->address = $request->address;
-            $property->bed_rooms = $request->bed_rooms;
-            $property->bath_rooms = $request->bath_rooms;
-            $property->balcony = $request->balcony;
-            $property->floor = $request->floor;
-            $property->google_map_location = $request->google_map_location;
-            $property->area_size = $request->area_size;
-            $property->rent_amount = $request->rent_amount;
-            $property->description = $request->description;
-            $property->status = $request->status;
-            $property->security_money = $request->security_money;
-            $property->utilities = json_encode($request->utilities);
-            $property->facilities = json_encode($request->facilities);
-            $property->updated_by = Auth::id();
-            $property->update();
+            $totalRent = $this->totalRentAmount($data['utilities'], $data['rent_amount']);
+
+            $data['total_amount'] = $totalRent;
+            $data['utilities'] = json_encode($data['utilities']);
+            $data['facilitie_ids'] = json_encode($data['facilitie_ids']);
+            $data['updated_by'] = $data['user_id'];
+
+            $property = Property::findOrFail($id);
+            $property->update($data);
 
             $mediaItems = $property->getMedia();
-            if(count($mediaItems) > 0){
+            if (count($mediaItems) > 0) {
                 foreach ($mediaItems as $mediaItem) {
                     $mediaItem->delete();
                 }
@@ -247,7 +182,6 @@ class PropertyController extends Controller
 
             if ($property && $request->images && count($request->images) > 0) {
                 foreach ($request->images as $image) {
-
                     $property->addMediaFromBase64($image['data'])
                         ->usingFileName(uniqid('property', false) . '.png')
                         ->toMediaCollection();
@@ -268,7 +202,6 @@ class PropertyController extends Controller
         }
     }
 
-
     /**
      * Get all Property Types
      * @return \Illuminate\Http\Response
@@ -280,7 +213,6 @@ class PropertyController extends Controller
             $propertyTypes = PropertyType::where('status', true)->get();
 
             return $this->sendResponse($propertyTypes, 'Property type categories list');
-
         } catch (\Exception $exception) {
 
             return $this->sendError('Property type list.', ['error' => $exception->getMessage()]);
@@ -289,32 +221,9 @@ class PropertyController extends Controller
 
     public function show($id)
     {
-        try{
-            $property = Property::where('id',$id)->with('propertyType','landlord','media')->first();
-            return $this->sendResponse($property,'Property data get successfully');
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    public function create()
-    {
         try {
-            $propertyTypes = PropertyType::all();
-            $division = Division::all();
-            $utility = Utility::all();
-            $facilities = Facility::all();
-
-            return $this->sendResponse(
-                [
-                    'propertyTypes' => $propertyTypes,
-                    'divisions' => $division,
-                    'utilities' => $utility,
-                    'facilities' => $facilities
-                ],
-                'Property data get successfully');
-
+            $property = Property::where('id', $id)->with('propertyType', 'landlord', 'media')->first();
+            return $this->sendResponse($property, 'Property data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
@@ -400,5 +309,17 @@ class PropertyController extends Controller
         }
 
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+    }
+
+    private function totalRentAmount(array $utilities, float $rent_amount): float
+    {
+        $totalUtility = 0;
+        foreach ($utilities as $utility) {
+            if ($utility['utility_paid_by'] == 2) {
+                $totalUtility += $utility['utility_amount'];
+            }
+        }
+
+        return $totalUtility + $rent_amount;
     }
 }

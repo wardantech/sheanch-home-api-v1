@@ -66,7 +66,6 @@ Route::group(['prefix' => 'settings'], function(){
 });
 //User route
 Route::group(['middleware' => ['auth:api']], function(){
-
     // Property Route
     Route::group(['prefix' => 'property'], function() {
         Route::post('store', [PropertyController::class, 'store']);
@@ -123,7 +122,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         });
 
     });
-
 
     Route::group(['prefix' => 'profile'], function(){
         // For landlord
