@@ -7,6 +7,7 @@ use App\Models\Landlord;
 
 use App\Models\Property\Property;
 use App\Models\Property\PropertyAd;
+use App\Models\Settings\Facility;
 use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -130,9 +131,12 @@ class PropertyAdController extends Controller
         try {
             $propertyAd = PropertyAd::where('id', $request->propertyAdId)
                 ->with(['property', 'property.media'])->first();
+            $facilityIds = json_decode($propertyAd->property->facilitie_ids);
+            $facilities = Facility::whereIn('id', $facilityIds)->get('name');
 
             return $this->sendResponse([
-                'propertyAd' => $propertyAd
+                'propertyAd' => $propertyAd,
+                'facilities' => $facilities
             ], 'Property data successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
