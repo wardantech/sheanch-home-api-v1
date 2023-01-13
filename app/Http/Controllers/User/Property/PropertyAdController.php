@@ -128,10 +128,12 @@ class PropertyAdController extends Controller
     public function getDetails(Request $request)
     {
         try {
-            $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
+            $propertyAd = PropertyAd::where('id', $request->propertyAdId)
                 ->with(['property', 'property.media'])->first();
 
-            return $this->sendResponse($PropertyAd, 'Property data successfully');
+            return $this->sendResponse([
+                'propertyAd' => $propertyAd
+            ], 'Property data successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
