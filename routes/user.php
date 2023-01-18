@@ -21,6 +21,7 @@ use App\Http\Controllers\User\Accounts\AddMobileMethodController;
 use App\Http\Controllers\User\Dashboard\TenantDashboardController;
 use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
 use App\Http\Controllers\User\Property\DeedInformationController;
+use App\Http\Controllers\User\Property\DueCollectionController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 
 /*
@@ -97,6 +98,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('save-data', [PropertyDeedController::class, 'save'])->withoutMiddleware(['auth:api']);
             Route::post('request-list', [PropertyDeedController::class, 'requestDeed']);
             Route::post('apply-list', [PropertyDeedController::class, 'applyDeed']);
+            Route::post('approved-list', [PropertyDeedController::class, 'approvedDeed']);
             Route::post('show', [PropertyDeedController::class, 'show']);
             Route::post('accept', [PropertyDeedController::class, 'accept']);
             Route::post('approve', [PropertyDeedController::class, 'approve']);
@@ -111,7 +113,6 @@ Route::group(['middleware' => ['auth:api']], function(){
 
             Route::post('get-rent-deed', [RentCollectionController::class, 'getRentDeed']);
             Route::post('get-property-info', [RentCollectionController::class, 'getPropertyInfo']);
-
             Route::post('get-payment-method', [RentCollectionController::class, 'getPaymentMethod']);
             Route::post('get-property-payments', [RentCollectionController::class, 'index']);
             Route::post('get-rent-property', [RentCollectionController::class, 'create']);
@@ -119,6 +120,12 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('rent-property/edit', [RentCollectionController::class, 'edit']);
             Route::put('rent-property/update/{id}', [RentCollectionController::class, 'update']);
             Route::post('delete-property-payment', [RentCollectionController::class, 'destroy']);
+
+            // Manage Due Amount
+            Route::post('get-due-deed', [DueCollectionController::class, 'getDueDeed']);
+            Route::post('get-due-amount', [DueCollectionController::class, 'getDueAmount']);
+            Route::post('get-due-payments', [DueCollectionController::class, 'index']);
+            Route::post('due-property/store', [DueCollectionController::class, 'store']);
         });
 
     });

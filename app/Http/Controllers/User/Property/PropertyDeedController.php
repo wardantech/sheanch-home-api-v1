@@ -21,8 +21,10 @@ class PropertyDeedController extends Controller
     }
 
     /**
-     * List api
-     * @return \Illuminate\Http\Response
+     * Show request deed
+     *
+     * @param  mixed $request
+     * @return void
      */
     public function requestDeed(Request $request)
     {
@@ -38,6 +40,7 @@ class PropertyDeedController extends Controller
         }, 'property' => function($query){
             $query->select('id', 'name');
         }])
+        ->whereNot('status', 5)
         ->where('landlord_id', $userId)
         ->orderBy($columns[$column], $dir);
 
@@ -59,6 +62,12 @@ class PropertyDeedController extends Controller
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
+    /**
+     * Show Apply Deed
+     *
+     * @param  mixed $request
+     * @return void
+     */
     public function applyDeed(Request $request)
     {
         $columns = ['id', 'name'];
@@ -74,6 +83,48 @@ class PropertyDeedController extends Controller
             $query->select('id', 'name');
         }])
         ->where('tenant_id', $userId)
+        ->orderBy($columns[$column], $dir);
+
+        $count = PropertyDeed::count();
+
+        if ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if ($length != 'all') {
+            $fetchData = $query->paginate($length);
+        } else {
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+    }
+
+    /**
+     * Show only approved deeds
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function approvedDeed(Request $request)
+    {
+        $columns = ['id', 'name'];
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+        $userId = $request['params']['userId'];
+
+        $query = PropertyDeed::with(['tenant' => function($query){
+            $query->select('id', 'name');
+        }, 'property' => function($query){
+            $query->select('id', 'name');
+        }])
+        ->where('status', 5)
+        ->where('landlord_id', $userId)
         ->orderBy($columns[$column], $dir);
 
         $count = PropertyDeed::count();
@@ -194,7 +245,7 @@ class PropertyDeedController extends Controller
             $this->sendSms($request->mobile, $text);
 
             $deed->status = 5;
-            $deed->start_date = now();
+            $deed->start_date = $request->date;
             $deed->update();
 
             return $this->sendResponse([

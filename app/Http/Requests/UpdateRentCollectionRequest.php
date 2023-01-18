@@ -27,6 +27,7 @@ class UpdateRentCollectionRequest extends FormRequest
     {
         return [
             'cash_in' => 'required',
+            'due_amount' => 'nullable',
             'bank_id' => 'nullable',
             'remark' => 'nullable|string',
             'user_id' => 'required|integer',

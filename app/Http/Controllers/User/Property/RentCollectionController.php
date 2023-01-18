@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers\User\Property;
 
-use App\Models\Accounts\Due;
 use Illuminate\Http\Request;
-use App\Rules\BeforeMonthRule;
-use App\Rules\UniqueDeedDateRule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRentCollectionRequest;
@@ -41,7 +38,8 @@ class RentCollectionController extends Controller
         $searchValue = $request['params']['search'];
         $userId = $request['params']['userId'];
 
-        $query = Transaction::with('due', 'property')
+        $query = Transaction::with('property')
+            ->where('transaction_purpose', 1)
             ->where('user_id', $userId)
             ->orderBy($columns[$column], $dir);
 
@@ -72,7 +70,7 @@ class RentCollectionController extends Controller
     public function create(Request $request)
     {
         try {
-            $propertyDeed = PropertyDeed::with('property', 'tenant')->findOrFail($request->deedId);
+            $propertyDeed = PropertyDeed::findOrFail($request->deedId);
 
             return $this->sendResponse([
                 'deed'=> $propertyDeed
@@ -113,7 +111,6 @@ class RentCollectionController extends Controller
     {
         $data = $request->validated();
 
-        DB::beginTransaction();
         try {
             if($data['payment_method'] == 2) {
                 $data['bank_id'] = $request->bank_id;
@@ -126,29 +123,14 @@ class RentCollectionController extends Controller
                 unset($data['mobile_banking_id']);
             }
 
-            if ($request->due_amount) {
-                $due = new Due();
-
-                $due->user_id = $request->user_id;
-                $due->property_id = $request->property_id;
-                $due->property_deed_id = $request->property_deed_id;
-                $due->amount = $request->due_amount;
-                $due->date = $request->date;
-                $due->save();
-
-                $data['due_id'] = $due->id;
-            }
-
-            $data['transaction_purpose'] = 1;
+            $data['transaction_purpose'] = 1; // Revenue
             $revenues = Transaction::create($data);
 
-            DB::commit();
             return $this->sendResponse([
                 'revenue' => new UserRevenueResource($revenues),
             ], 'Payment Successfully Added');
 
         }catch (\Exception $exception) {
-            DB::rollback();
             return $this->sendError('Payment Store Error', [
                 'error' => $exception->getMessage()
             ]);
@@ -199,11 +181,8 @@ class RentCollectionController extends Controller
 
             $transaction = Transaction::findOrFail($id);
 
-            // If Have A Due
-            $dueId = $this->dueUpdate($transaction, $request);
-
-            $data['due_id'] = $dueId;
             $data['transaction_purpose'] = 1;
+            return $data;
             $transaction->update($data);
 
             DB::commit();
@@ -267,62 +246,17 @@ class RentCollectionController extends Controller
         return $paymentMethod;
     }
 
-    /**
-     * dueUpdate
-     *
-     * @param  mixed $transaction
-     * @param  mixed $request
-     * @return integer
-     */
-    protected function dueUpdate($transaction, $request)
-    {
-        if ($request->due_amount) {
-            if ($transaction->due) {
-                $transaction->due->amount = $request->due_amount;
-                $transaction->due->date = date("Y-m-d", strtotime($request->date));
-                $transaction->due->update();
-
-                return $transaction->due->id;
-            }else {
-                $due = new Due();
-
-                $due->user_id = $request->user_id;
-                $due->property_id = $request->property_id;
-                $due->property_deed_id = $request->property_deed_id;
-                $due->amount = $request->due_amount;
-                $due->date = date("Y-m-d", strtotime($request->date));
-                $due->save();
-
-                return $due->id;
-            }
-        }else {
-            if ($transaction->due) {
-                $transaction->due->amount = $request->due_amount;
-                $transaction->due->date = date("Y-m-d", strtotime($request->date));
-                $transaction->due->update();
-
-                return $transaction->due->id;
-            }
-        }
-    }
-
-
-
-
-
-
-
-
     // For another loginc;
     public function getRentDeed(Request $request)
     {
         try {
-            $deeds = PropertyDeed::with('property', 'user')
-                ->where('status', 2)
-                ->where('landlord_id', $request->userId)->get();
+            $deeds = PropertyDeed::with('property', 'landlord', 'tenant')
+                ->where('landlord_id', $request->userId)
+                ->where('status', 5)
+                ->get();
 
             return $this->sendResponse([
-                'deeds' => $deeds,
+                'deeds' => $deeds
             ], 'All deed successfully get');
         }catch (\Exception $exception){
             return $this->sendError('Deed Error', ['error' => $exception->getMessage()]);
@@ -333,10 +267,8 @@ class RentCollectionController extends Controller
     {
         try {
             $property = Property::with(['deed' => function($query) {
-                $query->where('status', 2);
+                $query->where('status', 5);
             }])->where('id', $request->propertyId)->first();
-
-            // return $property->deed[0]->updated_at;
 
             return $this->sendResponse([
                 'property' => $property,

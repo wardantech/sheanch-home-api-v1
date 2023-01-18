@@ -2,6 +2,7 @@
 
 namespace App\Models\Property;
 
+use App\Models\Accounts\Transaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,5 +38,10 @@ class PropertyDeed extends Model
     public function deedInfo()
     {
         return $this->hasOne(DeedInformation::class, 'property_deed_id', 'id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'property_deed_id', 'id');
     }
 }

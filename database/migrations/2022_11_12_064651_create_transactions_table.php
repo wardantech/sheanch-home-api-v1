@@ -21,11 +21,11 @@ return new class extends Migration
             $table->foreignId('mobile_banking_id')->nullable()->constrained('mobile_bankings');
             $table->foreignId('property_deed_id')->nullable()->constrained('property_deeds');
             $table->foreignId('expanse_item_id')->nullable()->constrained('expanse_items');
-            $table->foreignId('due_id')->nullable()->constrained('dues');
             $table->string('transaction_id')->nullable();
-            $table->tinyInteger('transaction_purpose')->comment('1 = Revenue | 2 = Expanse');
+            $table->tinyInteger('transaction_purpose')->comment('1 = Revenue | 2 = Expanse | 3 = Due Payment');
             $table->double('cash_in')->default(0);
             $table->double('cash_out')->default(0);
+            $table->double('due_amount')->default(0);
             $table->text('remark')->nullable();
             $table->tinyInteger('payment_method')->comment('1 = Cash | 2 = Bank | 3 = Mobile Bank');
             $table->foreignId('created_by')->nullable()->constrained('users');
