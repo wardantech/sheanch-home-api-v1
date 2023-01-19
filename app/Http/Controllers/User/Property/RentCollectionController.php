@@ -61,43 +61,20 @@ class RentCollectionController extends Controller
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
-    /**
-     * Rent collection create page show
-     *
-     * @param  mixed $request
-     * @return void
-     */
-    public function create(Request $request)
+    // For another loginc;
+    public function getRentDeed(Request $request)
     {
         try {
-            $propertyDeed = PropertyDeed::findOrFail($request->deedId);
+            $deeds = PropertyDeed::with('property', 'landlord', 'tenant')
+                ->where('landlord_id', $request->userId)
+                ->where('status', 5)
+                ->get();
 
             return $this->sendResponse([
-                'deed'=> $propertyDeed
-            ],'Property deed get successfully');
-
-        } catch (\Exception $exception) {
-            return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
-     * Method selection.
-     *
-     * @param  mixed $request
-     * @return void
-     */
-    public function getPaymentMethod(Request $request)
-    {
-        try {
-            $paymentMethod = $this->paymentMethod($request->method, $request->userId);
-
-            return $this->sendResponse([
-                'banks'=> $paymentMethod
-            ],'Payment method get successfully');
-
-        } catch (\Exception $exception) {
-            return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
+                'deeds' => $deeds
+            ], 'All deed successfully get');
+        }catch (\Exception $exception){
+            return $this->sendError('Deed Error', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -145,10 +122,21 @@ class RentCollectionController extends Controller
      */
     public function edit(Request $request)
     {
-        $transaction = Transaction::with(['property', 'due', 'deed' => function($query) {
-            $query->with('tenant');
-        }])
-        ->findOrFail($request->transactionId);
+        try {
+            $deeds = PropertyDeed::with('property', 'landlord', 'tenant')
+                ->where('landlord_id', $request->userId)
+                ->where('status', 5)
+                ->get();
+
+            $transaction = Transaction::findOrFail($request->transactionId);
+
+            return $this->sendResponse([
+                'deeds' => $deeds,
+                'transaction' => $transaction
+            ], 'All deed successfully get');
+        }catch (\Exception $exception){
+            return $this->sendError('Deed Edit Error', ['error' => $exception->getMessage()]);
+        }
 
         return $this->sendResponse([
             'transaction' => $transaction
@@ -170,19 +158,18 @@ class RentCollectionController extends Controller
         try {
             if($data['payment_method'] == 2) {
                 $data['bank_id'] = $request->bank_id;
-                unset($data['mobile_banking_id']);
+                $data['mobile_banking_id'] = null;
             } elseif ($data['payment_method'] == 3) {
                 $data['mobile_banking_id'] = $request->mobile_banking_id;
-                unset($data['bank_id']);
+                $data['bank_id'] = null;
             }else {
-                unset($data['bank_id']);
-                unset($data['mobile_banking_id']);
+                $data['bank_id'] = null;
+                $data['mobile_banking_id'] = null;
             }
 
             $transaction = Transaction::findOrFail($id);
 
             $data['transaction_purpose'] = 1;
-            return $data;
             $transaction->update($data);
 
             DB::commit();
@@ -199,6 +186,26 @@ class RentCollectionController extends Controller
     }
 
     /**
+     * Method selection.
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function getPaymentMethod(Request $request)
+    {
+        try {
+            $paymentMethod = $this->paymentMethod($request->method, $request->userId);
+
+            return $this->sendResponse([
+                'banks'=> $paymentMethod
+            ],'Payment method get successfully');
+
+        } catch (\Exception $exception) {
+            return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
      * Destroy rent collection.
      *
      * @param  mixed $request
@@ -208,9 +215,6 @@ class RentCollectionController extends Controller
     {
         try {
             $transaction = Transaction::findOrFail($request->id);
-            if ($transaction->due_id) {
-                $transaction->due->delete();
-            }
             return $transaction->delete();
 
             return $this->sendResponse(['id' => $request->id],'Payment deleted successfully');
@@ -244,23 +248,6 @@ class RentCollectionController extends Controller
         }
 
         return $paymentMethod;
-    }
-
-    // For another loginc;
-    public function getRentDeed(Request $request)
-    {
-        try {
-            $deeds = PropertyDeed::with('property', 'landlord', 'tenant')
-                ->where('landlord_id', $request->userId)
-                ->where('status', 5)
-                ->get();
-
-            return $this->sendResponse([
-                'deeds' => $deeds
-            ], 'All deed successfully get');
-        }catch (\Exception $exception){
-            return $this->sendError('Deed Error', ['error' => $exception->getMessage()]);
-        }
     }
 
     public function getPropertyInfo(Request $request)
