@@ -40,14 +40,8 @@ class Transaction extends Model
         return $this->belongsTo(Property::class);
     }
 
-    public function due()
-    {
-        return $this->belongsTo(Due::class, 'due_id', 'id');
-    }
-
     public function deed()
     {
         return $this->belongsTo(PropertyDeed::class, 'property_deed_id', 'id');
     }
-
 }

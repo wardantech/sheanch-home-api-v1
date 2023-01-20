@@ -118,6 +118,8 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('get-rent-property', [RentCollectionController::class, 'create']);
             Route::post('rent-property/store', [RentCollectionController::class, 'store']);
             Route::post('rent-property/edit', [RentCollectionController::class, 'edit']);
+            Route::post('rent-property/due', [RentCollectionController::class, 'due']);
+            Route::post('rent-property/due/store', [RentCollectionController::class, 'dueStore']);
             Route::put('rent-property/update/{id}', [RentCollectionController::class, 'update']);
             Route::post('delete-property-payment', [RentCollectionController::class, 'destroy']);
 

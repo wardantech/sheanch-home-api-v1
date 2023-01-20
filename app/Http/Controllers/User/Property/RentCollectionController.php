@@ -38,12 +38,21 @@ class RentCollectionController extends Controller
         $searchValue = $request['params']['search'];
         $userId = $request['params']['userId'];
 
-        $query = Transaction::with('property')
-            ->where('transaction_purpose', 1)
-            ->where('user_id', $userId)
-            ->orderBy($columns[$column], $dir);
+        $query = DB::table("transactions")
+            ->where('transactions.user_id', $userId)
+            ->join("properties", 'transactions.property_id', '=', 'properties.id')
+            ->join("property_deeds", 'transactions.property_deed_id', '=', 'property_deeds.id')
+            ->join("users", "users.id", '=', 'property_deeds.tenant_id')
+            ->select([
+                "properties.name as property_name",
+                "properties.total_amount as property_amount",
+                "users.name as tenant_name",
+                DB::raw("MONTHNAME(transactions.date) as month"),
+                DB::raw("SUM(transactions.cash_in) as amount")
+            ])
+            ->groupBy(['property_name','tenant_name','month','property_amount']);
 
-        $count = PropertyDeed::count();
+        $count = Transaction::count();
 
         if ($searchValue) {
             $query->where(function ($query) use ($searchValue) {
@@ -58,7 +67,10 @@ class RentCollectionController extends Controller
             $fetchData = $query->paginate($count);
         }
 
-        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+        return [
+            'data' => $fetchData,
+            'draw' => $request['params']['draw']
+        ];
     }
 
     // For another loginc;
@@ -137,10 +149,6 @@ class RentCollectionController extends Controller
         }catch (\Exception $exception){
             return $this->sendError('Deed Edit Error', ['error' => $exception->getMessage()]);
         }
-
-        return $this->sendResponse([
-            'transaction' => $transaction
-        ], 'Transaction Edit Data');
     }
 
     /**
@@ -154,7 +162,6 @@ class RentCollectionController extends Controller
     {
         $data = $request->validated();
 
-        DB::beginTransaction();
         try {
             if($data['payment_method'] == 2) {
                 $data['bank_id'] = $request->bank_id;
@@ -172,14 +179,68 @@ class RentCollectionController extends Controller
             $data['transaction_purpose'] = 1;
             $transaction->update($data);
 
-            DB::commit();
             return $this->sendResponse([
                 'revenue' => new UserRevenueResource($transaction),
             ], 'Payment Successfully Updated');
 
         } catch (\Exception $exception) {
-            DB::rollback();
             return $this->sendError('Payment Update Error', [
+                'error' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    public function due(Request $request)
+    {
+        try {
+            $transaction = Transaction::with('property')
+                ->findOrFail($request->transactionId);
+
+            return $this->sendResponse([
+                'transaction' => $transaction
+            ], 'Payment Successfully Updated');
+        }catch (\Exception $exception){
+            return $this->sendError('Deed Edit Error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function dueStore(Request $request)
+    {
+        $data = $request->validate([
+            'cash_in' => 'required',
+            'due_amount' => 'nullable',
+            'bank_id' => 'nullable',
+            'remark' => 'nullable|string',
+            'user_id' => 'required|integer',
+            'mobile_banking_id' => 'nullable',
+            'property_id' => 'required|integer',
+            'payment_method' => 'required|integer',
+            'property_deed_id' => 'required|integer',
+            'transaction_id' => 'nullable|string',
+            'date' => 'required'
+        ]);
+
+        try {
+            if($data['payment_method'] == 2) {
+                $data['bank_id'] = $request->bank_id;
+                unset($data['mobile_banking_id']);
+            } elseif ($data['payment_method'] == 3) {
+                $data['mobile_banking_id'] = $request->mobile_banking_id;
+                unset($data['bank_id']);
+            }else {
+                unset($data['bank_id']);
+                unset($data['mobile_banking_id']);
+            }
+
+            $data['transaction_purpose'] = 3; // Due
+            $revenues = Transaction::create($data);
+
+            return $this->sendResponse([
+                'revenue' => new UserRevenueResource($revenues),
+            ], 'Due Payment Successfully Added');
+
+        }catch (\Exception $exception) {
+            return $this->sendError('Payment Store Error', [
                 'error' => $exception->getMessage()
             ]);
         }
