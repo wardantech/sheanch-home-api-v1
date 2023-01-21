@@ -115,12 +115,13 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('get-property-info', [RentCollectionController::class, 'getPropertyInfo']);
             Route::post('get-payment-method', [RentCollectionController::class, 'getPaymentMethod']);
             Route::post('get-property-payments', [RentCollectionController::class, 'index']);
-            Route::post('get-rent-property', [RentCollectionController::class, 'create']);
             Route::post('rent-property/store', [RentCollectionController::class, 'store']);
+            Route::post('get-deed-transaction-month', [RentCollectionController::class, 'getDeedTransactionMonth']);
             Route::post('rent-property/edit', [RentCollectionController::class, 'edit']);
+            Route::put('rent-property/update/{id}', [RentCollectionController::class, 'update']);
             Route::post('rent-property/due', [RentCollectionController::class, 'due']);
             Route::post('rent-property/due/store', [RentCollectionController::class, 'dueStore']);
-            Route::put('rent-property/update/{id}', [RentCollectionController::class, 'update']);
+
             Route::post('delete-property-payment', [RentCollectionController::class, 'destroy']);
 
             // Manage Due Amount

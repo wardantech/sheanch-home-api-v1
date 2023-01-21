@@ -40,6 +40,7 @@ class RentCollectionController extends Controller
 
         $query = DB::table("transactions")
             ->where('transactions.user_id', $userId)
+            ->whereNull('transactions.deleted_at')
             ->join("properties", 'transactions.property_id', '=', 'properties.id')
             ->join("property_deeds", 'transactions.property_deed_id', '=', 'property_deeds.id')
             ->join("users", "users.id", '=', 'property_deeds.tenant_id')
@@ -47,10 +48,52 @@ class RentCollectionController extends Controller
                 "properties.name as property_name",
                 "properties.total_amount as property_amount",
                 "users.name as tenant_name",
-                DB::raw("MONTHNAME(transactions.date) as month"),
+                "property_deeds.id as deedId",
+                DB::raw("MONTH(transactions.date) as month"),
+                DB::raw("MONTHNAME(transactions.date) as monthName"),
+                DB::raw("YEAR(transactions.date) as year"),
                 DB::raw("SUM(transactions.cash_in) as amount")
             ])
-            ->groupBy(['property_name','tenant_name','month','property_amount']);
+            ->groupBy(['property_name','tenant_name','month', 'monthName', 'year', 'property_amount', 'deedId']);
+
+            // ->orderBy('year', 'desc');
+
+        $count = Transaction::count();
+
+        if ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if ($length != 'all') {
+            $fetchData = $query->paginate($length);
+        } else {
+            $fetchData = $query->paginate($count);
+        }
+
+        return [
+            'data' => $fetchData,
+            'draw' => $request['params']['draw']
+        ];
+    }
+
+    public function getDeedTransactionMonth(Request $request)
+    {
+        $columns = ['id', 'name'];
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+        $deedId = $request['params']['deedId'];
+        $month = $request['params']['month'];
+
+        $query = Transaction::with(['property', 'deed' => function($query) {
+            $query->with('tenant');
+        }])
+        ->where('property_deed_id', $deedId)
+        ->whereMonth('date', $month);
 
         $count = Transaction::count();
 
@@ -232,7 +275,7 @@ class RentCollectionController extends Controller
                 unset($data['mobile_banking_id']);
             }
 
-            $data['transaction_purpose'] = 3; // Due
+            $data['transaction_purpose'] = 1; // Due
             $revenues = Transaction::create($data);
 
             return $this->sendResponse([
