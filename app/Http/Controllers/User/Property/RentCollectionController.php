@@ -91,9 +91,11 @@ class RentCollectionController extends Controller
 
         $query = Transaction::with(['property', 'deed' => function($query) {
             $query->with('tenant');
-        }])
+        }, 'mobileBank'])
         ->where('property_deed_id', $deedId)
         ->whereMonth('date', $month);
+
+        $payAmount = $query->sum('cash_in');
 
         $count = Transaction::count();
 
@@ -111,6 +113,7 @@ class RentCollectionController extends Controller
         }
 
         return [
+            'pay_amount' => $payAmount,
             'data' => $fetchData,
             'draw' => $request['params']['draw']
         ];
@@ -239,8 +242,12 @@ class RentCollectionController extends Controller
             $transaction = Transaction::with('property')
                 ->findOrFail($request->transactionId);
 
+            $payAmount = Transaction::where('property_deed_id', $transaction->property_deed_id)
+                        ->whereMonth('date', $transaction->date)->sum('cash_in');
+
             return $this->sendResponse([
-                'transaction' => $transaction
+                'transaction' => $transaction,
+                'pay_amount' => $payAmount
             ], 'Payment Successfully Updated');
         }catch (\Exception $exception){
             return $this->sendError('Deed Edit Error', ['error' => $exception->getMessage()]);
@@ -251,7 +258,6 @@ class RentCollectionController extends Controller
     {
         $data = $request->validate([
             'cash_in' => 'required',
-            'due_amount' => 'nullable',
             'bank_id' => 'nullable',
             'remark' => 'nullable|string',
             'user_id' => 'required|integer',
@@ -259,7 +265,7 @@ class RentCollectionController extends Controller
             'property_id' => 'required|integer',
             'payment_method' => 'required|integer',
             'property_deed_id' => 'required|integer',
-            'transaction_id' => 'nullable|string',
+            'transaction_id' => 'nullable',
             'date' => 'required'
         ]);
 

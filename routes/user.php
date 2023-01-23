@@ -123,12 +123,6 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('rent-property/due/store', [RentCollectionController::class, 'dueStore']);
 
             Route::post('delete-property-payment', [RentCollectionController::class, 'destroy']);
-
-            // Manage Due Amount
-            Route::post('get-due-deed', [DueCollectionController::class, 'getDueDeed']);
-            Route::post('get-due-amount', [DueCollectionController::class, 'getDueAmount']);
-            Route::post('get-due-payments', [DueCollectionController::class, 'index']);
-            Route::post('due-property/store', [DueCollectionController::class, 'store']);
         });
 
     });
