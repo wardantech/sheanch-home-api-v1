@@ -178,9 +178,10 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
 
     // Expanse Route
     Route::post('expanses', [ExpanseController::class, 'index']);
+    Route::post('expanses/create', [ExpanseController::class, 'create']);
     Route::post('expanses/store', [ExpanseController::class, 'store']);
     Route::put('expanses/{transaction}', [ExpanseController::class, 'update']);
-    Route::delete('expanses/{transaction}', [ExpanseController::class, 'destroy']);
+    Route::delete('expanses/{id}', [ExpanseController::class, 'destroy']);
 
     // Add bank account for user
     Route::post('get-bank-payment-method', [AddBankMethodController::class, 'index']);
