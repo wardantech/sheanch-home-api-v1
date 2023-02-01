@@ -20,6 +20,7 @@ class WishlistController extends Controller
         $column = $request['params']['column'];
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
+        $userId = $request['params']['user_id'];
 
         $query = Wishlist::with([
             'propertyAd' => function ($query) {
@@ -28,9 +29,8 @@ class WishlistController extends Controller
                 }]);
             }
         ])
-            ->where('tenant_id', $request->tenantId)
-            ->select('id', 'property_ad_id', 'tenant_id')
-            ->orderBy($columns[$column], $dir);
+        ->where('user_id', $userId)
+        ->orderBy($columns[$column], $dir);
 
         $count = Wishlist::count();
         if ($searchValue) {
@@ -46,7 +46,10 @@ class WishlistController extends Controller
             $fetchData = $query->paginate($count);
         }
 
-        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+        return [
+            'data' => $fetchData,
+            'draw' => $request['params']['draw']
+        ];
     }
 
     /**
@@ -57,32 +60,29 @@ class WishlistController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $tenatId = $request->tenantId;
-            $propertyAdId = $request->propertyAdId;
+        $data = $request->validate([
+            'property_ad_id' => 'required|integer',
+            'user_id' => 'required|integer'
+        ]);
 
-            $check = DB::table('wishlists')->where('tenant_id', $tenatId)
-                ->where('property_ad_id', $propertyAdId)
+        try {
+            $check = DB::table('wishlists')->where('user_id', $data['user_id'])
+                ->where('property_ad_id', $data['property_ad_id'])
                 ->first() ? true : false;
 
             if($check) {
                 return $this->sendResponse([
                     'status' => false
-                ], 'Property Already Has on your wishlist');
+                ], 'Property already has on your wishlist');
             }else {
-                $wishlist = new Wishlist();
-
-                $wishlist->property_ad_id = $propertyAdId;
-                $wishlist->tenant_id = $tenatId;
-                $wishlist->save();
+                Wishlist::create($data);
 
                 return $this->sendResponse([
                     'status' => true
                 ], 'Successfully added wishlist.');
             }
-
         }catch (\Exception $exception){
-            return $this->sendError('Wishlist Image error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Wishlist image error', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -98,7 +98,7 @@ class WishlistController extends Controller
             $id = $request->wishlistId;
 
             $check = DB::table('wishlists')
-                    ->where('tenant_id', $request->tenantId)
+                    ->where('user_id', $request->user_id)
                     ->first() ? true : false;
 
             if($check) {

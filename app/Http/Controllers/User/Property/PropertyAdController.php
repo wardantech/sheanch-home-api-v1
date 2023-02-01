@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User\Property;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\FrontPropertiesResourse;
 use App\Models\Landlord;
 
 use App\Models\Property\Property;
@@ -247,12 +248,12 @@ class PropertyAdController extends Controller
     public function getActivePropertyList()
     {
         try {
-            $activePropertyAds = PropertyAd::where('status', 1)
-                ->with(['property' => function ($query) {
-                    $query->with('media');
-                }])->get();
+            $properties = PropertyAd::where('status', 1)
+                ->with('property')->paginate(6);
 
-            return $this->sendResponse($activePropertyAds, 'Property data get successfully');
+            return $this->sendResponse([
+                'properties' => FrontPropertiesResourse::collection($properties)
+            ], 'Property data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
