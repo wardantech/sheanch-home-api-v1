@@ -11,6 +11,7 @@ use App\Http\Controllers\User\Accounts\ExpanseController;
 use App\Http\Controllers\User\Accounts\RevenueController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Property\PropertyAdController;
+use App\Http\Controllers\User\Accounts\ExpanseItemController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Property\PropertyPageController;
 use App\Http\Controllers\User\Accounts\AddBankMethodController;
@@ -18,10 +19,8 @@ use App\Http\Controllers\User\Dashboard\UserDasboardController;
 use App\Http\Controllers\User\Property\RentCollectionController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Accounts\AddMobileMethodController;
-use App\Http\Controllers\User\Dashboard\TenantDashboardController;
-use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
 use App\Http\Controllers\User\Property\DeedInformationController;
-use App\Http\Controllers\User\Property\DueCollectionController;
+use App\Http\Controllers\User\Dashboard\TenantDashboardController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 
 /*
@@ -170,9 +169,16 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
     Route::put('revenues/{transaction}', [RevenueController::class, 'update']);
     Route::delete('revenues/{transaction}', [RevenueController::class, 'destroy']);
 
+    // Expanse Item Route
+    Route::post('expanse-items', [ExpanseItemController::class, 'index']);
+    Route::post('expanses-items/store', [ExpanseItemController::class, 'store']);
+    Route::post('expanses-items/edit', [ExpanseItemController::class, 'edit']);
+    Route::put('expanses-items/update/{id}', [ExpanseItemController::class, 'update']);
+    Route::delete('expanses-items/{id}', [ExpanseItemController::class, 'destroy']);
+
     // Expanse Route
-    Route::get('expanses', [ExpanseController::class, 'index']);
-    Route::post('expanses', [ExpanseController::class, 'store']);
+    Route::post('expanses', [ExpanseController::class, 'index']);
+    Route::post('expanses/store', [ExpanseController::class, 'store']);
     Route::put('expanses/{transaction}', [ExpanseController::class, 'update']);
     Route::delete('expanses/{transaction}', [ExpanseController::class, 'destroy']);
 

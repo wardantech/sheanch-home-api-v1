@@ -12,8 +12,10 @@ class ExpanseItemController extends Controller
 {
     use ResponseTrait;
 
-    public function index()
+    public function index(Request $request)
     {
+        return 25;
+
         try {
             $expanseItem = ExpanseItem::all();
 
