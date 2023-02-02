@@ -21,6 +21,7 @@ use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Accounts\AddMobileMethodController;
 use App\Http\Controllers\User\Property\DeedInformationController;
 use App\Http\Controllers\User\Dashboard\TenantDashboardController;
+use App\Http\Controllers\User\Accounts\TransactionReportController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 
 /*
@@ -183,6 +184,9 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
     Route::post('expanses/edit', [ExpanseController::class, 'edit']);
     Route::put('expanses/{id}', [ExpanseController::class, 'update']);
     Route::delete('expanses/{id}', [ExpanseController::class, 'destroy']);
+
+    // Transaction Reports
+    Route::post('cash', [TransactionReportController::class, 'cash']);
 
     // Add bank account for user
     Route::post('get-bank-payment-method', [AddBankMethodController::class, 'index']);

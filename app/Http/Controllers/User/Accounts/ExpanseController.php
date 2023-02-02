@@ -5,7 +5,6 @@ namespace App\Http\Controllers\User\Accounts;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreExpanseRequest;
-use App\Http\Resources\UserExpanseResourse;
 use App\Models\Accounts\ExpanseItem;
 use App\Models\Accounts\Transaction;
 use App\Models\Property\Property;
