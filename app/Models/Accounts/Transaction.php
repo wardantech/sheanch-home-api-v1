@@ -12,7 +12,7 @@ class Transaction extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $casts = ['date' => 'date'];
+    protected $dates = ['date'];
 
     protected $fillable = [
         'user_id',

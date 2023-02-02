@@ -55,7 +55,7 @@ class ExpanseController extends Controller
     public function create(Request $request)
     {
         try {
-            $prperties = Property::select('id', 'name')
+            $properties = Property::select('id', 'name')
                 ->where('user_id', $request->userId)
                 ->get();
 
@@ -64,7 +64,7 @@ class ExpanseController extends Controller
                 ->get();
 
             return $this->sendResponse([
-                'prperties' => $prperties,
+                'properties' => $properties,
                 'expanseItems' => $expanseItems
             ], '');
         }catch (\Exception $exception) {
@@ -104,39 +104,54 @@ class ExpanseController extends Controller
         }
     }
 
-    public function update(Request $request,Transaction $transaction)
+    public function edit(Request $request)
     {
-        $data = $request->validate([
-            'date' => 'required',
-            'cash_out' => 'required',
-            'account_id' => 'nullable',
-            'remark' => 'nullable|string',
-            'user_id' => 'required|integer',
-            'mobile_banking_id' => 'nullable',
-            'property_id' => 'required|integer',
-            'payment_method' => 'required|integer',
-            'expanse_item_id' => 'required|integer',
-            'property_deed_id' => 'required|integer',
-        ]);
+        try {
+            $properties = Property::select('id', 'name')
+                ->where('user_id', $request->userId)
+                ->get();
+
+            $expanseItems = ExpanseItem::select('id', 'name')
+                ->where('created_by', $request->userId)
+                ->get();
+
+            $transaction = Transaction::findOrFail($request->id);
+
+            return $this->sendResponse([
+                'properties' => $properties,
+                'transaction' => $transaction,
+                'expanseItems' => $expanseItems
+            ], 'Succssfully get expance item');
+
+        } catch (\Exception $exception) {
+            return $this->sendError('Add Payment Method Error', [
+                'error' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    public function update(StoreExpanseRequest $request, $id)
+    {
+        $data = $request->validated();
 
         try {
-            if($data['payment_method'] === 2) {
-                $data['account_id'] = 1;
+            if($data['payment_method'] == 2) {
+                $data['bank_id'] = $request->bank_id;
                 unset($data['mobile_banking_id']);
-            } elseif ($data['payment_method'] === 3) {
-                $data['mobile_banking_id'] = 1;
-                unset($data['account_id']);
+            } elseif ($data['payment_method'] == 3) {
+                $data['mobile_banking_id'] = $request->mobile_banking_id;
+                unset($data['bank_id']);
             }else {
-                unset($data['account_id']);
+                unset($data['bank_id']);
                 unset($data['mobile_banking_id']);
             }
 
-            $data['transaction_purpose'] = 2;
+            $transaction = Transaction::findOrFail($request->id);
             $transaction->update($data);
 
             return $this->sendResponse([
-                'expanse' => new UserExpanseResourse($transaction),
-            ], 'Expanse Updated Successfully');
+                'transaction' => $transaction
+            ], 'Expanse successfully updated');
 
         }catch (\Exception $exception) {
             return $this->sendError('Expanse Update Error', [
