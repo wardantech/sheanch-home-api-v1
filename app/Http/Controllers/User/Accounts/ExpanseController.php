@@ -59,9 +59,7 @@ class ExpanseController extends Controller
                 ->where('user_id', $request->userId)
                 ->get();
 
-            $expanseItems = ExpanseItem::select('id', 'name')
-                ->where('created_by', $request->userId)
-                ->get();
+            $expanseItems = ExpanseItem::select('id', 'name')->get();
 
             return $this->sendResponse([
                 'properties' => $properties,
@@ -111,9 +109,7 @@ class ExpanseController extends Controller
                 ->where('user_id', $request->userId)
                 ->get();
 
-            $expanseItems = ExpanseItem::select('id', 'name')
-                ->where('created_by', $request->userId)
-                ->get();
+            $expanseItems = ExpanseItem::select('id', 'name')->get();
 
             $transaction = Transaction::findOrFail($request->id);
 
