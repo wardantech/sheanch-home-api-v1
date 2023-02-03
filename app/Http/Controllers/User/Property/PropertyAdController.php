@@ -249,7 +249,9 @@ class PropertyAdController extends Controller
     {
         try {
             $properties = PropertyAd::where('status', 1)
-                ->with('property')->paginate(6);
+                ->with('property')
+                ->latest()
+                ->paginate(6);
 
             return $this->sendResponse([
                 'properties' => FrontPropertiesResourse::collection($properties)
