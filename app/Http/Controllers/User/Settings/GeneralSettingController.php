@@ -20,8 +20,8 @@ class GeneralSettingController extends Controller
             $wishlist = '';
             $frontendData = FrontendSetting::with('media')->first();
 
-            if($request->tenantId){
-                $wishlist = Wishlist::where('tenant_id', $request->tenantId)->count();
+            if($request->userId){
+                $wishlist = Wishlist::where('user_id', $request->userId)->count();
             }
 
             return $this->sendResponse([

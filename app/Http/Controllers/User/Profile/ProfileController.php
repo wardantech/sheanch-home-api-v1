@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\User\Profile;
 
-use App\Http\Controllers\Controller;
-use App\Models\Landlord;
-use App\Models\Settings\District;
-use App\Models\Settings\Division;
-use App\Models\Settings\Thana;
-use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Tenant;
+use App\Models\Landlord;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Settings\Thana;
+use App\Models\UserInformation;
 use Illuminate\Validation\Rule;
+use App\Models\Settings\District;
+use App\Models\Settings\Division;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ProfileResourse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
@@ -31,25 +33,46 @@ class ProfileController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-
-    public function getLandlordData(Request $request)
+    public function getUser(Request $request)
     {
         try{
-            $landlord = Landlord::findOrFail($request->id);
-
+            $user = User::findOrFail($request->id);
             $divisions = Division::select('id', 'name')->get();
-            $district = District::where('division_id', $landlord->division_id)->get();
-            $thana = Thana::where('district_id', $landlord->district_id)->get();
+
+            $district = null;
+            $thana = null;
+            if ($user->information) {
+                $district = District::where('division_id', $user->information->division_id)->get();
+                $thana = Thana::where('district_id', $user->information->district_id)->get();
+            }
 
             return $this->sendResponse([
-                'landlord' => $landlord,
+                'user' => new ProfileResourse($user),
                 'divisions' => $divisions,
                 'districts' => $district,
-                'thanas' => $thana,
-            ], 'Get all data successfully');
+                'thanas' => $thana
+            ], 'User data get successfully');
+        } catch (\Exception $exception){
+            return $this->sendError('User data error', ['error' => $exception->getMessage()]);
         }
-        catch (\Exception $exception){
-            return $this->sendError('Landlord data error', ['error' => $exception->getMessage()]);
+    }
+
+    public function sidebar(Request $request)
+    {
+        try{
+            $user = User::select('id', 'name')->findOrFail($request->id);
+
+            $image = null;
+            if ($user->information) {
+                $image = $user->information->image;
+            }
+
+            return $this->sendResponse([
+                'user' => $user,
+                'image' => $image
+            ], 'User data get successfully');
+        } catch (\Exception $exception){
+            return $this->sendError('User data error', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -60,10 +83,9 @@ class ProfileController extends Controller
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
 
-    public function landlordUpdate(Request $request, $id)
+    public function update(Request $request, $id)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $request->validate([
             'email' => [
                 'required',
                 Rule::unique('users')->where(function ($query) use ($request, $id) {
@@ -76,49 +98,29 @@ class ProfileController extends Controller
             'thana_id' => 'required|numeric',
             'district_id' => 'required|numeric',
             'division_id' => 'required|numeric',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
-
+            'nid' => 'nullable|string',
+            'postal_address' => 'nullable|string',
+            'residential_address' => 'nullable|string'
+        ]);
 
         DB::beginTransaction();
         try {
+            $user = User::findOrFail($id);
+            $data['user_id'] = $user->id;
 
-            $landlord = Landlord::findOrFail($id);
+            $user->update($data);
 
-            $landlord->name = $request->name;
-            $landlord->email = $request->email;
-            $landlord->mobile = $request->mobile;
-            $landlord->status = $request->status;
-            $landlord->nid = $request->nid;
-            $landlord->thana_id = $request->thana_id;
-            $landlord->district_id = $request->district_id;
-            $landlord->division_id = $request->division_id;
-            $landlord->postal_address = $request->postal_address;
-            $landlord->residential_address = $request->residential_address;
-
-            $landlord->update();
-
-            $user = new User();
-            $user->email = $request->email;
-            $user->mobile = $request->mobile;
-            $user->name = $request->name;
-            $user->status = $request->status;
-
-            $user->update();
+            if ($user->information) {
+                $user->information->update($data);
+            } else {
+                UserInformation::create($data);
+            }
 
             DB::commit();
-
-            return $this->sendResponse(['id'=>$landlord->id],'Landlord update successfully');
-
+            return $this->sendResponse(['id'=>$user->id],'User update successfully');
         }catch (\Exception $exception){
             DB::rollback();
-            return $this->sendError('Landlord update error', ['error' => $exception->getMessage()]);
+            return $this->sendError('User update error', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -132,142 +134,17 @@ class ProfileController extends Controller
     public function imageUpload(Request $request, $id)
     {
         try{
-            $imageName = uniqid('landlord-',false).'.'.$request->file->getClientOriginalExtension();
+            $imageName = uniqid('user-',false).'.'.$request->file->getClientOriginalExtension();
             $request->file->move(public_path('images'), $imageName);
 
-            $landlord = Landlord::findOrFail($id);
-            $landlord->image = $imageName;
-            $landlord->update();
+            $information = UserInformation::where('user_id', $id)->first();
+            $information->image = $imageName;
+            $information->update();
 
-            return response()->json(['success'=>'You have successfully upload file.']);
+            return response()->json(['success'=>'You have successfully upload image.']);
         }
         catch (\Exception $exception){
-            return $this->sendError('Landlord Image error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
-     * Tenant get all data
-     * @param Request $request
-     * @return \Illuminate\Http\Response
-     */
-
-    public function getTenantData(Request $request)
-    {
-        try{
-            $tenant = Tenant::findOrFail($request->id);
-
-            $divisions = Division::select('id', 'name')->get();
-            $district = District::where('division_id', $tenant->division_id)->get();
-            $thana = Thana::where('district_id', $tenant->district_id)->get();
-
-            return $this->sendResponse([
-                'tenant' => $tenant,
-                'divisions' => $divisions,
-                'districts' => $district,
-                'thanas' => $thana,
-            ], 'Get all data successfully');
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Tenant data error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
-     * Tenant Update logic
-     * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
-
-    public function TenantUpdate(Request $request, $id)
-    {
-        // Tenants Validation
-        $rules = [
-            'email' => [
-                'required',
-                Rule::unique('users')->where(function ($query) use ($request, $id) {
-                    return $query->whereNull('deleted_at')->where('id','==',$id);
-                })
-            ],
-            'mobile' => 'required|string',
-            //'image' => 'mimes:jpg,jpeg,png|max:2048',
-            'name' => 'required|string|max:255',
-            'gender' => 'required|integer',
-            'marital_status' => 'integer',
-            'thana_id' => 'required|numeric',
-            'district_id' => 'required|numeric',
-            'division_id' => 'required|numeric',
-            'postal_code' => 'string',
-            'postal_address' => 'string',
-            'physical_address' => 'string',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        // Tenants Validation End
-
-        DB::beginTransaction();
-        try {
-            // Tenant Update
-            $tenant = Tenant::findOrFail($id);
-
-            $tenant->name = $request->name;
-            $tenant->email = $request->email;
-            $tenant->mobile = $request->mobile;
-            $tenant->status = $request->status;
-            $tenant->gender = $request->gender;
-            $tenant->dob = $request->dob;
-            $tenant->nid = $request->nid;
-            $tenant->passport_no = $request->passport_no;
-            $tenant->marital_status = $request->marital_status;
-            $tenant->thana_id = $request->thana_id;
-            $tenant->district_id = $request->district_id;
-            $tenant->division_id = $request->division_id;
-            $tenant->postal_code = $request->postal_code;
-            $tenant->postal_address = $request->postal_address;
-            $tenant->physical_address = $request->physical_address;
-            $tenant->update();
-
-            // User update
-            $user = new User();
-            $user->email = $request->email;
-            $user->mobile = $request->mobile;
-            $user->name = $request->name;
-            $user->status = $request->status;
-            $user->update();
-
-            DB::commit();
-            return $this->sendResponse(['id'=>$tenant->id],'Tenant updated successfully');
-
-        }catch (\Exception $exception) {
-            DB::rollback();
-            return $this->sendError('Tenant update error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
-     * Tenant image upload
-     * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
-
-    public function tenantImageUpload(Request $request, $id)
-    {
-        try{
-            $imageName = uniqid('tenant-',false).'.'.$request->file->getClientOriginalExtension();
-            $request->file->move(public_path('images'), $imageName);
-
-            $tenant = Tenant::findOrFail($id);
-            $tenant->image = $imageName;
-            $tenant->update();
-
-            return response()->json(['success'=>'You have successfully upload file.']);
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Tenant Image error', ['error' => $exception->getMessage()]);
+            return $this->sendError('User Image error', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -279,16 +156,10 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request)
     {
-        // Password Validation
-        $rules = [
+        $request->validate([
             'currentPassword' => 'required',
             'password' => 'required|confirmed'
-        ];
-        $validator = Validator::make($request->all(), $rules);
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        // Password Validation End
+        ]);
 
         try {
             $hashedPassword = Auth::user()->password;
@@ -313,7 +184,7 @@ class ProfileController extends Controller
         }
     }
 
-    public function showLandlord(Request $request){
+    public function show(Request $request){
         try{
             $landlord = Landlord::with('division','district','thana')
                 ->where('id',$request->landlordId)->first();
@@ -323,30 +194,6 @@ class ProfileController extends Controller
         catch (\Exception $exception){
             DB::rollback();
             return $this->sendError('Landlord data error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    public function showTenant(Request $request){
-        try{
-            $tenant = Tenant::with(['division' => function($query) {
-                $query->select('id', 'name');
-            },'district' => function($query) {
-                $query->select('id', 'name');
-            },'thana' => function($query) {
-                $query->select('id', 'name');
-            }, 'reviews'])
-            ->where('id',$request->tenantId)->first();
-
-            $rating = $tenant->reviews()->avg('rating');
-
-            return $this->sendResponse([
-                'tenant' => $tenant,
-                'rating' => $rating
-            ],'Tenant data get successfully');
-        }
-        catch (\Exception $exception){
-            DB::rollback();
-            return $this->sendError('Tenant data error', ['error' => $exception->getMessage()]);
         }
     }
 }

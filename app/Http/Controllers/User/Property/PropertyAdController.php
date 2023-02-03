@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\User\Property;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\FrontPropertiesResourse;
 use App\Models\Landlord;
 
 use App\Models\Property\Property;
 use App\Models\Property\PropertyAd;
+use App\Models\Settings\Facility;
 use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -42,7 +44,7 @@ class PropertyAdController extends Controller
         $searchValue = $request['params']['search'];
 
         $query = PropertyAd::select('*')->with(['landlord', 'property'])
-            ->where('landlord_id', Auth::user()->landlord_id)
+            ->where('user_id', Auth::id())
             ->orderBy($columns[$column], $dir);
 
         $count = PropertyAd::count();
@@ -69,27 +71,18 @@ class PropertyAdController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request->input();
-        //--- Validation Section Start ---//
-        $rules = [
-            'landlord_id' => 'required',
+        $request->validate([
+            'user_id' => 'required',
             'rent_amount' => 'required',
             'start_date' => 'required',
             'property_id' => 'required',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-
+        ]);
 
         try {
             // Store Property
             $PropertyAd = new PropertyAd();
 
-            $PropertyAd->landlord_id = $request->landlord_id;
+            $PropertyAd->user_id = $request->user_id;
             $PropertyAd->property_id = $request->property_id;
             $PropertyAd->property_category = $request->property_category_id;
             $PropertyAd->property_type_id = $request->property_type_id;
@@ -137,18 +130,15 @@ class PropertyAdController extends Controller
     public function getDetails(Request $request)
     {
         try {
-            // $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
-            //     ->with(['property', 'property.media', 'property.reviews' => function ($review) {
-            //         $review->where('review_type', 1)
-            //             ->select('id', 'review_type_id', 'review', 'rating', 'reviewer_type_id', 'created_at');
-            //     }, 'property.reviews.tenant' => function ($tenant) {
-            //         $tenant->select('id', 'name', 'image');
-            //     }])->first();
-
-            $PropertyAd = PropertyAd::where('id', $request->propertyAdId)
+            $propertyAd = PropertyAd::where('id', $request->propertyAdId)
                 ->with(['property', 'property.media'])->first();
+            $facilityIds = json_decode($propertyAd->property->facilitie_ids);
+            $facilities = Facility::whereIn('id', $facilityIds)->get('name');
 
-            return $this->sendResponse($PropertyAd, 'Property data successfully');
+            return $this->sendResponse([
+                'propertyAd' => $propertyAd,
+                'facilities' => $facilities
+            ], 'Property data successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
@@ -158,7 +148,7 @@ class PropertyAdController extends Controller
     {
         try {
             $PropertyAd = PropertyAd::findOrFail($request->id);
-            $properties = Property::where('landlord_id', $request->landlordId)
+            $properties = Property::where('user_id', $request->userId)
                 ->where('status', true)->get();
 
             $data = [
@@ -181,26 +171,18 @@ class PropertyAdController extends Controller
 
     public function update(Request $request, $id)
     {
-        //return $request->input();
-        //--- Validation Section Start ---//
-        $rules = [
-            'landlord_id' => 'required',
+        $request->validate([
+            'user_id' => 'required',
             'rent_amount' => 'required',
             'start_date' => 'required',
             'property_id' => 'required',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-
+        ]);
 
         try {
             // Store Property
             $PropertyAd = PropertyAd::findOrFail($id);
 
+            $PropertyAd->user_id = $request->user_id;
             $PropertyAd->property_id = $request->property_id;
             $PropertyAd->property_category = $request->property_category_id;
             $PropertyAd->property_type_id = $request->property_type_id;
@@ -253,7 +235,7 @@ class PropertyAdController extends Controller
     public function getPropertyAsLandlord(Request $request)
     {
         try {
-            $properties = Property::where('landlord_id', $request->landlordId)
+            $properties = Property::where('user_id', $request->userId)
                 ->where('status', true)->get();
 
             return $this->sendResponse($properties, 'Landlord list');
@@ -265,14 +247,15 @@ class PropertyAdController extends Controller
 
     public function getActivePropertyList()
     {
-
         try {
-            $activePropertyAds = PropertyAd::where('status', 1)
-                ->with(['property' => function ($query) {
-                    $query->with('media');
-                }])->get();
+            $properties = PropertyAd::where('status', 1)
+                ->with('property')
+                ->latest()
+                ->paginate(6);
 
-            return $this->sendResponse($activePropertyAds, 'Property data get successfully');
+            return $this->sendResponse([
+                'properties' => FrontPropertiesResourse::collection($properties)
+            ], 'Property data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
@@ -324,7 +307,7 @@ class PropertyAdController extends Controller
             if (isset($request->district_id)) {
                 $search->where('district_id', $request->district_id);
             }
-            
+
             if (isset($request->thana_id)) {
                 $search->where('thana_id', $request->thana_id);
             }

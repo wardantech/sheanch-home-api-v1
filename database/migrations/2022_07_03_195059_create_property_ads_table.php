@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('property_ads', function (Blueprint $table) {
             $table->id();
             $table->integer('status');
-            $table->integer('landlord_id')->index();
+            $table->foreignId('user_id')->constrained('users');
             $table->string('start_date')->index();
             $table->string('end_date')->index();
             $table->integer('property_id')->index();

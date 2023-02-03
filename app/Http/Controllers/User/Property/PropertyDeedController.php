@@ -5,15 +5,15 @@ namespace App\Http\Controllers\User\Property;
 
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use App\Models\Property\PropertyAd;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\DeedDetailsResource;
+use App\Http\Resources\DeedTenantInfoResource;
 use App\Models\Property\PropertyDeed;
-use Illuminate\Support\Facades\Validator;
+use App\Traits\OTPTrait;
 
 class PropertyDeedController extends Controller
 {
-    use ResponseTrait;
+    use ResponseTrait, OTPTrait;
 
     public function __construct()
     {
@@ -21,21 +21,28 @@ class PropertyDeedController extends Controller
     }
 
     /**
-     * List api
-     * @return \Illuminate\Http\Response
+     * Show request deed
+     *
+     * @param  mixed $request
+     * @return void
      */
-    public function getListTenant(Request $request)
+    public function requestDeed(Request $request)
     {
         $columns = ['id', 'name'];
-
         $length = $request['params']['length'];
         $column = $request['params']['column'];
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
+        $userId = $request['params']['userId'];
 
-        $query = PropertyDeed::select('*')->with(['landlord','property','propertyAd'])
-            ->where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy($columns[$column], $dir);
+        $query = PropertyDeed::with(['tenant' => function($query){
+            $query->select('id', 'name');
+        }, 'property' => function($query){
+            $query->select('id', 'name');
+        }])
+        ->whereNot('status', 5)
+        ->where('landlord_id', $userId)
+        ->orderBy($columns[$column], $dir);
 
         $count = PropertyDeed::count();
 
@@ -56,22 +63,69 @@ class PropertyDeedController extends Controller
     }
 
     /**
-     * List api
-     * @return \Illuminate\Http\Response
+     * Show Apply Deed
+     *
+     * @param  mixed $request
+     * @return void
      */
-    public function getListLandlord(Request $request)
+    public function applyDeed(Request $request)
     {
         $columns = ['id', 'name'];
-
         $length = $request['params']['length'];
         $column = $request['params']['column'];
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
+        $userId = $request['params']['userId'];
 
-        $query = PropertyDeed::select('*')->with(['tenant','property','propertyAd'])
-            ->where('landlord_id', Auth::user()->landlord_id)
-            ->whereIn('status', [1,2,3])
-            ->orderBy($columns[$column], $dir);
+        $query = PropertyDeed::with(['landlord' => function($query){
+            $query->select('id', 'name');
+        }, 'property' => function($query){
+            $query->select('id', 'name');
+        }])
+        ->where('tenant_id', $userId)
+        ->orderBy($columns[$column], $dir);
+
+        $count = PropertyDeed::count();
+
+        if ($searchValue) {
+            $query->where(function ($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        if ($length != 'all') {
+            $fetchData = $query->paginate($length);
+        } else {
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+    }
+
+    /**
+     * Show only approved deeds
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function approvedDeed(Request $request)
+    {
+        $columns = ['id', 'name'];
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+        $userId = $request['params']['userId'];
+
+        $query = PropertyDeed::with(['tenant' => function($query){
+            $query->select('id', 'name');
+        }, 'property' => function($query){
+            $query->select('id', 'name');
+        }])
+        ->where('status', 5)
+        ->where('landlord_id', $userId)
+        ->orderBy($columns[$column], $dir);
 
         $count = PropertyDeed::count();
 
@@ -99,33 +153,124 @@ class PropertyDeedController extends Controller
      */
     public function save(Request $request)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $request->validate([
             'landlord_id' => 'required',
-            'tenant_id' => 'required',
+            'tenant_id' => 'required|unique:property_deeds',
             'property_id' => 'required',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-
+            'property_ad_id' => 'required',
+        ], [
+            'tenant_id.unique' => 'You already apply on this advertisement.',
+        ]);
 
         try {
-            // Store Property
-            $deed = new PropertyDeed();
+            $data['status'] = 1;
+            $deed = PropertyDeed::create($data);
 
-            $deed->landlord_id = $request->landlord_id;
-            $deed->property_id = $request->property_id;
-            $deed->property_ad_id = $request->property_ad_id;
-            $deed->tenant_id = $request->tenant_id;
+            return $this->sendResponse(['id' => $deed], 'Property create successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function show(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            if ($deed->landlord_id !== $request->userId) {
+                throw new \Exception("User or landlord not same");
+            }
+
+            if ($deed->status === 0) {
+                $deed->status = 2;
+                $deed->update();
+            }
+
+            return $this->sendResponse([
+                'deed' => new DeedDetailsResource($deed)
+            ], 'Property create successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function accept(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            if ($deed->landlord_id !== $request->userId) {
+                throw new \Exception("User or landlord not same");
+            }
+
+            $deed->status = 3;
+            $deed->start_date = now();
+            $deed->update();
+
+            return $this->sendResponse([
+                'deed' => new DeedDetailsResource($deed)
+            ], 'Deed accept successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function tenantInfo(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            if ($deed->landlord_id !== $request->userId) {
+                throw new \Exception("User or landlord not same");
+            }
+
+            return $this->sendResponse([
+                'tenant' => new DeedTenantInfoResource($deed)
+            ], 'Get tenant information successfully.');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function approve(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            if ($deed->landlord_id !== $request->userId) {
+                throw new \Exception("User or landlord not same");
+            }
+
+            $text = "Dear $request->name, Thank you so mutch. Your lease will start on $request->date";
+            $this->sendSms($request->mobile, $text);
+
+            $deed->status = 5;
+            $deed->start_date = $request->date;
+            $deed->update();
+
+            return $this->sendResponse([
+                'deed' => new DeedDetailsResource($deed)
+            ], 'deed approved successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    public function decline(Request $request)
+    {
+        try {
+            $deed = PropertyDeed::findOrFail($request->deedId);
+
+            if ($deed->landlord_id !== $request->userId) {
+                throw new \Exception("User or landlord not same");
+            }
+
             $deed->status = 0;
-            $deed->created_by = Auth::id();
-            $deed->save();
+            $deed->update();
 
-            return $this->sendResponse(['id' => $deed->id], 'Property create successfully');
+            return $this->sendResponse([
+                'deed' => new DeedDetailsResource($deed)
+            ], 'deed declined successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
         }
@@ -146,30 +291,6 @@ class PropertyDeedController extends Controller
             return $this->sendResponse(['id'=>$id],'Property Deed deleted successfully');
         }catch (\Exception $exception){
             return $this->sendError('Property Deed delete error', ['error' => $exception->getMessage()]);
-        }
-    }
-    public function changeStatus(Request $request, $id)
-    {
-        try {
-            $lease = PropertyDeed::findOrFail($id);
-            $lease->status = $request->status;
-            $lease->update();
-
-            $property_ad = PropertyAd::findOrFail($lease->property_ad_id);
-
-            if($request->status == 2){
-                $property_ad->status = 2;
-                $property_ad->update();
-            }
-            else{
-
-                $property_ad->status = 1;
-                $property_ad->update();
-            }
-
-            return $this->sendResponse(['id' => $id], 'Property Deed status change successfully');
-        } catch (\Exception $exception) {
-            return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
         }
     }
 }

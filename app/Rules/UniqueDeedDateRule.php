@@ -9,16 +9,18 @@ class UniqueDeedDateRule implements Rule
 {
     public int $deedId;
     public int $userId;
+    public ?int $id = null;
 
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct(int $deed_id, int $user_id)
+    public function __construct(int $deed_id, int $user_id, int $id = null)
     {
         $this->deedId = $deed_id;
         $this->userId = $user_id;
+        $this->id = $id;
     }
 
     /**
@@ -37,6 +39,10 @@ class UniqueDeedDateRule implements Rule
         foreach($transactions as $transaction) {
             $dbYearDate = date("Y-m", strtotime($transaction['date']));
             $requestDate = date("Y-m", strtotime($value));
+
+            if ($this->id) {
+                return true;
+            }
 
             if ($dbYearDate === $requestDate) {
                 return false;

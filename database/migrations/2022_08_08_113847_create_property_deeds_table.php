@@ -15,19 +15,12 @@ return new class extends Migration
     {
         Schema::create('property_deeds', function (Blueprint $table) {
             $table->id();
-            $table->integer('status')->comment('0-pending,1-lend to landlord,2-complete,3-decline');
+            $table->foreignId('landlord_id')->constrained('users');
+            $table->foreignId('tenant_id')->constrained('users');
+            $table->foreignId('property_id')->constrained('properties');
+            $table->foreignId('property_ad_id')->constrained('property_ads');
+            $table->tinyInteger('status')->comment('0-decline, 1-pending, 2-view, 3-Accept, 4-info-submit, 5-approved');
             $table->string('start_date')->index()->nullable();
-            $table->integer('property_id')->index();
-            $table->integer('property_ad_id')->index()->nullable();
-            $table->integer('landlord_id')->index();
-            $table->integer('tenant_id')->index();
-            $table->integer('lease_type')->nullable()->index()->comment('1 for commercial, 2 for residential');
-            $table->integer('sale_type')->nullable()->index()->comment('1 for rent, 2 for sale');
-            $table->double('lease_amount')->nullable()->index();
-            $table->double('security_money')->nullable();
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
-            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

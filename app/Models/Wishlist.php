@@ -11,13 +11,15 @@ class Wishlist extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['property_ad_id', 'user_id'];
+
     public function propertyAd(): BelongsTo
     {
         return $this->belongsTo(PropertyAd::class, 'property_ad_id');
     }
 
-    public function tenant(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
+        return $this->belongsTo(User::class);
     }
 }

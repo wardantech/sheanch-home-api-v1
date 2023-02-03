@@ -8,6 +8,7 @@ use App\Models\Landlord;
 use App\Models\Property\Property;
 use App\Models\Property\PropertyAd;
 use App\Models\Settings\PropertyType;
+use App\Models\User;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -57,29 +58,18 @@ class PropertyAdController extends Controller
      */
     public function store(Request $request)
     {
-
-        //--- Validation Section Start ---//
-        $rules = [
-            'landlord_id' => 'required',
+        $request->validate([
+            'user_id' => 'required',
             'status' => 'required|integer',
             'rent_amount' => 'required',
             'start_date' => 'required',
             'property_id' => 'required',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-
+        ]);
 
         try {
-            // Store Property
-
             $PropertyAd = new PropertyAd();
 
-            $PropertyAd->landlord_id = $request->landlord_id;
+            $PropertyAd->user_id = $request->user_id;
             $PropertyAd->property_id = $request->property_id;
             $PropertyAd->property_category = $request->property_category_id;
             $PropertyAd->property_type_id = $request->property_type_id;
@@ -120,20 +110,23 @@ class PropertyAdController extends Controller
     }
 
     /**
+     * getPropertyEditData
      *
+     * @param  mixed $request
+     * @return void
      */
-
-    public function getPropertyEditData(Request $request){
+    public function getPropertyEditData(Request $request)
+    {
         try {
             $PropertyAd = PropertyAd::findOrFail($request->id);
-            $landlords = Landlord::all(['id','name']);
-            $properties = Property::where('landlord_id', $PropertyAd->landlord_id)
+            $users = User::all(['id','name']);
+            $properties = Property::where('user_id', $PropertyAd->user_id)
                 ->where('status', true)->get();
 
             return $this->sendResponse([
                 'propertyAd' =>  $PropertyAd,
                 'properties' =>  $properties,
-                'landlords' =>  $landlords,
+                'users' =>  $users,
             ],
                 'Property Ad data get successfully');
         } catch (\Exception $exception) {
@@ -150,25 +143,19 @@ class PropertyAdController extends Controller
 
     public function update(Request $request, $id)
     {
-        //--- Validation Section Start ---//
-        $rules = [
-            'landlord_id' => 'required',
+        $request->validate([
+            'user_id' => 'required',
             'status' => 'required|integer',
             'rent_amount' => 'required',
             'start_date' => 'required',
             'property_id' => 'required',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
+        ]);
 
         try {
             // Update Property
             $PropertyAd = PropertyAd::findOrFail($id);
 
+            $PropertyAd->user_id = $request->user_id;
             $PropertyAd->property_id = $request->property_id;
             $PropertyAd->property_category = $request->property_category_id;
             $PropertyAd->property_type_id = $request->property_type_id;
@@ -223,10 +210,10 @@ class PropertyAdController extends Controller
     public function getPropertyAsLandlord(Request $request)
     {
         try {
-            $landlords = Property::where('landlord_id', $request->landlordId)
+            $landlords = Property::where('user_id', $request->userId)
                 ->where('status', true)->get();
 
-            return $this->sendResponse($landlords, 'Landlord list');
+            return $this->sendResponse($landlords, 'Get landlord successfully.');
 
         } catch (\Exception $exception) {
 

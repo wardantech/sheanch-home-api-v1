@@ -11,4 +11,5 @@ class Facility extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name', 'description', 'status', 'created_by', 'updated_by'];
 }

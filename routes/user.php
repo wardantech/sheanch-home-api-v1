@@ -5,23 +5,23 @@ use App\Http\Controllers\Auth\OTPController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\Auth\AuthController;
 use App\Http\Controllers\User\Review\ReviewController;
-use App\Http\Controllers\User\Property\LeaseController;
 use App\Http\Controllers\User\Widgets\WidgetController;
 use App\Http\Controllers\User\Profile\ProfileController;
 use App\Http\Controllers\User\Accounts\ExpanseController;
 use App\Http\Controllers\User\Accounts\RevenueController;
-use App\Http\Controllers\User\Auth\SocialLoginController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Property\PropertyAdController;
+use App\Http\Controllers\User\Accounts\ExpanseItemController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Property\PropertyPageController;
 use App\Http\Controllers\User\Accounts\AddBankMethodController;
+use App\Http\Controllers\User\Dashboard\UserDasboardController;
+use App\Http\Controllers\User\Property\RentCollectionController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
 use App\Http\Controllers\User\Accounts\AddMobileMethodController;
-use App\Http\Controllers\User\Property\PropertyPaymentController;
-use App\Http\Controllers\User\Accounts\AddPaymentMethodController;
+use App\Http\Controllers\User\Property\DeedInformationController;
 use App\Http\Controllers\User\Dashboard\TenantDashboardController;
-use App\Http\Controllers\User\Dashboard\LandlordDashboardController;
+use App\Http\Controllers\User\Accounts\TransactionReportController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 
 /*
@@ -47,7 +47,7 @@ Route::get('get-frontend-banner-data', [GeneralSettingController::class, 'getFro
 
 
 // Dashboard controller
-Route::post('get-landlord-dashboard-data', [LandlordDashboardController::class, 'getDashboardData']);
+Route::post('get-dashboard-data', [UserDasboardController::class, 'getDashboardData']);
 Route::post('get-tenant-dashboard-data', [TenantDashboardController::class, 'getDashboardData']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
@@ -67,7 +67,6 @@ Route::group(['prefix' => 'settings'], function(){
 });
 //User route
 Route::group(['middleware' => ['auth:api']], function(){
-
     // Property Route
     Route::group(['prefix' => 'property'], function() {
         Route::post('store', [PropertyController::class, 'store']);
@@ -97,36 +96,47 @@ Route::group(['middleware' => ['auth:api']], function(){
         //
         Route::group(['prefix' => 'deed'], function(){
             Route::post('save-data', [PropertyDeedController::class, 'save'])->withoutMiddleware(['auth:api']);
-            Route::post('tenant-list', [PropertyDeedController::class, 'getListTenant']);
-            Route::post('landlord-list', [PropertyDeedController::class, 'getListLandlord']);
-            Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
+            Route::post('request-list', [PropertyDeedController::class, 'requestDeed']);
+            Route::post('apply-list', [PropertyDeedController::class, 'applyDeed']);
+            Route::post('approved-list', [PropertyDeedController::class, 'approvedDeed']);
+            Route::post('show', [PropertyDeedController::class, 'show']);
+            Route::post('accept', [PropertyDeedController::class, 'accept']);
+            Route::post('approve', [PropertyDeedController::class, 'approve']);
+            Route::post('tenant-info', [PropertyDeedController::class, 'tenantInfo']);
+            Route::post('decline', [PropertyDeedController::class, 'decline']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
-            Route::post('get-rent-property', [PropertyPaymentController::class, 'getRentProperty']);
-            Route::post('get-payment-method', [PropertyPaymentController::class, 'getPaymentMethod']);
-            Route::post('rent-property/store', [PropertyPaymentController::class, 'RentPropertyStore']);
-            Route::post('get-property-payments', [PropertyPaymentController::class, 'getPropertyPayments']);
-            Route::post('delete-property-payment', [PropertyPaymentController::class, 'destroyPropertyPayment']);
+            // Deed Information
+            Route::post('information-data', [DeedInformationController::class, 'getData']);
+            Route::post('information/store', [DeedInformationController::class, 'store']);
+            Route::post('information/image/{id}', [DeedInformationController::class, 'imageUpload']);
+
+            Route::post('get-rent-deed', [RentCollectionController::class, 'getRentDeed']);
+            Route::post('get-property-info', [RentCollectionController::class, 'getPropertyInfo']);
+            Route::post('get-payment-method', [RentCollectionController::class, 'getPaymentMethod']);
+            Route::post('get-property-payments', [RentCollectionController::class, 'index']);
+            Route::post('rent-property/store', [RentCollectionController::class, 'store']);
+            Route::post('get-deed-transaction-month', [RentCollectionController::class, 'getDeedTransactionMonth']);
+            Route::post('rent-property/edit', [RentCollectionController::class, 'edit']);
+            Route::put('rent-property/update/{id}', [RentCollectionController::class, 'update']);
+            Route::post('rent-property/due', [RentCollectionController::class, 'due']);
+            Route::post('rent-property/due/store', [RentCollectionController::class, 'dueStore']);
+
+            Route::post('delete-property-payment', [RentCollectionController::class, 'destroy']);
         });
 
     });
 
-
     Route::group(['prefix' => 'profile'], function(){
         // For landlord
-        Route::post('landlord', [ProfileController::class, 'getLandlordData']);
-        Route::post('landlord/show', [ProfileController::class, 'showLandlord']);
-        Route::post('landlord/update/{id}', [ProfileController::class, 'landlordUpdate']);
-        Route::post('landlord/image-upload/{id}', [ProfileController::class, 'imageUpload']);
-
-        // For Tenant
-        Route::post('tenant', [ProfileController::class, 'getTenantData']);
-        Route::post('tenant/update/{id}', [ProfileController::class, 'TenantUpdate']);
-        Route::post('tenant/show', [ProfileController::class, 'showTenant']);
-        Route::post('tenant/tenant-image-upload/{id}', [ProfileController::class, 'tenantImageUpload']);
+        Route::post('/', [ProfileController::class, 'getUser']);
+        Route::post('/sidebar', [ProfileController::class, 'sidebar']);
+        Route::post('/show', [ProfileController::class, 'show']);
+        Route::post('update/{id}', [ProfileController::class, 'update']);
+        Route::post('image-upload/{id}', [ProfileController::class, 'imageUpload']);
 
         // Update password
-        Route::post('landlord/password', [ProfileController::class, 'updatePassword']);
+        Route::post('password', [ProfileController::class, 'updatePassword']);
     });
 });
 
@@ -160,11 +170,23 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
     Route::put('revenues/{transaction}', [RevenueController::class, 'update']);
     Route::delete('revenues/{transaction}', [RevenueController::class, 'destroy']);
 
+    // Expanse Item Route
+    Route::post('expanse-items', [ExpanseItemController::class, 'index']);
+    Route::post('expanses-items/store', [ExpanseItemController::class, 'store']);
+    Route::post('expanses-items/edit', [ExpanseItemController::class, 'edit']);
+    Route::put('expanses-items/update/{id}', [ExpanseItemController::class, 'update']);
+    Route::delete('expanses-items/{id}', [ExpanseItemController::class, 'destroy']);
+
     // Expanse Route
-    Route::get('expanses', [ExpanseController::class, 'index']);
-    Route::post('expanses', [ExpanseController::class, 'store']);
-    Route::put('expanses/{transaction}', [ExpanseController::class, 'update']);
-    Route::delete('expanses/{transaction}', [ExpanseController::class, 'destroy']);
+    Route::post('expanses', [ExpanseController::class, 'index']);
+    Route::post('expanses/create', [ExpanseController::class, 'create']);
+    Route::post('expanses/store', [ExpanseController::class, 'store']);
+    Route::post('expanses/edit', [ExpanseController::class, 'edit']);
+    Route::put('expanses/{id}', [ExpanseController::class, 'update']);
+    Route::delete('expanses/{id}', [ExpanseController::class, 'destroy']);
+
+    // Transaction Reports
+    Route::post('cash', [TransactionReportController::class, 'cash']);
 
     // Add bank account for user
     Route::post('get-bank-payment-method', [AddBankMethodController::class, 'index']);
