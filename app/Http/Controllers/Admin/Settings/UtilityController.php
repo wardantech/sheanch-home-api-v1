@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Controller;
 
-
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +21,8 @@ class UtilityController extends Controller
     }
 
     /**
-     * List api
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return array
      */
     public function getList(Request $request)
     {
@@ -55,8 +54,8 @@ class UtilityController extends Controller
     }
 
     /**
-     * Store api
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -87,11 +86,9 @@ class UtilityController extends Controller
     }
 
     /**
-     * Utility single data get for update or show
      * @param $id
      * @return \Illuminate\Http\Response
      */
-
     public function show($id)
     {
         try {
@@ -106,12 +103,10 @@ class UtilityController extends Controller
     }
 
     /**
-     *
      * @param Request $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-
     public function update(Request $request, $id)
     {
         //--- Validation Section Start ---//
@@ -141,19 +136,11 @@ class UtilityController extends Controller
     }
 
     /**
-     * Get all categories
+     * @return \Illuminate\Http\Response
      */
-
-
     public function getUtilities()
     {
         try {
-//            $utility = UtilityCategory::where('status', 1)
-//                ->with(['utilities' => function ($query) {
-//                    $query->where('status', 1);
-//                    $query->select(['id', 'name', 'utility_category_id']);
-//                }])->get(['id','name']);
-
             $utility = Utility::where('status', 1)->get(['id','name']);
 
             return $this->sendResponse($utility, 'Utility list');
@@ -164,6 +151,11 @@ class UtilityController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
     public function changeStatus(Request $request, $id)
     {
         try{
@@ -180,11 +172,9 @@ class UtilityController extends Controller
     }
 
     /**
-     * Utility Data Delete
      * @param $id
-     * @return mixed
+     * @return \Illuminate\Http\Response
      */
-
     public function destroy($id)
     {
         try {

@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
 use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
 use App\Http\Controllers\Admin\Settings\AreaController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
+use App\Http\Controllers\Admin\User\UserController;
 use App\Models\Area;
 
 /*
@@ -48,9 +49,7 @@ Route::post('register',[AuthController::class, 'register']);
 Route::post('get-dashboard-data',[DashboardController::class, 'getDashbordData']);
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
-
     Route::post('login', [AuthController::class,'login']);
-    //Route::get('login', [AuthController::class,'login'])->name('login');
     Route::post('logout', [AuthController::class,'logout']);
     Route::post('refresh', [AuthController::class,'refresh']);
     Route::post('me', [AuthController::class,'me']);
@@ -58,10 +57,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
 
 //Admin route
 Route::group(['middleware' => ['auth:api']], function(){
-
-    //landlord route
-    Route::group(['prefix' => 'user'], function(){
-        Route::apiResource('/', AdminController::class)->only(['index','store','show','update']);
+    // users routes
+    Route::group(['prefix' => 'users'], function() {
+        Route::post('/', [UserController::class, 'index']);
+        Route::post('/store', [UserController::class, 'store']);
+        Route::post('image/{id}',[UserController::class,'image']);
+        Route::delete('/delete/{id}', [UserController::class, 'destroy']);
     });
 
     //landlord route

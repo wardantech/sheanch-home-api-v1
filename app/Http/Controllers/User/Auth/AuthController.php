@@ -32,20 +32,12 @@ class AuthController extends Controller
             ]);
         }
 
-        //--- Validation Section
-        $rules = [
+        $data = $this->validate($request, [
             'mobile' => 'required|string',
             'password' => 'required|string',
-        ];
+        ]);
 
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
-
-        $user = User::where('mobile',$request->mobile)->first();
+        $user = User::where('mobile',$data['mobile'])->first();
         if ($user->status == 0){
             return response()->json([
                 'status' => false,
