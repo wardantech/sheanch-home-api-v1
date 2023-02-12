@@ -13,7 +13,6 @@ trait ResponseTrait {
             'success' => true,
             'message' => $message,
             'data'    => $result,
-
         ];
 
         return response()->json($response, 200);

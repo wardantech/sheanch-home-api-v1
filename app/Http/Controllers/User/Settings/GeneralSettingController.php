@@ -2,51 +2,43 @@
 
 namespace App\Http\Controllers\User\Settings;
 
-use App\Http\Controllers\Controller;
-use App\Models\Settings\Division;
-use App\Models\Settings\FrontendSetting;
-use App\Models\Settings\PropertyType;
 use App\Models\Wishlist;
-use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Models\Settings\Division;
+use App\Models\Widgets\HowItWork;
+use App\Models\Property\PropertyAd;
+use App\Http\Controllers\Controller;
+use App\Models\Settings\PropertyType;
+use App\Models\Settings\FrontendSetting;
+use App\Http\Resources\FrontPropertiesResourse;
 
 class GeneralSettingController extends Controller
 {
     use ResponseTrait;
 
-    public function getFrontendData(Request $request)
+    public function home(Request $request)
     {
-        try {
-            $wishlist = '';
-            $frontendData = FrontendSetting::with('media')->first();
+        $frontendData = FrontendSetting::with('media')->first();
+        $propertyTypes = PropertyType::select('id', 'name')->get();
+        $divisions = Division::select('id', 'name')->get();
 
-            if($request->userId){
-                $wishlist = Wishlist::where('user_id', $request->userId)->count();
-            }
+        $worksWidgets = HowItWork::select('id', 'title', 'icon', 'description', 'status')
+                    ->where('status', 1)
+                    ->limit(3)
+                    ->get();
 
-            return $this->sendResponse([
-                'frontendData' => $frontendData,
-                'wishlistCount' => $wishlist,
-            ], 'Settings data get successfully');
-        }catch (\Exception $exception) {
-            return $this->sendError('Frontend general setting get data error', ['error' => $exception->getMessage()]);
-        }
-    }
+        $properties = PropertyAd::where('status', 1)
+                ->with('property')
+                ->latest()
+                ->paginate(6);
 
-    public function getFrontendBannerData(){
-        try {
-            $propertyTypes = PropertyType::all();
-            $divisions = Division::all();
-
-            return $this->sendResponse(
-                [
-                    'propertyType' => $propertyTypes,
-                    'divisions' => $divisions,
-                ],
-                'Banner data get successfully');
-
-        }catch (\Exception $exception) {
-            return $this->sendError('Banner data error', ['error' => $exception->getMessage()]);
-        }
+        return $this->sendResponse([
+            'frontendData' => $frontendData,
+            'propertyTypes' => $propertyTypes,
+            'divisions' => $divisions,
+            'worksWidgets' => $worksWidgets,
+            'properties' => FrontPropertiesResourse::collection($properties)
+        ],'');
     }
 }

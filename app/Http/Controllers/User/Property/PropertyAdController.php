@@ -245,25 +245,8 @@ class PropertyAdController extends Controller
         }
     }
 
-    public function getActivePropertyList()
-    {
-        try {
-            $properties = PropertyAd::where('status', 1)
-                ->with('property')
-                ->latest()
-                ->paginate(6);
-
-            return $this->sendResponse([
-                'properties' => FrontPropertiesResourse::collection($properties)
-            ], 'Property data get successfully');
-        } catch (\Exception $exception) {
-            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
-        }
-    }
-
     public function getActivePropertyListAsType(Request $request)
     {
-
         try {
             $activePropertyAds = PropertyAd::where('status', 1)
                 ->where('sale_type', $request->type)

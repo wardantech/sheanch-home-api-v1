@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->index()->nullable();
             $table->string('status')->index()->default(0)->comment('1-active,0-deactivated');
+            $table->tinyInteger('is_admin')->default(0)->comment('1 Admin, 0 Normal user');
             $table->integer('type')->index()->comment('1-Admin,2-Landlord,3-Tenant');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

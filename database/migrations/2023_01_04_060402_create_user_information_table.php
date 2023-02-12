@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('residential_address')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

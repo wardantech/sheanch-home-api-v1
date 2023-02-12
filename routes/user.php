@@ -42,9 +42,7 @@ Route::get('as', function (){
 Route::post('register',[AuthController::class,'register']);
 
 //Frontend Data
-Route::post('get-frontend-data', [GeneralSettingController::class, 'getFrontendData'])->withoutMiddleware(['auth:api']);
-Route::get('get-frontend-banner-data', [GeneralSettingController::class, 'getFrontendBannerData'])->withoutMiddleware(['auth:api']);
-
+Route::post('home', [GeneralSettingController::class, 'home'])->withoutMiddleware(['auth:api']);
 
 // Dashboard controller
 Route::post('get-dashboard-data', [UserDasboardController::class, 'getDashboardData']);
@@ -86,7 +84,6 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('list', [PropertyAdController::class,'getList']);
             Route::post('get-details', [PropertyAdController::class,'getDetails'])->withoutMiddleware(['auth:api']);
             Route::post('get-edit-data', [PropertyAdController::class,'getEditData']);
-            Route::post('active-property/list', [PropertyAdController::class,'getActivePropertyList'])->withoutMiddleware(['auth:api']);
             Route::post('active-property/list-as-type', [PropertyAdController::class,'getActivePropertyListAsType'])->withoutMiddleware(['auth:api']);
             Route::post('change-status/{id}',[PropertyAdController::class, 'changeStatus']);
             Route::post('update/{id}',[PropertyAdController::class, 'update']);
@@ -139,10 +136,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('password', [ProfileController::class, 'updatePassword']);
     });
 });
-
-
-// Get widgets route
-Route::get('get-how-to-work-widget', [WidgetController::class, 'getHowToWork'])->withoutMiddleware(['auth:api']);
 
 // Get Property Page Data
 Route::get('get-property-faq-data', [PropertyPageController::class, 'getFaq']);
