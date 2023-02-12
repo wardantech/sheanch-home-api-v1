@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\UserInformation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserInformationResource;
 use App\Traits\ResponseTrait;
 
 class UserController extends Controller
@@ -62,20 +63,16 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
-            // $data['password'] = bcrypt($request->password);
-            // $user = User::create($data);
-            // $data['user_id'] = $user->id;
-
-            // UserInformation::create($data);
-
-            $user =  new User();
+            // Insert into users table
+            $user = new User();
             $user->name = $request->name;
-            $user->email = $request->email;
             $user->mobile = $request->mobile;
+            $user->email = $request->email;
             $user->status = $request->status;
             $user->password = bcrypt($request->password);
             $user->save();
 
+            // Insert into user informations table
             $information = new UserInformation();
 
             $information->user_id = $user->id;
@@ -93,28 +90,110 @@ class UserController extends Controller
                 'status' => 'success',
                 'message' => 'User created successfully',
                 'user' => $user,
-                'type' => 'bearer',
+                'type' => 'bearer'
             ]);
         }catch (\Exception $exception){
             DB::rollback();
-            return $this->sendError('User create error', ['error' => $exception->getMessage()]);
+            return $this->sendError('User create error', [
+                'error' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    public function show(Request $request)
+    {
+        $user = User::findOrFail($request->userId);
+
+        return $this->sendResponse([
+            'user' => new UserInformationResource($user)
+        ], 'User get successfully');
+    }
+
+    public function edit(Request $request)
+    {
+        $user = User::findOrFail($request->userId);
+
+        return $this->sendResponse([
+            'user' => new UserInformationResource($user)
+        ], 'User get successfully');
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'email' => 'required',
+            'name' => 'required|string|max:255',
+            'mobile' => 'required|string',
+            'thana_id' => 'required|numeric',
+            'status' => 'nullable|numeric',
+            'district_id' => 'required|numeric',
+            'division_id' => 'required|numeric',
+            'nid' => 'nullable|string',
+            'postal_address' => 'nullable|string',
+            'residential_address' => 'nullable|string'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // Update into users table
+            $user->name = $request->name;
+            $user->mobile = $request->mobile;
+            $user->email = $request->email;
+            $user->status = $request->status;
+            $user->update();
+
+            // Update into user informations table
+            $user->information->user_id = $user->id;
+            $user->information->division_id = $request->division_id;
+            $user->information->district_id = $request->district_id;
+            $user->information->thana_id = $request->thana_id;
+            $user->information->nid = $request->nid;
+            $user->information->postal_address = $request->postal_address;
+            $user->information->residential_address = $request->residential_address;
+            $user->information->description = $request->description;
+            $user->information->update();
+
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User updated successfully',
+                'user' => $user,
+                'type' => 'bearer'
+            ]);
+        }catch (\Exception $exception){
+            DB::rollback();
+            return $this->sendError('User create error', [
+                'error' => $exception->getMessage()
+            ]);
         }
     }
 
     public function destroy($id)
     {
-        return 50;
+        DB::beginTransaction();
+        try {
+            UserInformation::where('user_id', $id)->first()->delete();
+            User::findOrFail($id)->delete();
+
+            DB::commit();
+            return $this->sendResponse([ 'id'=> $id ], 'User deleted successfully');
+        }catch (\Exception $exception){
+            DB::rollback();
+            return $this->sendError('User delete error', [
+                'error' => $exception->getMessage()
+            ]);
+        }
     }
 
     public function image(Request $request, $id)
     {
         try{
-            $imageName = uniqid('tenant-',false).'.'.$request->file->getClientOriginalExtension();
+            $imageName = uniqid('user-',false).'.'.$request->file->getClientOriginalExtension();
             $request->file->move(public_path('images'), $imageName);
 
-            $user = UserInformation::where('user_id', $id)->first();
-            $user->image = $imageName;
-            $user->update();
+            $information = UserInformation::where('user_id', $id)->first();
+            $information->image = $imageName;
+            $information->update();
 
             return response()->json([
                 'success'=>'You have successfully upload file.'

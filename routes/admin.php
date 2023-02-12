@@ -44,7 +44,6 @@ Route::get('as', function (){
     return 6;
 });
 
-
 Route::post('register',[AuthController::class, 'register']);
 Route::post('get-dashboard-data',[DashboardController::class, 'getDashbordData']);
 
@@ -61,31 +60,11 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::group(['prefix' => 'users'], function() {
         Route::post('/', [UserController::class, 'index']);
         Route::post('/store', [UserController::class, 'store']);
-        Route::post('image/{id}',[UserController::class,'image']);
+        Route::post('/show', [UserController::class, 'show']);
+        Route::post('/edit', [UserController::class, 'edit']);
+        Route::put('/update/{user}', [UserController::class, 'update']);
+        Route::post('image/{id}',[UserController::class, 'image']);
         Route::delete('/delete/{id}', [UserController::class, 'destroy']);
-    });
-
-    //landlord route
-    Route::group(['prefix' => 'landlord'], function(){
-        Route::post('store', [LandlordController::class,'store']);
-        Route::post('list', [LandlordController::class,'getList']);
-        Route::post('show',[LandlordController::class,'show']);
-        Route::post('update/{id}',[LandlordController::class,'update']);
-        Route::post('image-upload/{id}',[LandlordController::class,'imageUpload']);
-        Route::get('get-landlords',[LandlordController::class,'getLandlords']);
-        Route::post('change-status/{id}',[LandlordController::class, 'changeStatus']);
-        Route::post('delete/{id}',[LandlordController::class, 'destroy']);
-    });
-
-    //Tenant route
-    Route::group(['prefix' => 'tenant'], function(){
-        Route::post('store', [TenantController::class,'store']);
-        Route::post('list', [TenantController::class,'getList']);
-        Route::post('show',[TenantController::class, 'show']);
-        Route::post('update/{id}',[TenantController::class,'update']);
-        Route::post('image-upload/{id}',[TenantController::class,'imageUpload']);
-        Route::post('change-status/{id}',[TenantController::class, 'changeStatus']);
-        Route::post('delete/{id}',[TenantController::class, 'destroy']);
     });
 
     // Account Routes
@@ -140,9 +119,7 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('list', [PropertyDeedController::class, 'getList']);
             Route::post('change-status/{id}',[PropertyDeedController::class, 'changeStatus']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
-
         });
-
     });
 
     //Review route
