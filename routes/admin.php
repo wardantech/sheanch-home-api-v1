@@ -64,6 +64,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('/edit', [UserController::class, 'edit']);
         Route::put('/update/{user}', [UserController::class, 'update']);
         Route::post('image/{id}',[UserController::class, 'image']);
+        Route::post('change-status/{id}',[UserController::class, 'changeStatus']);
         Route::delete('/delete/{id}', [UserController::class, 'destroy']);
     });
 
