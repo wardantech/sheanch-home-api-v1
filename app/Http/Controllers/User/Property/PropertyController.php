@@ -7,18 +7,19 @@ use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Models\Settings\Thana;
 use App\Models\Settings\Utility;
+use App\Service\PropertyService;
 use App\Models\Property\Property;
 use App\Models\Settings\District;
 use App\Models\Settings\Division;
 use App\Models\Settings\Facility;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePropertyRequest;
-use App\Http\Resources\FacilityResource;
 use App\Models\Accounts\Transaction;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Property\PropertyDeed;
 use App\Models\Settings\PropertyType;
+use App\Http\Resources\FacilityResource;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StorePropertyRequest;
 
 class PropertyController extends Controller
 {
@@ -61,20 +62,14 @@ class PropertyController extends Controller
     public function create()
     {
         try {
-            $propertyTypes = PropertyType::all();
-            $division = Division::all();
-            $utility = Utility::all();
-            $facilities = Facility::all();
+            [$users, $propertyTypes, $division, $utility, $facilities] = PropertyService::getPropertyData();
 
-            return $this->sendResponse(
-                [
-                    'propertyTypes' => $propertyTypes,
-                    'divisions' => $division,
-                    'utilities' => $utility,
-                    'facilities' => FacilityResource::collection($facilities)
-                ],
-                'Property data get successfully'
-            );
+            return $this->sendResponse([
+                'propertyTypes' => $propertyTypes,
+                'divisions' => $division,
+                'utilities' => $utility,
+                'facilities' => FacilityResource::collection($facilities)
+            ], 'Property data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
@@ -89,7 +84,7 @@ class PropertyController extends Controller
         try {
             $data = $request->validated();
 
-            $totalRent = $this->totalRentAmount($data['utilities'], $data['rent_amount']);
+            $totalRent = PropertyService::totalRentAmount($data['utilities'], $data['rent_amount']);
 
             $data['total_amount'] = $totalRent;
             $data['utilities'] = json_encode($data['utilities']);
@@ -116,36 +111,16 @@ class PropertyController extends Controller
     {
         try {
             $property = Property::findOrFail($request->id);
+            $propertyImages = PropertyService::getImages($property->getMedia());
 
-            $propertyImages = $property->getMedia();
-            $propertyImagesData = [];
+            [$users, $propertyTypes, $division, $utilities, $facilities] = PropertyService::getPropertyData();
 
-            foreach ($propertyImages as $propertyImage) {
-                $propertyImagesUrl = [];
-
-                $path = $propertyImage->getPath();
-                $type = pathinfo($path, PATHINFO_EXTENSION);
-                $data = file_get_contents($path);
-                $base64 = 'data:application/' . $type . ';base64,' . base64_encode($data);
-
-                $propertyImagesUrl['url'] = $propertyImage->original_url;
-                $propertyImagesUrl['data'] = $base64;
-                $propertyImagesUrl['size'] = $propertyImage->size;
-                $propertyImagesUrl['name'] = $propertyImage->file_name;
-
-                $propertyImagesData[] = $propertyImagesUrl;
-            }
-
-            $propertyTypes = PropertyType::all();
-            $division = Division::all();
             $district = District::where('division_id', $property->division_id)->get();
             $thana = Thana::where('district_id', $property->district_id)->get();
-            $utilities = Utility::all();
-            $facilities = Facility::all();
 
             return $this->sendResponse([
                 'property' => $property,
-                'propertyImages' => $propertyImagesData,
+                'propertyImages' => $propertyImages,
                 'propertyTypes' => $propertyTypes,
                 'divisions' => $division,
                 'districts' => $district,
@@ -153,7 +128,7 @@ class PropertyController extends Controller
                 'utilities' => $utilities,
                 'facilities' => FacilityResource::collection($facilities)
             ], 'Property edit data get successfully');
-        } catch (\Exception $exception) {
+        }catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
         }
     }
@@ -163,7 +138,7 @@ class PropertyController extends Controller
         try {
             $data = $request->validated();
 
-            $totalRent = $this->totalRentAmount($data['utilities'], $data['rent_amount']);
+            $totalRent = PropertyService::totalRentAmount($data['utilities'], $data['rent_amount']);
 
             $data['total_amount'] = $totalRent;
             $data['utilities'] = json_encode($data['utilities']);
@@ -309,17 +284,5 @@ class PropertyController extends Controller
         }
 
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
-    }
-
-    private function totalRentAmount(array $utilities, float $rent_amount): float
-    {
-        $totalUtility = 0;
-        foreach ($utilities as $utility) {
-            if ($utility['utility_paid_by'] == 2) {
-                $totalUtility += $utility['utility_amount'];
-            }
-        }
-
-        return $totalUtility + $rent_amount;
     }
 }
