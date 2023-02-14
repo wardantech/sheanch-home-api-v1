@@ -38,7 +38,6 @@ class PropertyShowResource extends JsonResource
             'area_size' => $this->area_size,
             'video_link' => $this->video_link,
             'utilities' => json_decode($this->utilities),
-            'facilitie_ids' => json_decode($this->facilitie_ids),
             'google_map_location' => $this->google_map_location,
             'description' => $this->description,
             'status' => $this->status,

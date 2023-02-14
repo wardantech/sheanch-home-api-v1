@@ -112,16 +112,17 @@ class PropertyController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-
     public function show($id)
     {
         try {
-            // $property = Property::with('thana', 'district', 'division', 'propertyType', 'landlord', 'media')
-            //     ->findOrFail($id);
-
             $property = Property::findOrFail($id);
+            $images = PropertyService::getImages($property->getMedia());
+            $facilitieIds = json_decode($property->facilitie_ids);
+            $facilities = Facility::whereIn('id', $facilitieIds)->get('name');
 
             return $this->sendResponse([
+                'images' => $images,
+                'facilities' => $facilities,
                 'property' => new PropertyShowResource($property)
             ], 'Property data get successfully');
         } catch (\Exception $exception) {
@@ -209,23 +210,6 @@ class PropertyController extends Controller
             return $this->sendResponse(['id' => $property->id], 'Property updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    /**
-     * Get All Property Types
-     */
-
-    public function getPropertyTypes()
-    {
-        try {
-            $propertyTypes = PropertyType::where('status', true)->get();
-
-            return $this->sendResponse($propertyTypes, 'Property type categories list');
-
-        } catch (\Exception $exception) {
-
-            return $this->sendError('Property type list.', ['error' => $exception->getMessage()]);
         }
     }
 
