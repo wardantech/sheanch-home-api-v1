@@ -61,27 +61,19 @@ class FacilityController extends Controller
      */
     public function store(Request $request)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $this->validate($request, [
             'name' => 'required|string|max:255',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
+            'description' => 'nullable|string',
+            'status' => 'nullable',
+        ]);
 
         try {
-            // Store Utility
-            $utility = new Facility();
-            $utility->name = $request->name;
-            $utility->description = $request->description;
-            $utility->status = $request->status;
-            $utility->created_by = Auth::user()->id;
-            $utility->save();
+            $data['created_by'] = Auth::user()->id;
+            $utility = Facility::create($data);
 
-            return $this->sendResponse(['id'=>$utility->id],'Facility create successfully');
+            return $this->sendResponse([
+                'id'=>$utility->id
+            ],'Facility create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Facility store error', ['error' => $exception->getMessage()]);
         }
@@ -92,17 +84,10 @@ class FacilityController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-
-    public function show($id)
+    public function edit($id)
     {
-        try{
-            $category = Facility::findOrFail($id);
-
-            return $this->sendResponse($category,'Facility data get successfully');
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Facility data error', ['error' => $exception->getMessage()]);
-        }
+        $category = Facility::findOrFail($id);
+        return $this->sendResponse($category,'Facility data get successfully');
     }
 
     /**
@@ -111,30 +96,22 @@ class FacilityController extends Controller
      * @param $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-
     public function update(Request $request, $id)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $this->validate($request, [
             'name' => 'required|string|max:255',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
+            'description' => 'nullable|string',
+            'status' => 'nullable',
+        ]);
 
         try {
-            // Store Utility
+            $data['updated_by'] = Auth::user()->id;
             $utility = Facility::findOrFail($id);
-            $utility->name = $request->name;
-            $utility->description = $request->description;
-            $utility->status = $request->status;
-            $utility->updated_by = Auth::user()->id;
-            $utility->update();
+            $utility->update($data);
 
-            return $this->sendResponse(['id'=>$utility->id],'Facility updated successfully');
+            return $this->sendResponse([
+                'id'=>$utility->id
+            ],'Facility updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Facility updated error', ['error' => $exception->getMessage()]);
         }
@@ -143,15 +120,12 @@ class FacilityController extends Controller
     /**
      * Get all facilities
      */
-
     public function getFacilities()
     {
         try {
             $facility = Facility::where('status', 1)->get(['id','name']);
             return $this->sendResponse($facility, 'Facility list');
-
-        } catch (\Exception $exception) {
-
+        }catch (\Exception $exception) {
             return $this->sendError('Facility list.', ['error' => $exception->getMessage()]);
         }
     }
@@ -159,15 +133,13 @@ class FacilityController extends Controller
     public function changeStatus(Request $request, $id)
     {
         try{
-
             $facility = Facility::findOrFail($id);
 
             $facility->status = $request->status;
             $facility->update();
 
             return $this->sendResponse($facility,'Facility active successfully');
-        }
-        catch (\Exception $exception){
+        }catch (\Exception $exception){
             return $this->sendError('Facility category status error', ['error' => $exception->getMessage()]);
         }
     }
@@ -177,7 +149,6 @@ class FacilityController extends Controller
      * @param $id
      * @return mixed
      */
-
     public function destroy($id)
     {
         try {

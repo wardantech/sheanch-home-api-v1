@@ -146,11 +146,9 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //facility route
         Route::group(['prefix' => 'facility'], function(){
-
-            // Facility
             Route::post('/', [FacilityController::class, 'store']);
             Route::post('list', [FacilityController::class,'getList']);
-            Route::get('show/{id}',[FacilityController::class, 'show']);
+            Route::get('edit/{id}',[FacilityController::class, 'edit']);
             Route::post('update/{id}',[FacilityController::class, 'update']);
             Route::get('get-facilities',[FacilityController::class, 'getFacilities']);
             Route::post('change-status/{id}',[FacilityController::class, 'changeStatus']);
@@ -159,11 +157,9 @@ Route::group(['middleware' => ['auth:api']], function(){
 
         //Utility route
         Route::group(['prefix' => 'utility'], function(){
-
-            // Utility
             Route::post('/', [UtilityController::class, 'store']);
             Route::post('list', [UtilityController::class,'getList']);
-            Route::get('show/{id}',[UtilityController::class, 'show']);
+            Route::get('edit/{id}',[UtilityController::class, 'edit']);
             Route::post('update/{id}',[UtilityController::class, 'update']);
             Route::get('get-utilities',[UtilityController::class, 'getUtilities']);
             Route::post('change-status/{id}',[UtilityController::class, 'changeStatus']);
@@ -174,7 +170,7 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::group(['prefix' => 'property-type'], function(){
             Route::post('/', [PropertyTypeController::class, 'store']);
             Route::post('list', [PropertyTypeController::class,'getList']);
-            Route::get('show/{id}',[PropertyTypeController::class, 'show']);
+            Route::get('edit/{id}',[PropertyTypeController::class, 'edit']);
             Route::post('update/{id}',[PropertyTypeController::class, 'update']);
             Route::post('change-status/{id}',[PropertyTypeController::class, 'status']);
             Route::post('delete/{id}',[PropertyTypeController::class, 'destroy']);
