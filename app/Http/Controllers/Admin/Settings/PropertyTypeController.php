@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Settings\PropertyType;
 use App\Traits\ResponseTrait;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class PropertyTypeController extends Controller
@@ -54,31 +53,17 @@ class PropertyTypeController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-
     public function store(Request $request)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $this->validate($request, [
             'name' => 'required|string|max:255',
             'status' => 'required',
             'description' => 'string|nullable'
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
+        ]);
 
         try {
-            // Store Utilities Category
-            $category = new PropertyType();
-
-            $category->name = $request->name;
-            $category->status = $request->status;
-            $category->description = $request->description;
-            $category->created_by = Auth::user()->id;
-            $category->save();
+            $data['created_by'] = Auth::user()->id;
+            $category = PropertyType::create($data);
 
             return $this->sendResponse(['id'=>$category->id],'Property Type create successfully');
         }catch (\Exception $exception) {
@@ -91,17 +76,10 @@ class PropertyTypeController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-
-    public function show($id)
+    public function edit($id)
     {
-        try{
-            $category = PropertyType::findOrFail($id);
-
-            return $this->sendResponse($category,'Property Type data get successfully');
-        }
-        catch (\Exception $exception){
-            return $this->sendError('Property Type data error', ['error' => $exception->getMessage()]);
-        }
+        $category = PropertyType::findOrFail($id);
+        return $this->sendResponse($category,'Property Type data get successfully');
     }
 
     /**
@@ -109,33 +87,22 @@ class PropertyTypeController extends Controller
      * @param Request $request
      * @param $id
      */
-
     public function update(Request $request, $id)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $this->validate($request, [
             'name' => 'required|string|max:255',
             'status' => 'required',
             'description' => 'string|nullable'
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
+        ]);
 
         try {
-            // Store Utilities Category
+            $data['updated_by'] = Auth::user()->id;
             $category = PropertyType::findOrFail($id);
+            $category->update($data);
 
-            $category->name = $request->name;
-            $category->status = $request->status;
-            $category->description = $request->description;
-            $category->updated_by = Auth::user()->id;
-            $category->update();
-
-            return $this->sendResponse(['id'=>$category->id],'Property Type updated successfully');
+            return $this->sendResponse([
+                'id'=>$category->id
+            ],'Property Type updated successfully');
         }catch (\Exception $exception) {
             return $this->sendError('Property Type update error', ['error' => $exception->getMessage()]);
         }
@@ -147,7 +114,6 @@ class PropertyTypeController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-
     public function status(Request $request, $id)
     {
         try{
@@ -168,7 +134,6 @@ class PropertyTypeController extends Controller
      * @param $id
      * @return mixed
      */
-
     public function destroy($id)
     {
         try {

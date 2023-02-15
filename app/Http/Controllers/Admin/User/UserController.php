@@ -168,6 +168,27 @@ class UserController extends Controller
         }
     }
 
+    public function changeStatus(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            if ($request->status){
+                $user->status = 0;
+                $user->update();
+            }else {
+                $user->status = 1;
+                $user->update();
+            }
+
+            return $this->sendResponse(['id' => $id], 'User status changed successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property status error', [
+                'error' => $exception->getMessage()
+            ]);
+        }
+    }
+
     public function destroy($id)
     {
         DB::beginTransaction();

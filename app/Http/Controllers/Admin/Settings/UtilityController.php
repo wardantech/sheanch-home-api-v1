@@ -59,27 +59,19 @@ class UtilityController extends Controller
      */
     public function store(Request $request)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $this->validate($request, [
             'name' => 'required|string|max:255',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
+            'description' => 'nullable|string',
+            'status' => 'nullable',
+        ]);
 
         try {
-            // Store Utility
-            $utility = new Utility();
-            $utility->name = $request->name;
-            $utility->description = $request->description;
-            $utility->status = $request->status;
-            $utility->created_by = Auth::user()->id;
-            $utility->save();
+            $data['created_by'] = Auth::user()->id;
+            $utility = Utility::create($data);
 
-            return $this->sendResponse(['id' => $utility->id], 'Utility create successfully');
+            return $this->sendResponse([
+                'id' => $utility->id
+            ], 'Utility create successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Utility store error', ['error' => $exception->getMessage()]);
         }
@@ -89,17 +81,10 @@ class UtilityController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function edit($id)
     {
-        try {
-
-            $utility = Utility::findOrFail($id);
-
-            return $this->sendResponse($utility, 'Utility data get successfully');
-
-        } catch (\Exception $exception) {
-            return $this->sendError('Utility data error', ['error' => $exception->getMessage()]);
-        }
+        $utility = Utility::findOrFail($id);
+        return $this->sendResponse( $utility, 'Utility data get successfully');
     }
 
     /**
@@ -109,25 +94,17 @@ class UtilityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //--- Validation Section Start ---//
-        $rules = [
+        $data = $this->validate($request, [
             'name' => 'required|string|max:255',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
+            'description' => 'nullable|string',
+            'status' => 'nullable',
+        ]);
 
         try {
-            // Store Utility
+            $data['updated_by'] = Auth::user()->id;
+
             $utility = Utility::findOrFail($id);
-            $utility->name = $request->name;
-            $utility->description = $request->description;
-            $utility->status = $request->status;
-            $utility->updated_by = Auth::user()->id;
-            $utility->update();
+            $utility->update($data);
 
             return $this->sendResponse(['id' => $utility->id], 'Utility updated successfully');
         } catch (\Exception $exception) {
@@ -141,10 +118,9 @@ class UtilityController extends Controller
     public function getUtilities()
     {
         try {
-            $utility = Utility::where('status', 1)->get(['id','name']);
+            $utility = Utility::where('status', 1)->get(['id', 'name']);
 
             return $this->sendResponse($utility, 'Utility list');
-
         } catch (\Exception $exception) {
 
             return $this->sendError('Utility list.', ['error' => $exception->getMessage()]);
@@ -158,15 +134,14 @@ class UtilityController extends Controller
      */
     public function changeStatus(Request $request, $id)
     {
-        try{
+        try {
             $utility = Utility::findOrFail($id);
 
             $utility->status = $request->status;
             $utility->update();
 
-            return $this->sendResponse($utility,'Utility category active successfully');
-        }
-        catch (\Exception $exception){
+            return $this->sendResponse($utility, 'Utility category active successfully');
+        } catch (\Exception $exception) {
             return $this->sendError('Utility category status error', ['error' => $exception->getMessage()]);
         }
     }
@@ -181,8 +156,8 @@ class UtilityController extends Controller
             $Utility = Utility::findOrFail($id);
             $Utility->delete();
 
-            return $this->sendResponse(['id'=>$id],'Utility deleted successfully');
-        }catch (\Exception $exception){
+            return $this->sendResponse(['id' => $id], 'Utility deleted successfully');
+        } catch (\Exception $exception) {
             return $this->sendError('Utility delete error', ['error' => $exception->getMessage()]);
         }
     }
