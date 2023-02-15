@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\Admin\Property;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePropertyAdRequest;
 use App\Models\Landlord;
 
 use App\Models\Property\Property;
 use App\Models\Property\PropertyAd;
-use App\Models\Settings\PropertyType;
 use App\Models\User;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class PropertyAdController extends Controller
 {
@@ -53,42 +52,44 @@ class PropertyAdController extends Controller
     }
 
     /**
+     * Get all
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function create(Request $request)
+    {
+        $users = User::where('is_admin', 0)
+            ->where('status', 1)
+            ->select('id', 'name')
+            ->get();
+
+        return $this->sendResponse([
+            'users' => $users
+        ], 'get all users successfully');
+    }
+
+    /**
      * Store api
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePropertyAdRequest $request)
     {
-        $request->validate([
-            'user_id' => 'required',
-            'status' => 'required|integer',
-            'rent_amount' => 'required',
-            'start_date' => 'required',
-            'property_id' => 'required',
-        ]);
+        $data = $request->validated();
 
         try {
-            $PropertyAd = new PropertyAd();
+            $data['created_by'] = Auth::id();
+            $data['property_category'] = $data['property_category'] == 'Commercial' ? 1: 2;
 
-            $PropertyAd->user_id = $request->user_id;
-            $PropertyAd->property_id = $request->property_id;
-            $PropertyAd->property_category = $request->property_category_id;
-            $PropertyAd->property_type_id = $request->property_type_id;
-            $PropertyAd->sale_type = $request->sale_type;
-            $PropertyAd->division_id = $request->division_id;
-            $PropertyAd->district_id = $request->district_id;
-            $PropertyAd->thana_id = $request->thana_id;
-            $PropertyAd->rent_amount = $request->rent_amount;
-            $PropertyAd->security_money = $request->security_money;
-            $PropertyAd->description = $request->description;
-            $PropertyAd->start_date = $request->start_date;
-            $PropertyAd->end_date = $request->end_date;
-            $PropertyAd->status = $request->status;
-            $PropertyAd->created_by = Auth::id();
-            $PropertyAd->save();
+            $propertyAd = PropertyAd::create($data);
 
-            return $this->sendResponse(['id' => $PropertyAd->id], 'Property create successfully');
+            return $this->sendResponse([
+                'id' => $propertyAd->id
+            ], 'Property create successfully');
         } catch (\Exception $exception) {
-            return $this->sendError('Property store error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Property store error', [
+                'error' => $exception->getMessage()
+            ]);
         }
     }
 
@@ -109,26 +110,19 @@ class PropertyAdController extends Controller
         }
     }
 
-    /**
-     * getPropertyEditData
-     *
-     * @param  mixed $request
-     * @return void
-     */
-    public function getPropertyEditData(Request $request)
+    public function edit(Request $request)
     {
         try {
-            $PropertyAd = PropertyAd::findOrFail($request->id);
+            $propertyAd = PropertyAd::findOrFail($request->id);
             $users = User::all(['id','name']);
-            $properties = Property::where('user_id', $PropertyAd->user_id)
+            $properties = Property::where('user_id', $propertyAd->user_id)
                 ->where('status', true)->get();
 
             return $this->sendResponse([
-                'propertyAd' =>  $PropertyAd,
+                'propertyAd' =>  $propertyAd,
                 'properties' =>  $properties,
                 'users' =>  $users,
-            ],
-                'Property Ad data get successfully');
+            ], 'Property Ad data get successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property Ad data error', ['error' => $exception->getMessage()]);
         }
@@ -140,45 +134,24 @@ class PropertyAdController extends Controller
      * @param $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-
-    public function update(Request $request, $id)
+    public function update(StorePropertyAdRequest $request, $id)
     {
-        $request->validate([
-            'user_id' => 'required',
-            'status' => 'required|integer',
-            'rent_amount' => 'required',
-            'start_date' => 'required',
-            'property_id' => 'required',
-        ]);
+        $data = $request->validated();
 
         try {
-            // Update Property
-            $PropertyAd = PropertyAd::findOrFail($id);
+            $data['updated_by'] = Auth::id();
+            $data['property_category'] = $data['property_category'] == 'Commercial' ? 1: 2;
 
-            $PropertyAd->user_id = $request->user_id;
-            $PropertyAd->property_id = $request->property_id;
-            $PropertyAd->property_category = $request->property_category_id;
-            $PropertyAd->property_type_id = $request->property_type_id;
-            $PropertyAd->sale_type = $request->sale_type;
-            $PropertyAd->division_id = $request->division_id;
-            $PropertyAd->district_id = $request->district_id;
-            $PropertyAd->thana_id = $request->thana_id;
-            $PropertyAd->rent_amount = $request->rent_amount;
-            $PropertyAd->security_money = $request->security_money;
-            $PropertyAd->description = $request->description;
-            $PropertyAd->start_date = $request->start_date;
-            $PropertyAd->end_date = $request->end_date;
-            $PropertyAd->status = $request->status;
-            $PropertyAd->updated_by = Auth::id();
+            $propertyAd = PropertyAd::findOrFail($id);
+            $propertyAd->update($data);
 
-            $PropertyAd->update();
-
-            return $this->sendResponse(['id' => $PropertyAd->id], 'Property updated successfully');
+            return $this->sendResponse([
+                'id' => $propertyAd->id
+            ], 'Property updated successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property updated error', ['error' => $exception->getMessage()]);
         }
     }
-
 
     /**
      * Status Active or Inactive
@@ -186,7 +159,6 @@ class PropertyAdController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-
     public function changeStatus(Request $request, $id)
     {
         try {
@@ -204,20 +176,6 @@ class PropertyAdController extends Controller
             return $this->sendResponse(['id' => $id], 'Property active successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property status error', ['error' => $exception->getMessage()]);
-        }
-    }
-
-    public function getPropertyAsLandlord(Request $request)
-    {
-        try {
-            $landlords = Property::where('user_id', $request->userId)
-                ->where('status', true)->get();
-
-            return $this->sendResponse($landlords, 'Get landlord successfully.');
-
-        } catch (\Exception $exception) {
-
-            return $this->sendError('Landlord list.', ['error' => $exception->getMessage()]);
         }
     }
 
@@ -239,4 +197,24 @@ class PropertyAdController extends Controller
         }
     }
 
+    /**
+     * Get all property dependency by user
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function getProperty(Request $request)
+    {
+        try {
+            $properties = Property::where('user_id', $request->userId)
+                ->where('status', 1)->get();
+
+            return $this->sendResponse([
+                'properties' =>  $properties
+            ],
+                'Property Ad data get successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property Ad data error', ['error' => $exception->getMessage()]);
+        }
+    }
 }

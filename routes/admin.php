@@ -104,10 +104,11 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('delete/{id}',[PropertyController::class, 'destroy']);
 
         Route::group(['prefix' => 'ad'], function() {
-            Route::post('store', [PropertyAdController::class, 'store']);
-            Route::post('get-property-as-landlord', [PropertyAdController::class, 'getPropertyAsLandlord']);
             Route::post('list', [PropertyAdController::class,'getList']);
-            Route::post('get-property-edit-data', [PropertyAdController::class,'getPropertyEditData']);
+            Route::post('create', [PropertyAdController::class, 'create']);
+            Route::post('store', [PropertyAdController::class, 'store']);
+            Route::post('edit', [PropertyAdController::class, 'edit']);
+            Route::post('get-property', [PropertyAdController::class,'getProperty']);
             Route::post('change-status/{id}',[PropertyAdController::class, 'changeStatus']);
             Route::post('update/{id}',[PropertyAdController::class, 'update']);
             Route::post('delete/{id}',[PropertyAdController::class, 'destroy']);
@@ -143,7 +144,6 @@ Route::group(['middleware' => ['auth:api']], function(){
 
     //Settings route
     Route::group(['prefix' => 'settings'], function(){
-
         //facility route
         Route::group(['prefix' => 'facility'], function(){
             Route::post('/', [FacilityController::class, 'store']);
