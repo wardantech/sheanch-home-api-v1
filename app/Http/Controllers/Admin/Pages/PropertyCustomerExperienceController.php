@@ -58,26 +58,17 @@ class PropertyCustomerExperienceController extends Controller
 
     public function store(Request $request)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'video_link' => 'required',
             'status' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+        ]);
 
         try {
-            $customerExperience = new PropertyCustomerExperience();
+            $experience = PropertyCustomerExperience::create($data);
 
-            $customerExperience->video_link = $request->video_link;
-            $customerExperience->status = $request->status;
-            $customerExperience->save();
-
+            return $this->sendResponse([
+                'experience'=>$experience
+            ],'Customer experience active successfully');
         }catch (\Exception $exception){
             return $this->sendError('Customer experience store error', ['error' => $exception->getMessage()]);
         }
@@ -137,26 +128,18 @@ class PropertyCustomerExperienceController extends Controller
 
     public function update(Request $request, $id)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'video_link' => 'required',
             'status' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+        ]);
 
         try {
-            $customerExperience = PropertyCustomerExperience::findOrFail($id);
+            $experience = PropertyCustomerExperience::findOrFail($id);
+            $experience->update($data);
 
-            $customerExperience->video_link = $request->video_link;
-            $customerExperience->status = $request->status;
-            $customerExperience->update();
-
+            return $this->sendResponse([
+                'experience'=>$experience
+            ],'Customer experience updated successfully');
         }catch (\Exception $exception){
             return $this->sendError('Customer experience store error', ['error' => $exception->getMessage()]);
         }

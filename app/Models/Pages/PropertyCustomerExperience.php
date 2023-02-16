@@ -9,4 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PropertyCustomerExperience extends Model
 {
     use HasFactory, SoftDeletes;
+
+    public $fillable = ['video_link', 'status'];
 }
