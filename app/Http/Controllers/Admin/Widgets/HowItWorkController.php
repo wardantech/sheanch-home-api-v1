@@ -58,30 +58,19 @@ class HowItWorkController extends Controller
 
     public function store(Request $request)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'title' => 'required',
             'icon' => 'required',
             'description' => 'nullable',
             'status' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+        ]);
 
         try {
-            $howItWork = new HowItWork();
+            $howItWork = HowItWork::create($data);
 
-            $howItWork->title = $request->title;
-            $howItWork->icon = $request->icon;
-            $howItWork->status = $request->status;
-            $howItWork->description = $request->description;
-            $howItWork->save();
-
+            return $this->sendResponse([
+                'howItWork' => $howItWork
+            ],'How it work save successfully');
         }catch (\Exception $exception){
             return $this->sendError('How it work store error', ['error' => $exception->getMessage()]);
         }
@@ -141,30 +130,20 @@ class HowItWorkController extends Controller
 
     public function update(Request $request, $id)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'title' => 'required',
             'icon' => 'required',
             'description' => 'nullable',
             'status' => 'required',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+        ]);
 
         try {
             $howItWork = HowItWork::findOrFail($id);
+            $howItWork->update($data);
 
-            $howItWork->title = $request->title;
-            $howItWork->icon = $request->icon;
-            $howItWork->status = $request->status;
-            $howItWork->description = $request->description;
-            $howItWork->update();
-
+            return $this->sendResponse([
+                'howItWork' => $howItWork
+            ],'How it work updated successfully');
         }catch (\Exception $exception){
             return $this->sendError('How it work store error', ['error' => $exception->getMessage()]);
         }
