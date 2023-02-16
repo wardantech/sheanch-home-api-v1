@@ -7,7 +7,6 @@ use App\Models\Pages\PropertyFaq;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class PropertyFaqController extends Controller
 {
@@ -58,28 +57,18 @@ class PropertyFaqController extends Controller
 
     public function store(Request $request)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'title' => 'required|string|max:255',
             'status' => 'required',
-            'description' => 'required'
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+            'description' => 'nullable'
+        ]);
 
         try {
-            $propertyFaq = new PropertyFaq();
+            $propertyFaq = PropertyFaq::create($data);
 
-            $propertyFaq->title = $request->title;
-            $propertyFaq->status = $request->status;
-            $propertyFaq->description = $request->description;
-            $propertyFaq->save();
-
+            return $this->sendResponse([
+                'propertyFaq'=>$propertyFaq
+            ],'Property faq store successfully');
         }catch (\Exception $exception){
             return $this->sendError('Property faq store error', ['error' => $exception->getMessage()]);
         }
@@ -139,28 +128,19 @@ class PropertyFaqController extends Controller
 
     public function update(Request $request, $id)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'title' => 'required|string|max:255',
             'status' => 'required',
-            'description' => 'required'
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+            'description' => 'nullable'
+        ]);
 
         try {
             $propertyFaq = PropertyFaq::findOrFail($id);
+            $propertyFaq->update($data);
 
-            $propertyFaq->title = $request->title;
-            $propertyFaq->status = $request->status;
-            $propertyFaq->description = $request->description;
-            $propertyFaq->update();
-
+            return $this->sendResponse([
+                'propertyFaq'=>$propertyFaq
+            ],'Property faq update successfully');
         }catch (\Exception $exception){
             return $this->sendError('Property faq store error', ['error' => $exception->getMessage()]);
         }

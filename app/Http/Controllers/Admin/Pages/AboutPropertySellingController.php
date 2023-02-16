@@ -58,30 +58,18 @@ class AboutPropertySellingController extends Controller
 
     public function store(Request $request)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'title' => 'required|string|max:255',
             'status' => 'required',
             'description' => 'nullable'
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+        ]);
 
         try {
-            $propertySelling = new AboutPropertySelling();
+            $propertySelling = AboutPropertySelling::create($data);
 
-            $propertySelling->title = $request->title;
-            $propertySelling->status = $request->status;
-            $propertySelling->description = $request->description;
-            $propertySelling->save();
-
-            return $this->sendResponse(['id'=> $propertySelling->id],'About property selling create successfully');
-
+            return $this->sendResponse([
+                'propertySelling'=> $propertySelling
+            ],'About property selling create successfully');
         }catch (\Exception $exception){
             return $this->sendError('About property selling store error', ['error' => $exception->getMessage()]);
         }
@@ -126,7 +114,9 @@ class AboutPropertySellingController extends Controller
         try{
             $propertySelling = AboutPropertySelling::findOrFail($id);
 
-            return $this->sendResponse($propertySelling, 'About property selling edit data get successfully');
+            return $this->sendResponse([
+                'propertySelling' => $propertySelling
+            ], 'About property selling edit data get successfully');
         }
         catch (\Exception $exception){
             return $this->sendError('About property selling data error', ['error' => $exception->getMessage()]);
@@ -142,30 +132,19 @@ class AboutPropertySellingController extends Controller
 
     public function update(Request $request, $id)
     {
-        //--- Validation Section Starts
-        $rules = [
+        $data = $this->validate($request, [
             'title' => 'required|string|max:255',
             'status' => 'required',
-            'description' => 'required'
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()),422);
-        }
-        //--- Validation Section Ends
+            'description' => 'nullable'
+        ]);
 
         try {
             $propertySelling = AboutPropertySelling::findOrFail($id);
+            $propertySelling->update($data);
 
-            $propertySelling->title = $request->title;
-            $propertySelling->status = $request->status;
-            $propertySelling->description = $request->description;
-            $propertySelling->update();
-
-            return $this->sendResponse(['id' => $propertySelling->id], 'About property selling updated successfully');
-
+            return $this->sendResponse([
+                'propertySelling' => $propertySelling
+            ], 'About property selling updated successfully');
         }catch (\Exception $exception){
             return $this->sendError('About property selling store error', ['error' => $exception->getMessage()]);
         }

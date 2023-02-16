@@ -9,4 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PropertyFaq extends Model
 {
     use HasFactory, SoftDeletes;
+
+    public $fillable = ['title', 'description', 'status'];
 }

@@ -11,4 +11,6 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class AboutPropertySelling extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia;
+
+    public $fillable = ['title', 'image', 'description', 'status'];
 }
