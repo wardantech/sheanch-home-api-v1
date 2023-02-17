@@ -9,4 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class HowItWork extends Model
 {
     use HasFactory, SoftDeletes;
+
+    public $fillable = ['title', 'icon', 'description', 'status'];
 }

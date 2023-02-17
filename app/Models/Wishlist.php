@@ -18,8 +18,8 @@ class Wishlist extends Model
         return $this->belongsTo(PropertyAd::class, 'property_ad_id');
     }
 
-    public function user(): BelongsTo
+    public function tenant(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

@@ -30,7 +30,7 @@ class ReviewController extends Controller
         $query = Review::with(['tenant' => function ($query) {
             $query->select('id', 'name');
         }, 'property' => function ($query) {
-            $query->select('id', 'name', 'landlord_id')->with(['landlord' => function ($query) {
+            $query->select('id', 'name', 'user_id')->with(['landlord' => function ($query) {
                 $query->select('id', 'name');
             }]);
         }])->where('review_type', 1)
@@ -144,7 +144,6 @@ class ReviewController extends Controller
      * @param $id
      * @return mixed
      */
-
     public function destroy($id)
     {
         try {
