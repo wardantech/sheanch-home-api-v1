@@ -31,8 +31,8 @@ class WishlistController extends Controller
                 $tenantQuery->select('id', 'name');
             }
         ])
-            ->select('id', 'property_ad_id', 'tenant_id')
-            ->orderBy($columns[$column], $dir);
+        ->select('id', 'property_ad_id', 'user_id')
+        ->orderBy($columns[$column], $dir);
 
         $count = Wishlist::count();
         if ($searchValue) {
