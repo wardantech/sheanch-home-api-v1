@@ -1,12 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Pages\AboutPropertySelling;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Admin\User\AdminController;
-use App\Http\Controllers\Admin\User\TenantController;
 use App\Http\Controllers\Admin\Review\ReviewController;
-use App\Http\Controllers\Admin\User\LandlordController;
 use App\Http\Controllers\Admin\Accounts\ExpanseController;
 use App\Http\Controllers\Admin\Settings\UtilityController;
 use App\Http\Controllers\Admin\Pages\PropertyFaqController;
@@ -21,14 +17,12 @@ use App\Http\Controllers\Admin\Accounts\TransactionController;
 use App\Http\Controllers\Admin\Review\ReviewCommentController;
 use App\Http\Controllers\Admin\Property\PropertyDeedController;
 use App\Http\Controllers\Admin\Settings\PropertyTypeController;
-use App\Http\Controllers\Admin\Accounts\Users\RevenueController;
 use App\Http\Controllers\Admin\Settings\FrontendSettingController;
 use App\Http\Controllers\Admin\Pages\AboutPropertySellingController;
 use App\Http\Controllers\Admin\Pages\PropertyCustomerExperienceController;
 use App\Http\Controllers\Admin\Settings\AreaController;
 use App\Http\Controllers\Admin\Settings\GetDivisionDistrictThanaController;
 use App\Http\Controllers\Admin\User\UserController;
-use App\Models\Area;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +49,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function () {
 });
 
 //Admin route
-Route::group(['middleware' => ['auth:api']], function(){
+Route::group(['middleware' => ['auth:api']], function() {
     // users routes
     Route::group(['prefix' => 'users'], function() {
         Route::post('/', [UserController::class, 'index']);
@@ -66,6 +60,17 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::post('image/{id}',[UserController::class, 'image']);
         Route::post('change-status/{id}',[UserController::class, 'changeStatus']);
         Route::delete('/delete/{id}', [UserController::class, 'destroy']);
+    });
+
+    Route::group(['prefix' => 'areas'], function(){
+        Route::post('/get-districts', [AreaController::class, 'getDistricts']);
+        Route::post('/get-thanas', [AreaController::class, 'getThanas']);
+        Route::post('/', [AreaController::class, 'index']);
+        Route::post('/create', [AreaController::class, 'create']);
+        Route::post('/store', [AreaController::class, 'store']);
+        Route::post('/edit', [AreaController::class, 'edit']);
+        Route::put('/update/{area}', [AreaController::class, 'update']);
+        Route::delete('/delete/{area}', [AreaController::class, 'destroy']);
     });
 
     // Account Routes
@@ -179,14 +184,6 @@ Route::group(['middleware' => ['auth:api']], function(){
         Route::group(['prefix' => 'frontend'], function () {
             Route::post('general/store', [FrontendSettingController::class, 'store']);
             Route::post('get-data', [FrontendSettingController::class, 'getData']);
-        });
-
-        //Address route
-        Route::group(['prefix' => ''], function(){
-            Route::get('divisions', [GetDivisionDistrictThanaController::class, 'getDivisions']);
-            Route::post('districts', [GetDivisionDistrictThanaController::class, 'getDistricets']);
-            Route::post('thanas', [GetDivisionDistrictThanaController::class, 'getThanas']);
-            Route::apiResource('area', AreaController::class)->only(['index','store','show','update','destroy']);
         });
     });
 

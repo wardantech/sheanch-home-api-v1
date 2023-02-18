@@ -2,21 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Property;
 
-use App\Models\User;
-use App\Models\Landlord;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Models\Settings\Thana;
-use App\Models\Settings\Utility;
 use App\Models\Property\Property;
 use App\Models\Settings\District;
-use App\Models\Settings\Division;
 use App\Models\Settings\Facility;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Settings\PropertyType;
 use App\Http\Resources\FacilityResource;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StorePropertyRequest;
 use App\Http\Resources\PropertyShowResource;
 use App\Service\PropertyService;
