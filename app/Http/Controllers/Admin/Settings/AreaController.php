@@ -9,6 +9,7 @@ use App\Models\Settings\Thana;
 use App\Models\Settings\District;
 use App\Models\Settings\Division;
 use App\Http\Controllers\Controller;
+use App\Service\PropertyService;
 
 class AreaController extends Controller
 {
@@ -62,7 +63,7 @@ class AreaController extends Controller
      */
     public function create()
     {
-        $divisions = $this->getDivisions();
+        $divisions = PropertyService::getDivisions();
 
         return $this->sendResponse([
             'divisions' => $divisions
@@ -104,7 +105,7 @@ class AreaController extends Controller
     public function edit(Request $request)
     {
         $area = Area::findOrFail($request->areaId);
-        $divisions = $this->getDivisions();
+        $divisions = PropertyService::getDivisions();
         $districts = District::select('id', 'name')->get();
         $thanas = Thana::select('id', 'name')->get();
 
@@ -159,11 +160,6 @@ class AreaController extends Controller
         } catch (\Exception $exception) {
             return $this->sendError('Area delete error', ['error' => $exception->getMessage()]);
         }
-    }
-
-    private function getDivisions()
-    {
-        return Division::select('id', 'name')->get();
     }
 
     public function getDistricts(Request $request)

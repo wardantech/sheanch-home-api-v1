@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Area;
 use App\Models\User;
 use App\Models\Settings\Utility;
 use App\Models\Settings\Division;
@@ -22,11 +23,12 @@ class PropertyService
                 ->where('status', 1)
                 ->get();
         $propertyTypes = PropertyType::select('id', 'name')->where('status', 1)->get();
-        $division = Division::select('id', 'name')->get();
+        $division = self::getDivisions();
         $utilities = Utility::select('id', 'name')->where('status', 1)->get();
         $facilities = Facility::select('id', 'name')->where('status', 1)->get();
+        $areas = Area::select('id', 'name')->get();
 
-        return [ $users, $propertyTypes, $division, $utilities, $facilities ];
+        return [ $users, $propertyTypes, $division, $utilities, $facilities, $areas ];
     }
 
     /**
@@ -56,6 +58,16 @@ class PropertyService
         }
 
         return $propertyImages;
+    }
+
+    /**
+     * Get all divisions
+     *
+     * @return void
+     */
+    public static function getDivisions()
+    {
+        return Division::select('id', 'name')->get();
     }
 
     /**

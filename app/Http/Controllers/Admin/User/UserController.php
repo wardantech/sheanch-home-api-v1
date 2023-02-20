@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin\User;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Models\Settings\Thana;
 use App\Models\UserInformation;
+use App\Service\PropertyService;
+use App\Models\Settings\District;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserInformationResource;
-use App\Traits\ResponseTrait;
 
 class UserController extends Controller
 {
@@ -43,6 +46,15 @@ class UserController extends Controller
         }
 
         return ['data' => $fetchData, 'draw' => $request['params']['draw']];
+    }
+
+    public function create()
+    {
+        $divisions = PropertyService::getDivisions();
+
+        return $this->sendResponse([
+            'divisions' => $divisions
+        ], 'User get successfully');
     }
 
     public function store(Request $request)
@@ -112,8 +124,14 @@ class UserController extends Controller
     public function edit(Request $request)
     {
         $user = User::findOrFail($request->userId);
+        $divisions = PropertyService::getDivisions();
+        $districts = District::where('division_id', $user->information->division_id)->get();
+        $thanas = Thana::where('district_id', $user->information->district_id)->get();
 
         return $this->sendResponse([
+            'divisions' => $divisions,
+            'districts' => $districts,
+            'thanas' => $thanas,
             'user' => new UserInformationResource($user)
         ], 'User get successfully');
     }

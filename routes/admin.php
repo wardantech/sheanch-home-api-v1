@@ -53,6 +53,7 @@ Route::group(['middleware' => ['auth:api']], function() {
     // users routes
     Route::group(['prefix' => 'users'], function() {
         Route::post('/', [UserController::class, 'index']);
+        Route::post('/create', [UserController::class, 'create']);
         Route::post('/store', [UserController::class, 'store']);
         Route::post('/show', [UserController::class, 'show']);
         Route::post('/edit', [UserController::class, 'edit']);
