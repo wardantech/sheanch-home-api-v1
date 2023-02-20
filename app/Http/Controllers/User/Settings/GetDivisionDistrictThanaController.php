@@ -20,7 +20,7 @@ class GetDivisionDistrictThanaController extends Controller
     public function getDivisions()
     {
         try {
-            $divisions = Division::all();
+            $divisions = Division::select('id', 'name')->get();
 
             return $this->sendResponse($divisions, 'Division list');
 
@@ -38,7 +38,9 @@ class GetDivisionDistrictThanaController extends Controller
     public function getDistricets(Request $request)
     {
         try {
-            $districts = District::where('division_id', $request->divisionId)->get();
+            $districts = District::where('division_id', $request->divisionId)
+                ->select('id', 'name')
+                ->get();
 
             return $this->sendResponse($districts, 'District list');
 
@@ -56,7 +58,9 @@ class GetDivisionDistrictThanaController extends Controller
     public function getThanas(Request $request)
     {
         try {
-            $thanas = Thana::where('district_id', $request->districtId)->get();
+            $thanas = Thana::where('district_id', $request->districtId)
+                ->select('id', 'name')
+                ->get();
 
             return $this->sendResponse($thanas, 'Thana list');
 

@@ -62,12 +62,13 @@ class PropertyController extends Controller
     public function create()
     {
         try {
-            [$users, $propertyTypes, $division, $utility, $facilities] = PropertyService::getPropertyData();
+            [$users, $propertyTypes, $division, $utility, $facilities, $areas] = PropertyService::getPropertyData();
 
             return $this->sendResponse([
                 'propertyTypes' => $propertyTypes,
                 'divisions' => $division,
                 'utilities' => $utility,
+                'areas' => $areas,
                 'facilities' => FacilityResource::collection($facilities)
             ], 'Property data get successfully');
         } catch (\Exception $exception) {
@@ -113,7 +114,7 @@ class PropertyController extends Controller
             $property = Property::findOrFail($request->id);
             $propertyImages = PropertyService::getImages($property->getMedia());
 
-            [$users, $propertyTypes, $division, $utilities, $facilities] = PropertyService::getPropertyData();
+            [$users, $propertyTypes, $division, $utilities, $facilities, $areas] = PropertyService::getPropertyData();
 
             $district = District::where('division_id', $property->division_id)->get();
             $thana = Thana::where('district_id', $property->district_id)->get();
@@ -126,6 +127,7 @@ class PropertyController extends Controller
                 'districts' => $district,
                 'thanas' => $thana,
                 'utilities' => $utilities,
+                'areas' => $areas,
                 'facilities' => FacilityResource::collection($facilities)
             ], 'Property edit data get successfully');
         }catch (\Exception $exception) {

@@ -26,6 +26,7 @@ class Property extends Model implements HasMedia
         'name',
         'user_id',
         'thana_id',
+        'area_id',
         'district_id',
         'division_id',
         'property_category',

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('thana_id')->constrained('thanas');
             $table->foreignId('district_id')->constrained('districts');
             $table->foreignId('division_id')->constrained('divisions');
+            $table->foreignId('area_id')->constrained('areas');
             $table->foreignId('property_type_id')->constrained('property_types');
             $table->tinyInteger('property_category')->comment('1 for commercial 2 for residential');
             $table->tinyInteger('sale_type')->comment('1 for rent 2 for sale');

@@ -9,7 +9,7 @@ use App\Models\Settings\Thana;
 use App\Models\Settings\District;
 use App\Models\Settings\Division;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+use App\Service\PropertyService;
 
 class AreaController extends Controller
 {
@@ -19,36 +19,41 @@ class AreaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        try{
-            $area = Area::with('division','district','thana')->get();
-            // $area = Area::get();
-            // // return  $area;
-            // $district = [];
-            // $division = [];
-            // $thana = [];
-            // foreach( $area as $a){
-            //     $districtId = $a->district_id;
-            //     $divitsonId = $a->division_id;
-            //     $thanaId = $a->thana_id;
-            //     $district[] = District::where('id', $districtId)->first();
-            //     $division[] = Division::where('id', $divitsonId)->first();
-            //     $thana[] = Thana::where('id', $thanaId)->first();
-            // }
-            // $area1 = [
-            //     'area' => $area,
-            //     'division' => $division,
-            //     'district' => $district,
-            //     'thana' => $thana
-            // ];
-            return $this->sendResponse([
-                'area' => $area,
-            ], 'Get all data successfully');
+        $columns = ['id', 'name'];
+
+        $length = $request['params']['length'];
+        $column = $request['params']['column'];
+        $dir = $request['params']['dir'];
+        $searchValue = $request['params']['search'];
+
+        $query = Area::with(['divisions' => function($query) {
+            $query->select('id', 'name');
+        }, 'districts' => function($query) {
+            $query->select('id', 'name');
+        }, 'thanas' => function($query) {
+            $query->select('id', 'name');
+        }])
+        ->select('*')->orderBy($columns[$column], $dir);
+
+        $count = Area::count();
+
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('id', 'like', '%' . $searchValue . '%')
+                    ->orWhere('name', 'like', '%' . $searchValue . '%');
+            });
         }
-        catch (\Exception $exception){
-            return $this->sendError('Area data error', ['error' => $exception->getMessage()]);
+
+        if($length!='all'){
+            $fetchData = $query->paginate($length);
         }
+        else{
+            $fetchData = $query->paginate($count);
+        }
+
+        return ['data' => $fetchData, 'draw' => $request['params']['draw']];
     }
 
     /**
@@ -58,7 +63,11 @@ class AreaController extends Controller
      */
     public function create()
     {
-        //
+        $divisions = PropertyService::getDivisions();
+
+        return $this->sendResponse([
+            'divisions' => $divisions
+        ],'');
     }
 
     /**
@@ -69,49 +78,22 @@ class AreaController extends Controller
      */
     public function store(Request $request)
     {
-       //--- Validation Section Start ---//
-       $rules = [
-        'name' => 'required|string|max:255',
-    ];
-    $validator = Validator::make($request->all(), $rules);
+        $data = $this->validate($request, [
+            'name' => 'required|string',
+            'district_id' => 'required|integer',
+            'division_id' => 'required|integer',
+            'thana_id' => 'required|integer'
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-    }
-    //--- Validation Section Ends  ---//
+        try {
+            $areas = Area::create($data);
 
-    try {
-        // Store Utility
-        $area = new Area();
-        $area->division_id = $request->division_id;
-        $area->district_id = $request->district_id;
-        $area->thana_id = $request->thana_id;
-        $area->name = $request->name;
-        $area->bn_name = $request->bn_name;
-        $area->save();
-        return $this->sendResponse(['id'=>$area->id],'Area create successfully');
+            return $this->sendResponse([
+                'areas' => $areas
+            ],'Area created successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Area store error', ['error' => $exception->getMessage()]);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        try {
-            $area = Area::findOrFail($id);
-            return $this->sendResponse([
-                'area' =>$area
-            ], 'Area fetch successfully');
-        } catch (\Exception $exception) {
-            return $this->sendError('Area fetch error', ['error' => $exception->getMessage()]);
-        }
-
     }
 
     /**
@@ -120,9 +102,19 @@ class AreaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+        $area = Area::findOrFail($request->areaId);
+        $divisions = PropertyService::getDivisions();
+        $districts = District::select('id', 'name')->get();
+        $thanas = Thana::select('id', 'name')->get();
+
+        return $this->sendResponse([
+            'area' => $area,
+            'divisions' => $divisions,
+            'districts' => $districts,
+            'thanas' => $thanas
+        ], 'Area fetch successfully');
     }
 
     /**
@@ -132,32 +124,24 @@ class AreaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,Area $area)
     {
-        //--- Validation Section Start ---//
-        $rules = [
-            'name' => 'required|string|max:255',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-    
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends  ---//
-    
+        $data = $this->validate($request, [
+            'name' => 'required|string',
+            'district_id' => 'required|integer',
+            'division_id' => 'required|integer',
+            'thana_id' => 'required|integer'
+        ]);
+
         try {
-            // Store Utility
-            $area = Area::findOrFail($id);
-            $area->division_id = $request->division_id;
-            $area->district_id = $request->district_id;
-            $area->thana_id = $request->thana_id;
-            $area->name = $request->name;
-            $area->bn_name = $request->bn_name;
-            $area->update();
-            return $this->sendResponse(['id'=>$area->id],'Area edit successfully');
-            } catch (\Exception $exception) {
-                return $this->sendError('Area edit error', ['error' => $exception->getMessage()]);
-            }
+            $area->update($data);
+
+            return $this->sendResponse([
+                'area' => $area
+            ], 'Area updated successfully');
+        }catch(\Exception $exception) {
+            return $this->sendError('Area edit error', ['error' => $exception->getMessage()]);
+        }
     }
 
     /**
@@ -166,14 +150,37 @@ class AreaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Area $area)
     {
         try {
-            $area = Area::findOrFail($id);
             $area->delete();
-            return $this->sendResponse(['id' => $id], 'Area deleted successfully');
+            return $this->sendResponse([
+                'area' => $area
+            ], 'Area deleted successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Area delete error', ['error' => $exception->getMessage()]);
         }
+    }
+
+    public function getDistricts(Request $request)
+    {
+        $districts = District::where('division_id', $request->divisionId)
+                        ->select('id', 'name')
+                        ->get();
+
+        return $this->sendResponse([
+            'districts' => $districts
+        ],'');
+    }
+
+    public function getThanas(Request $request)
+    {
+        $thanas = Thana::where('district_id', $request->thanaId)
+                    ->select('id', 'name')
+                    ->get();
+
+        return $this->sendResponse([
+            'thanas' => $thanas
+        ],'');
     }
 }

@@ -29,6 +29,7 @@ class StorePropertyRequest extends FormRequest
             'thana_id' => 'required|integer',
             'district_id' => 'required|integer',
             'division_id' => 'required|integer',
+            'area_id' => 'required|integer',
             'property_type_id' => 'required|integer',
             'property_category' => 'required|integer',
             'sale_type' => 'required|integer',

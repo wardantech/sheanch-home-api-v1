@@ -10,8 +10,6 @@ use App\Models\Settings\Division;
 use App\Models\Settings\Thana;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class GetDivisionDistrictThanaController extends Controller
 {
