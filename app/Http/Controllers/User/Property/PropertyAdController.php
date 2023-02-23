@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User\Property;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FrontPropertiesResourse;
+use App\Http\Resources\PropertyAdDetailsResource;
 use App\Models\Landlord;
 
 use App\Models\Property\Property;
@@ -130,14 +131,10 @@ class PropertyAdController extends Controller
     public function getDetails(Request $request)
     {
         try {
-            $propertyAd = PropertyAd::where('id', $request->propertyAdId)
-                ->with(['property', 'property.media'])->first();
-            $facilityIds = json_decode($propertyAd->property->facilitie_ids);
-            $facilities = Facility::whereIn('id', $facilityIds)->get('name');
+            $propertyAd = PropertyAd::findOrFail($request->id);
 
             return $this->sendResponse([
-                'propertyAd' => $propertyAd,
-                'facilities' => $facilities
+                'propertyAd' => new PropertyAdDetailsResource($propertyAd)
             ], 'Property data successfully');
         } catch (\Exception $exception) {
             return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
