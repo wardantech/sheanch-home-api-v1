@@ -131,6 +131,27 @@ class PropertyAdController extends Controller
     public function getDetails(Request $request)
     {
         try {
+            $propertyAd = PropertyAd::where('id', $request->propertyAdId)
+                ->with(['property', 'property.media'])->first();
+            $facilityIds = json_decode($propertyAd->property->facilitie_ids);
+            $facilities = Facility::whereIn('id', $facilityIds)->get('name');
+
+            return $this->sendResponse([
+                'propertyAd' => $propertyAd,
+                'facilities' => $facilities
+            ], 'Property data successfully');
+        } catch (\Exception $exception) {
+            return $this->sendError('Property data error', ['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getAdDetails(Request $request)
+    {
+        try {
             $propertyAd = PropertyAd::findOrFail($request->id);
 
             return $this->sendResponse([

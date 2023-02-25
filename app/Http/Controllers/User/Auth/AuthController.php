@@ -69,20 +69,11 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        //--- Validation Section
-        $rules = [
+        $this->validate($request, [
             'name' => 'required|string|max:255',
-            'type' => 'required|integer',
             'mobile' => 'required|string|unique:users',
-            'password' => 'required|confirmed|string|min:6',
-        ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(array('errors' => $validator->getMessageBag()->toArray()), 422);
-        }
-        //--- Validation Section Ends
+            'password' => 'required|confirmed|string|min:6'
+        ]);
 
         $user =  new User();
         $user->name = $request->name;
@@ -90,32 +81,6 @@ class AuthController extends Controller
         $user->status = 0;
         $user->type = $request->type;
         $user->password = bcrypt($request->password);
-
-        if($request->type == 2){
-            $landlord = new Landlord();
-
-            $landlord->name = $request->name;
-            $landlord->mobile = $request->mobile;
-            $landlord->status = 0;
-
-            $landlord->save();
-
-            $user->landlord_id = $landlord->id;
-        }
-
-        if($request->type == 3){
-            $tenant = new Tenant();
-
-            $tenant->name = $request->name;
-            $tenant->mobile = $request->mobile;
-            $tenant->status = 0;
-
-            $tenant->save();
-
-            $user->tenant_id = $tenant->id;
-
-        }
-
         $user->save();
 
         //$credentials = $request->only('mobile', 'password');
