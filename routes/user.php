@@ -43,6 +43,7 @@ Route::post('register',[AuthController::class,'register']);
 
 //Frontend Data
 Route::post('home', [GeneralSettingController::class, 'home'])->withoutMiddleware(['auth:api']);
+Route::post('properties', [GeneralSettingController::class, 'properties'])->withoutMiddleware(['auth:api']);
 
 // Dashboard controller
 Route::post('get-dashboard-data', [UserDasboardController::class, 'getDashboardData']);

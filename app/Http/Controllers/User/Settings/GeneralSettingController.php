@@ -41,4 +41,16 @@ class GeneralSettingController extends Controller
             'properties' => FrontPropertiesResourse::collection($properties)
         ],'');
     }
+
+    public function properties()
+    {
+        $properties = PropertyAd::where('status', 1)
+                ->with('property')
+                ->latest()
+                ->get();
+
+        return $this->sendResponse([
+            'properties' => FrontPropertiesResourse::collection($properties)
+        ],'');
+    }
 }
