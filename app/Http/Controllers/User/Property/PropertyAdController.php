@@ -84,6 +84,7 @@ class PropertyAdController extends Controller
             $PropertyAd = new PropertyAd();
 
             $PropertyAd->user_id = $request->user_id;
+            $PropertyAd->area_id = $request->area_id;
             $PropertyAd->property_id = $request->property_id;
             $PropertyAd->property_category = $request->property_category_id;
             $PropertyAd->property_type_id = $request->property_type_id;

@@ -42,15 +42,28 @@ class GeneralSettingController extends Controller
         ],'');
     }
 
-    public function properties()
+    public function properties(Request $request)
     {
-        $properties = PropertyAd::where('status', 1)
-                ->with('property')
-                ->latest()
-                ->get();
+        $properties = PropertyAd::with('property')->where('status', 1);
+
+        if (isset($request->sale_type)) {
+            $properties->where('sale_type', $request->input('sale_type'));
+        }
+        if (isset($request->property_type_id)) {
+            $properties->where('property_type_id', $request->input('property_type_id'));
+        }
+        if (isset($request->min_price)) {
+            $properties->where('rent_amount', '>=', $request->min_price);
+        }
+        if (isset($request->max_price)) {
+            $properties->where('rent_amount', '<=', $request->max_price);
+        }
+
+        // get search result data
+        $searchResult = $properties->get();
 
         return $this->sendResponse([
-            'properties' => FrontPropertiesResourse::collection($properties)
+            'properties' => FrontPropertiesResourse::collection($searchResult)
         ],'');
     }
 }

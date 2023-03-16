@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('status');
             $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('area_id')->constrained('property_ads');
             $table->string('start_date')->index();
             $table->string('end_date')->index();
             $table->integer('property_id')->index();
