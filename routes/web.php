@@ -18,6 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Route::get('/linkstorage', function () {
+//     Artisan::call('storage:link');
+// });
+
 Route::get('otp', function (){
     $url = "http://66.45.237.70/api.php";
     $number="01643734728";
