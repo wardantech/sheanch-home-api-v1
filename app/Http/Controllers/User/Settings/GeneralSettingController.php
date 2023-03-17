@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Settings\PropertyType;
 use App\Models\Settings\FrontendSetting;
 use App\Http\Resources\FrontPropertiesResourse;
+use App\Models\Area;
 
 class GeneralSettingController extends Controller
 {
@@ -22,6 +23,7 @@ class GeneralSettingController extends Controller
         $frontendData = FrontendSetting::with('media')->first();
         $propertyTypes = PropertyType::select('id', 'name')->get();
         $divisions = Division::select('id', 'name')->get();
+        $areas = Area::select('id', 'name')->get();
 
         $worksWidgets = HowItWork::select('id', 'title', 'icon', 'description', 'status')
                     ->where('status', 1)
@@ -34,6 +36,7 @@ class GeneralSettingController extends Controller
                 ->paginate(6);
 
         return $this->sendResponse([
+            'areas' => $areas,
             'frontendData' => $frontendData,
             'propertyTypes' => $propertyTypes,
             'divisions' => $divisions,
@@ -48,6 +51,9 @@ class GeneralSettingController extends Controller
 
         if (isset($request->sale_type)) {
             $properties->where('sale_type', $request->input('sale_type'));
+        }
+        if (isset($request->area_id)) {
+            $properties->where('area_id', $request->input('area_id'));
         }
         if (isset($request->property_type_id)) {
             $properties->where('property_type_id', $request->input('property_type_id'));
