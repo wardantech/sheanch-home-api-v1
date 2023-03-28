@@ -22,10 +22,23 @@ class ExpanseController extends Controller
         $dir = $request['params']['dir'];
         $searchValue = $request['params']['search'];
         $userId = $request['params']['userId'];
+        $YearMonth = $request['params']['year_month'];
 
-        $query = Transaction::with(['property', 'mobileBank'])
-            ->where('user_id', $userId)
-            ->where('transaction_purpose', 2);
+        if ($YearMonth) {
+            $YearMonth = explode("-", $YearMonth);
+            $year = $YearMonth[0];
+            $month = $YearMonth[1];
+
+            $query = Transaction::with(['property', 'mobileBank'])
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('user_id', $userId)
+                ->where('transaction_purpose', 2);
+        }else {
+            $query = Transaction::with(['property', 'mobileBank'])
+                ->where('user_id', $userId)
+                ->where('transaction_purpose', 2);
+        }
 
         $totalExpanse = $query->sum('cash_out');
 

@@ -185,6 +185,9 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
 
     // Transaction Reports
     Route::post('cash', [TransactionReportController::class, 'cash']);
+    Route::post('revenues', [TransactionReportController::class, 'revenues']);
+    Route::post('property-transactions', [TransactionReportController::class, 'propertyTransactions']);
+    Route::post('bank-transactions', [TransactionReportController::class, 'bankTransactions']);
 
     // Add bank account for user
     Route::post('get-bank-payment-method', [AddBankMethodController::class, 'index']);
