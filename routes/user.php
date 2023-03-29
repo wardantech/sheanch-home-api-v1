@@ -105,10 +105,13 @@ Route::group(['middleware' => ['auth:api']], function(){
             Route::post('decline', [PropertyDeedController::class, 'decline']);
             Route::post('delete/{id}',[PropertyDeedController::class, 'destroy']);
 
+            Route::post('transaction-reports', [PropertyDeedController::class, 'transactionReports']);
+
             // Deed Information
             Route::post('information-data', [DeedInformationController::class, 'getData']);
             Route::post('information/store', [DeedInformationController::class, 'store']);
             Route::post('information/image/{id}', [DeedInformationController::class, 'imageUpload']);
+
 
             Route::post('get-rent-deed', [RentCollectionController::class, 'getRentDeed']);
             Route::post('get-property-info', [RentCollectionController::class, 'getPropertyInfo']);
@@ -182,6 +185,10 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
 
     // Transaction Reports
     Route::post('cash', [TransactionReportController::class, 'cash']);
+    Route::post('revenues', [TransactionReportController::class, 'revenues']);
+    Route::post('property-transactions', [TransactionReportController::class, 'propertyTransactions']);
+    Route::post('bank-transactions', [TransactionReportController::class, 'bankTransactions']);
+    Route::post('mobile-bank-transactions', [TransactionReportController::class, 'mobileBankTransactions']);
 
     // Add bank account for user
     Route::post('get-bank-payment-method', [AddBankMethodController::class, 'index']);

@@ -123,9 +123,15 @@ class RentCollectionController extends Controller
     public function getRentDeed(Request $request)
     {
         try {
-            $deeds = PropertyDeed::with('property', 'landlord', 'tenant')
-                ->where('landlord_id', $request->userId)
-                ->where('status', 5)
+            $deeds = PropertyDeed::select('id', 'property_id', 'landlord_id', 'tenant_id')
+                ->with(['property' => function($property) {
+                    $property->select('id', 'name');
+                }, 'landlord' => function($landlord) {
+                    $landlord->select('id', 'name');
+                }, 'tenant' => function($tenant) {
+                    $tenant->select('id', 'name');
+                }])
+                ->where('landlord_id', $request->userId)->where('status', 5)
                 ->get();
 
             return $this->sendResponse([
