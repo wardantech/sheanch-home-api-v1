@@ -305,7 +305,7 @@ class PropertyDeedController extends Controller
                 DB::raw("YEAR(transactions.date) as year"),
                 DB::raw("SUM(transactions.cash_in) as amount")
             ])
-            ->groupBy(['property_name','tenant_name','month', 'monthName', 'year', 'property_amount', 'deedId']);
+            ->groupBy(['property_name', 'tenant_name', 'month', 'monthName', 'year', 'property_amount', 'deedId']);
 
         $count = Transaction::count();
 
