@@ -11,16 +11,16 @@ use App\Http\Controllers\User\Accounts\ExpanseController;
 use App\Http\Controllers\User\Accounts\RevenueController;
 use App\Http\Controllers\User\Property\PropertyController;
 use App\Http\Controllers\User\Property\PropertyAdController;
+use App\Http\Controllers\User\Accounts\BankAccountController;
 use App\Http\Controllers\User\Accounts\ExpanseItemController;
 use App\Http\Controllers\User\Property\PropertyDeedController;
 use App\Http\Controllers\User\Property\PropertyPageController;
-use App\Http\Controllers\User\Accounts\AddBankMethodController;
 use App\Http\Controllers\User\Dashboard\UserDasboardController;
 use App\Http\Controllers\User\Property\RentCollectionController;
 use App\Http\Controllers\User\Settings\GeneralSettingController;
-use App\Http\Controllers\User\Accounts\AddMobileMethodController;
 use App\Http\Controllers\User\Property\DeedInformationController;
 use App\Http\Controllers\User\Dashboard\TenantDashboardController;
+use App\Http\Controllers\User\Accounts\MobileBankAccountController;
 use App\Http\Controllers\User\Accounts\TransactionReportController;
 use App\Http\Controllers\User\Settings\GetDivisionDistrictThanaController;
 
@@ -191,18 +191,18 @@ Route::group(['prefix' => 'accounts', 'namespace' => 'User'], function() {
     Route::post('mobile-bank-transactions', [TransactionReportController::class, 'mobileBankTransactions']);
 
     // Add bank account for user
-    Route::post('get-bank-payment-method', [AddBankMethodController::class, 'index']);
-    Route::post('get-banks', [AddBankMethodController::class, 'getBanks']);
-    Route::post('bank-method-store', [AddBankMethodController::class, 'store']);
-    Route::post('bank-method-edit', [AddBankMethodController::class, 'edit']);
-    Route::put('bank-method-update/{id}', [AddBankMethodController::class, 'update']);
-    Route::delete('bank-method-delete/{id}', [AddBankMethodController::class, 'destroy']);
+    Route::post('banks', [BankAccountController::class, 'index']);
+    Route::post('banks-store', [BankAccountController::class, 'store']);
+    Route::post('banks-edit', [BankAccountController::class, 'edit']);
+    Route::put('banks-update/{id}', [BankAccountController::class, 'update']);
+    Route::delete('bank-method-delete/{id}', [BankAccountController::class, 'destroy']);
+    Route::post('get-banks', [BankAccountController::class, 'getBanks']);
 
     // Add bank account for user
-    Route::post('get-mobile-payment-method', [AddMobileMethodController::class, 'index']);
-    Route::post('get-mobile-banks', [AddMobileMethodController::class, 'getMobileBanks']);
-    Route::post('mobile-method-store', [AddMobileMethodController::class, 'store']);
-    Route::post('mobile-method-edit', [AddMobileMethodController::class, 'edit']);
-    Route::put('mobile-method-update/{id}', [AddMobileMethodController::class, 'update']);
-    Route::delete('mobile-method-delete/{id}', [AddMobileMethodController::class, 'destroy']);
+    Route::post('mobile-banks', [MobileBankAccountController::class, 'index']);
+    Route::post('mobile-banks-store', [MobileBankAccountController::class, 'store']);
+    Route::post('mobile-banks-edit', [MobileBankAccountController::class, 'edit']);
+    Route::put('mobile-banks-update/{id}', [MobileBankAccountController::class, 'update']);
+    Route::delete('mobile-method-delete/{id}', [MobileBankAccountController::class, 'destroy']);
+    Route::post('get-mobile-banks', [MobileBankAccountController::class, 'getMobileBanks']);
 });

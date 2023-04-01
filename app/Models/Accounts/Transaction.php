@@ -15,24 +15,25 @@ class Transaction extends Model
     protected $dates = ['date'];
 
     protected $fillable = [
-        'user_id',
-        'payment_method',
-        'property_id',
-        'bank_id',
-        'account_id',
-        'mobile_banking_id',
-        'property_deed_id',
-        'expanse_item_id',
+        'date',
+        'remark',
         'due_id',
+        'cash_in',
+        'user_id',
+        'cash_out',
+        'is_initial',
+        'due_amount',
+        'created_by',
+        'updated_by',
+        'account_id',
+        'property_id',
+        'payment_method',
+        'bank_account_id',
+        'expanse_item_id',
+        'property_deed_id',
         'transaction_id',
         'transaction_purpose',
-        'cash_in',
-        'cash_out',
-        'due_amount',
-        'remark',
-        'date',
-        'created_by',
-        'updated_by'
+        'mobile_bank_account_id'
     ];
 
     public function property()
