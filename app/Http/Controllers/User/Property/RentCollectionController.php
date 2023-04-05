@@ -11,6 +11,8 @@ use App\Models\Accounts\Transaction;
 use App\Models\Property\PropertyDeed;
 use App\Http\Resources\UserRevenueResource;
 use App\Models\Accounts\AddPaymentMethod;
+use App\Models\Accounts\BankAccount;
+use App\Models\Accounts\MobileBankAccount;
 use App\Models\Property\Property;
 use App\Traits\ResponseTrait;
 
@@ -89,9 +91,17 @@ class RentCollectionController extends Controller
         $deedId = $request['params']['deedId'];
         $month = $request['params']['month'];
 
-        $query = Transaction::with(['property', 'deed' => function($query) {
+        $query = Transaction::with([
+            'property', 'deed' => function($query) {
             $query->with('tenant');
-        }, 'mobileBank'])
+        }, 'mobileBank' => function($query) {
+            $query->select('id', 'name');
+        }, 'bankAccount' => function($query) {
+            $query->select('id', 'bank_id', 'account_number')
+                ->with(['bank' => function($query) {
+                    $query->select('id', 'name');
+                }]);
+        }])
         ->where('property_deed_id', $deedId)
         ->whereMonth('date', $month);
 
@@ -154,17 +164,18 @@ class RentCollectionController extends Controller
 
         try {
             if($data['payment_method'] == 2) {
-                $data['bank_id'] = $request->bank_id;
-                unset($data['mobile_banking_id']);
+                $data['bank_account_id'] = $request->bank_account_id;
+                unset($data['mobile_bank_account_id']);
             } elseif ($data['payment_method'] == 3) {
-                $data['mobile_banking_id'] = $request->mobile_banking_id;
-                unset($data['bank_id']);
+                $data['mobile_bank_account_id'] = $request->mobile_bank_account_id;
+                unset($data['bank_account_id']);
             }else {
-                unset($data['bank_id']);
-                unset($data['mobile_banking_id']);
+                unset($data['bank_account_id']);
+                unset($data['mobile_bank_account_id']);
             }
 
             $data['transaction_purpose'] = 1; // Revenue
+            $data['created_by'] = auth('api')->user()->id;
             $revenues = Transaction::create($data);
 
             return $this->sendResponse([
@@ -216,19 +227,22 @@ class RentCollectionController extends Controller
 
         try {
             if($data['payment_method'] == 2) {
-                $data['bank_id'] = $request->bank_id;
-                $data['mobile_banking_id'] = null;
+                $data['transaction_id'] = null;
+                $data['mobile_bank_account_id'] = null;
+                $data['bank_account_id'] = $request->bank_account_id;
             } elseif ($data['payment_method'] == 3) {
-                $data['mobile_banking_id'] = $request->mobile_banking_id;
-                $data['bank_id'] = null;
+                $data['mobile_bank_account_id'] = $request->mobile_bank_account_id;
+                $data['bank_account_id'] = null;
             }else {
-                $data['bank_id'] = null;
-                $data['mobile_banking_id'] = null;
+                $data['transaction_id'] = null;
+                $data['bank_account_id'] = null;
+                $data['mobile_bank_account_id'] = null;
             }
 
             $transaction = Transaction::findOrFail($id);
 
             $data['transaction_purpose'] = 1;
+            $data['updated_by'] = auth('api')->user()->id;
             $transaction->update($data);
 
             return $this->sendResponse([
@@ -277,14 +291,14 @@ class RentCollectionController extends Controller
 
         try {
             if($data['payment_method'] == 2) {
-                $data['bank_id'] = $request->bank_id;
-                unset($data['mobile_banking_id']);
+                $data['bank_account_id'] = $request->bank_account_id;
+                unset($data['mobile_bank_account_id']);
             } elseif ($data['payment_method'] == 3) {
-                $data['mobile_banking_id'] = $request->mobile_banking_id;
-                unset($data['bank_id']);
+                $data['mobile_bank_account_id'] = $request->mobile_bank_account_id;
+                unset($data['bank_account_id']);
             }else {
-                unset($data['bank_id']);
-                unset($data['mobile_banking_id']);
+                unset($data['bank_account_id']);
+                unset($data['mobile_bank_account_id']);
             }
 
             $data['transaction_purpose'] = 1; // Due
@@ -307,17 +321,19 @@ class RentCollectionController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function getPaymentMethod(Request $request)
+    public function getAccounts(Request $request)
     {
         try {
-            $paymentMethod = $this->paymentMethod($request->method, $request->userId);
+            $accounts = $this->accounts($request->method, $request->userId);
 
             return $this->sendResponse([
-                'banks'=> $paymentMethod
-            ],'Payment method get successfully');
+                'banks'=> $accounts
+            ],'Accounts get successfully');
 
         } catch (\Exception $exception) {
-            return $this->sendError('Property Deed status change error', ['error' => $exception->getMessage()]);
+            return $this->sendError('Accounts get error', [
+                'error' => $exception->getMessage()
+            ]);
         }
     }
 
@@ -346,24 +362,24 @@ class RentCollectionController extends Controller
      * @param  mixed $userId
      * @return void
      */
-    protected function paymentMethod($method, $userId)
+    protected function accounts($method, $userId)
     {
-        $paymentMethod = null;
+        $accounts = null;
         if ($method == 2) {
-            $paymentMethod = AddPaymentMethod::with('bank')
+            $accounts = BankAccount::with('bank')
                 ->whereNotNull('bank_id')
                 ->where('user_id', $userId)
                 ->get();
         }
 
         if ($method == 3) {
-            $paymentMethod = AddPaymentMethod::with('mobileBank')
+            $accounts = MobileBankAccount::with('mobileBank')
                 ->whereNotNull('mobile_banking_id')
                 ->where('user_id', $userId)
                 ->get();
         }
 
-        return $paymentMethod;
+        return $accounts;
     }
 
     public function getPropertyInfo(Request $request)

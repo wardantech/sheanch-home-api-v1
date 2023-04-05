@@ -24,7 +24,7 @@ class MobileBankAccountController extends Controller
         $searchValue = $request['params']['search'];
         $userId = $request['params']['userId'];
 
-        $query = MobileBankAccount::with('bank')
+        $query = MobileBankAccount::with('mobileBank')
             ->whereNotNull('mobile_banking_id')
             ->where('user_id', $userId)
             ->orderBy($columns[$column], $dir);

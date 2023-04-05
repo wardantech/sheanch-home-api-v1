@@ -12,7 +12,7 @@ class MobileBankAccount extends Model
 
     protected $fillable = ['user_id', 'mobile_banking_id', 'account_number'];
 
-    public function bank()
+    public function mobileBank()
     {
         return $this->belongsTo(MobileBanking::class, 'mobile_banking_id', 'id');
     }

@@ -28,14 +28,14 @@ class StoreRentCollectionRequest extends FormRequest
         return [
             'cash_in' => 'required',
             'due_amount' => 'nullable',
-            'bank_id' => 'nullable',
             'remark' => 'nullable|string',
+            'bank_account_id' => 'nullable',
             'user_id' => 'required|integer',
-            'mobile_banking_id' => 'nullable',
             'property_id' => 'required|integer',
+            'transaction_id' => 'nullable|string',
+            'mobile_bank_account_id' => 'nullable',
             'payment_method' => 'required|integer',
             'property_deed_id' => 'required|integer',
-            'transaction_id' => 'nullable|string',
             'date' => [
                 'required',
                 new BeforeMonthRule,

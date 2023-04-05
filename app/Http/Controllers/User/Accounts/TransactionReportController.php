@@ -26,14 +26,12 @@ class TransactionReportController extends Controller
             $year = $YearMonth[0];
             $month = $YearMonth[1];
 
-            $query = Transaction::with('mobileBank')
-                ->whereYear('date', $year)
+            $query = $this->transactions()->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->where('user_id', $userId)
                 ->orderBy($columns[$column], $dir);
         }else {
-            $query = Transaction::with('mobileBank')
-                ->where('user_id', $userId)
+            $query = $this->transactions()->where('user_id', $userId)
                 ->orderBy($columns[$column], $dir);
         }
 
@@ -80,15 +78,13 @@ class TransactionReportController extends Controller
             $year = $YearMonth[0];
             $month = $YearMonth[1];
 
-            $query = Transaction::with('mobileBank')
-                ->whereYear('date', $year)
+            $query = $this->transactions()->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->where('user_id', $userId)
                 ->where('transaction_purpose', 1)
                 ->orderBy($columns[$column], $dir);
         }else {
-            $query = Transaction::with('mobileBank')
-                ->where('user_id', $userId)
+            $query = $this->transactions()->where('user_id', $userId)
                 ->where('transaction_purpose', 1)
                 ->orderBy($columns[$column], $dir);
         }
@@ -133,15 +129,13 @@ class TransactionReportController extends Controller
             $year = $YearMonth[0];
             $month = $YearMonth[1];
 
-            $query = Transaction::with('mobileBank')
-                ->where('property_id', $propertyId)
+            $query = $this->transactions()->where('property_id', $propertyId)
                 ->where('user_id', $userId)
                 ->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->orderBy($columns[$column], $dir);
         }else {
-            $query = Transaction::with('mobileBank')
-                ->where('property_id', $propertyId)
+            $query = $this->transactions()->where('property_id', $propertyId)
                 ->where('user_id', $userId)
                 ->orderBy($columns[$column], $dir);
         }
@@ -286,5 +280,20 @@ class TransactionReportController extends Controller
             'totalExpanse' => $totalExpanse,
             // 'currentAmount' => $currentAmount
         ];
+    }
+
+    private function transactions()
+    {
+        $transactions = Transaction::with(['bankAccount' => function($query) {
+            $query->select('id', 'account_number', 'bank_id')
+                ->with(['bank' => function($query) {
+                    $query->select('id', 'name');
+                }]);
+        },
+        'mobileBank' => function($query) {
+            $query->select('id', 'name');
+        }]);
+
+        return $transactions;
     }
 }

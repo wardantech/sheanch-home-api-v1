@@ -115,7 +115,7 @@ Route::group(['middleware' => ['auth:api']], function(){
 
             Route::post('get-rent-deed', [RentCollectionController::class, 'getRentDeed']);
             Route::post('get-property-info', [RentCollectionController::class, 'getPropertyInfo']);
-            Route::post('get-payment-method', [RentCollectionController::class, 'getPaymentMethod']);
+            Route::post('get-accounts', [RentCollectionController::class, 'getAccounts']);
             Route::post('get-property-payments', [RentCollectionController::class, 'index']);
             Route::post('rent-property/store', [RentCollectionController::class, 'store']);
             Route::post('get-deed-transaction-month', [RentCollectionController::class, 'getDeedTransactionMonth']);

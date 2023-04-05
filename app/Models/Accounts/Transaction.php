@@ -46,8 +46,13 @@ class Transaction extends Model
         return $this->belongsTo(PropertyDeed::class, 'property_deed_id', 'id');
     }
 
+    public function bankAccount()
+    {
+        return $this->belongsTo(BankAccount::class, 'bank_account_id', 'id');
+    }
+
     public function mobileBank()
     {
-        return $this->belongsTo(MobileBanking::class, 'mobile_banking_id', 'id');
+        return $this->belongsTo(MobileBanking::class, 'mobile_bank_account_id', 'id');
     }
 }
