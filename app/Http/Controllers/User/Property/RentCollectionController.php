@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRentCollectionRequest;
 use App\Http\Requests\UpdateRentCollectionRequest;
+use App\Http\Resources\BankAccountResource;
+use App\Http\Resources\MobileBankAccountResource;
 use App\Models\Accounts\Transaction;
 use App\Models\Property\PropertyDeed;
 use App\Http\Resources\UserRevenueResource;
@@ -14,6 +16,7 @@ use App\Models\Accounts\AddPaymentMethod;
 use App\Models\Accounts\BankAccount;
 use App\Models\Accounts\MobileBankAccount;
 use App\Models\Property\Property;
+use App\Service\TransactionsService;
 use App\Traits\ResponseTrait;
 
 class RentCollectionController extends Controller
@@ -327,8 +330,8 @@ class RentCollectionController extends Controller
             $accounts = $this->accounts($request->method, $request->userId);
 
             return $this->sendResponse([
-                'banks'=> $accounts
-            ],'Accounts get successfully');
+                'accounts'=> $accounts,
+            ],'Accounts details get successfully');
 
         } catch (\Exception $exception) {
             return $this->sendError('Accounts get error', [
@@ -370,6 +373,8 @@ class RentCollectionController extends Controller
                 ->whereNotNull('bank_id')
                 ->where('user_id', $userId)
                 ->get();
+
+            return BankAccountResource::collection($accounts);
         }
 
         if ($method == 3) {
@@ -377,6 +382,8 @@ class RentCollectionController extends Controller
                 ->whereNotNull('mobile_banking_id')
                 ->where('user_id', $userId)
                 ->get();
+
+            return MobileBankAccountResource::collection($accounts);
         }
 
         return $accounts;
