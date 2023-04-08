@@ -177,29 +177,25 @@ class TransactionReportController extends Controller
         $searchValue = $request['params']['search'];
         $userId = $request['params']['userId'];
         $YearMonth = $request['params']['year_month'];
-        $bankId = $request['params']['bankId'];
+        $bankAccountId = $request['params']['bankAccountId'];
 
         if ($YearMonth) {
             $YearMonth = explode("-", $YearMonth);
             $year = $YearMonth[0];
             $month = $YearMonth[1];
 
-            $query = Transaction::with('mobileBank')
-                ->where('bank_id', $bankId)
-                ->where('user_id', $userId)
-                ->whereYear('date', $year)
-                ->whereMonth('date', $month)
-                ->orderBy($columns[$column], $dir);
+            $query = $this->transactions()->where('bank_account_id', $bankAccountId)
+                ->where('user_id', $userId)->whereYear('date', $year)
+                ->whereMonth('date', $month)->orderBy($columns[$column], $dir);
         }else {
-            $query = Transaction::with('mobileBank')
-                ->where('bank_id', $bankId)
+            $query = $this->transactions()->where('bank_account_id', $bankAccountId)
                 ->where('user_id', $userId)
                 ->orderBy($columns[$column], $dir);
         }
 
         $totalRevenue = $query->sum('cash_in');
         $totalExpanse = $query->sum('cash_out');
-        // $currentAmount = ($totalRevenue - $totalExpanse);
+        $currentAmount = ($totalRevenue - $totalExpanse);
 
         $count = Transaction::count();
 
@@ -221,7 +217,7 @@ class TransactionReportController extends Controller
             'draw' => $request['params']['draw'],
             'totalRevenue' => $totalRevenue,
             'totalExpanse' => $totalExpanse,
-            // 'currentAmount' => $currentAmount
+            'currentAmount' => $currentAmount
         ];
     }
 
@@ -241,22 +237,22 @@ class TransactionReportController extends Controller
             $year = $YearMonth[0];
             $month = $YearMonth[1];
 
-            $query = Transaction::with('mobileBank')
-                ->where('mobile_banking_id', $mobileBankId)
+            $query = $this->transactions()
+                ->where('mobile_bank_account_id', $mobileBankId)
                 ->where('user_id', $userId)
                 ->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->orderBy($columns[$column], $dir);
         }else {
-            $query = Transaction::with('mobileBank')
-                ->where('mobile_banking_id', $mobileBankId)
+            $query = $this->transactions()
+                ->where('mobile_bank_account_id', $mobileBankId)
                 ->where('user_id', $userId)
                 ->orderBy($columns[$column], $dir);
         }
 
         $totalRevenue = $query->sum('cash_in');
         $totalExpanse = $query->sum('cash_out');
-        // $currentAmount = ($totalRevenue - $totalExpanse);
+        $currentAmount = ($totalRevenue - $totalExpanse);
 
         $count = Transaction::count();
 
@@ -278,7 +274,7 @@ class TransactionReportController extends Controller
             'draw' => $request['params']['draw'],
             'totalRevenue' => $totalRevenue,
             'totalExpanse' => $totalExpanse,
-            // 'currentAmount' => $currentAmount
+            'currentAmount' => $currentAmount
         ];
     }
 
