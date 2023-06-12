@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('property_id')->nullable()->constrained('properties');
-            $table->foreignId('bank_id')->nullable()->constrained('banks');
-            $table->foreignId('mobile_banking_id')->nullable()->constrained('mobile_bankings');
+            $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts');
+            $table->foreignId('mobile_bank_account_id')->nullable()->constrained('mobile_bank_accounts');
             $table->foreignId('property_deed_id')->nullable()->constrained('property_deeds');
             $table->foreignId('expanse_item_id')->nullable()->constrained('expanse_items');
             $table->string('transaction_id')->nullable();
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->double('due_amount')->default(0);
             $table->text('remark')->nullable();
             $table->tinyInteger('payment_method')->comment('1 = Cash | 2 = Bank | 3 = Mobile Bank');
+            $table->tinyInteger('is_initial')->default(0);
             $table->foreignId('created_by')->nullable()->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->date('date');

@@ -8,6 +8,7 @@ use App\Http\Requests\StoreExpanseRequest;
 use App\Models\Accounts\ExpanseItem;
 use App\Models\Accounts\Transaction;
 use App\Models\Property\Property;
+use App\Service\TransactionsService;
 use App\Traits\ResponseTrait;
 
 class ExpanseController extends Controller
@@ -29,14 +30,12 @@ class ExpanseController extends Controller
             $year = $YearMonth[0];
             $month = $YearMonth[1];
 
-            $query = Transaction::with(['property', 'mobileBank'])
-                ->whereYear('date', $year)
+            $query = $this->transactions()->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->where('user_id', $userId)
                 ->where('transaction_purpose', 2);
         }else {
-            $query = Transaction::with(['property', 'mobileBank'])
-                ->where('user_id', $userId)
+            $query = $this->transactions()->where('user_id', $userId)
                 ->where('transaction_purpose', 2);
         }
 
@@ -90,14 +89,14 @@ class ExpanseController extends Controller
 
         try {
             if($data['payment_method'] == 2) {
-                $data['bank_id'] = $request->bank_id;
-                unset($data['mobile_banking_id']);
+                $data['bank_account_id'] = $request->bank_account_id;
+                unset($data['mobile_bank_account_id']);
             } elseif ($data['payment_method'] == 3) {
-                $data['mobile_banking_id'] = $request->mobile_banking_id;
-                unset($data['bank_id']);
+                $data['mobile_bank_account_id'] = $request->mobile_bank_account_id;
+                unset($data['bank_account_id']);
             }else {
-                unset($data['bank_id']);
-                unset($data['mobile_banking_id']);
+                unset($data['bank_account_id']);
+                unset($data['mobile_bank_account_id']);
             }
 
             $data['transaction_purpose'] = 2;
@@ -144,17 +143,20 @@ class ExpanseController extends Controller
 
         try {
             if($data['payment_method'] == 2) {
-                $data['bank_id'] = $request->bank_id;
-                unset($data['mobile_banking_id']);
+                $data['transaction_id'] = null;
+                $data['mobile_bank_account_id'] = null;
+                $data['bank_account_id'] = $request->bank_account_id;
             } elseif ($data['payment_method'] == 3) {
-                $data['mobile_banking_id'] = $request->mobile_banking_id;
-                unset($data['bank_id']);
+                $data['mobile_bank_account_id'] = $request->mobile_bank_account_id;
+                $data['bank_account_id'] = null;
             }else {
-                unset($data['bank_id']);
-                unset($data['mobile_banking_id']);
+                $data['transaction_id'] = null;
+                $data['bank_account_id'] = null;
+                $data['mobile_bank_account_id'] = null;
             }
 
             $transaction = Transaction::findOrFail($request->id);
+            $data['updated_by'] = auth('api')->user()->id;
             $transaction->update($data);
 
             return $this->sendResponse([
@@ -174,5 +176,23 @@ class ExpanseController extends Controller
         $transaction->delete();
 
         return $this->sendResponse('', 'Expanse delete successfully');
+    }
+
+    private function transactions()
+    {
+        $transactions = Transaction::with([
+            'property' => function($query) {
+                $query->select('id', 'name');
+            },
+            'bankAccount' => function($query) {
+                $query->select('id', 'bank_id', 'account_number')
+                    ->with(['bank' => function($query) {
+                        $query->select('id', 'name');
+                    }]);
+            },
+            'mobileBank'
+        ]);
+
+        return $transactions;
     }
 }

@@ -27,11 +27,12 @@ class StoreExpanseRequest extends FormRequest
             'date' => 'required',
             'cash_out' => 'required',
             'remark' => 'nullable|string',
-            'user_id' => 'required|integer',
-            'mobile_banking_id' => 'nullable',
             'transaction_id' => 'nullable',
+            'user_id' => 'required|integer',
+            'bank_account_id' => 'nullable',
             'property_id' => 'required|integer',
             'payment_method' => 'required|integer',
+            'mobile_bank_account_id' => 'nullable',
             'expanse_item_id' => 'required|integer'
         ];
     }

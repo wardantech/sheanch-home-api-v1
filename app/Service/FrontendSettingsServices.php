@@ -3,13 +3,12 @@
 namespace App\Service;
 class FrontendSettingsServices
 {
-
     /**
      * Banner Image delete
      * @return \Illuminate\Http\Response
      */
-
-    public static function imageDelete($data, $type){
+    public static function imageDelete($data, $type)
+    {
         if($type == 'banner'){
             $images = $data->getMedia('banner');
         }
@@ -30,12 +29,10 @@ class FrontendSettingsServices
         }
     }
 
-
-    public static function imageUpload($data, $image, $type){
+    public static function imageUpload($data, $image, $type)
+    {
         $data->addMediaFromBase64($image)
             ->usingFileName(uniqid($type, false) . '.png')
             ->toMediaCollection($type);
     }
-
-
 }
